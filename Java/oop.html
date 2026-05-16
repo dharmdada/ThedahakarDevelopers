@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Java OOP - JavaMaster</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">OOP</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(249,115,22,0.15);">OOP</div>
+    <div><h2>Object-Oriented Programming in Java</h2><p>Design maintainable systems using classes, contracts, and composable object behavior.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Object thinking: identity, state, behavior, contracts, and substitution.</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Object-oriented programming is a way of managing complexity by putting related state and behavior behind a meaningful boundary. A class should represent a concept in the problem domain or a technical role in the solution. Good classes make invalid states hard to create and valid operations easy to perform.</p>
+    <p>Java OOP depends on two different ideas that are often mixed together: data modeling and behavior polymorphism. Data modeling asks what information belongs together. Polymorphism asks which operations can be performed through a shared contract. Understanding the difference prevents overusing inheritance just to share fields.</p>
+    <p>The central question is not "Can I make this a class?" but "What responsibility should this object own?" If the answer is unclear, the class will become a dumping ground. If the responsibility is clear, methods, fields, constructors, and visibility become easier to design.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Protect invariants through constructors and methods.</li>
+      <li>Use interfaces for behavior contracts and classes for implementation details.</li>
+      <li>Prefer composition when behavior varies independently.</li>
+      <li>Keep public APIs smaller than internal implementation.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Using inheritance to reuse code when composition would be simpler.</li>
+      <li>Making every field public and destroying encapsulation.</li>
+      <li>Creating an interface for every class without a real alternate implementation.</li>
+      <li>Putting unrelated responsibilities into one service or model class.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain why a field is private, protected, package-private, or public.</li>
+      <li>You can choose interface, abstract class, record, enum, or normal class intentionally.</li>
+      <li>You can design classes that are easy to test.</li>
+      <li>You can replace conditional behavior with polymorphism when it genuinely improves design.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card-grid">
+  <a href="pages/classes.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">01</div><h4>Classes and Objects</h4><p>Class anatomy, constructors, members, static behavior, and object lifecycle.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/inheritance.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">02</div><h4>Inheritance and Polymorphism</h4><p>extends/super, overriding, upcasting, runtime dispatch, equals/hashCode.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/interfaces.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">03</div><h4>Interfaces and Abstraction</h4><p>Contracts, default methods, abstract classes, and extension points.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/enums-records.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">04</div><h4>Enums and Records</h4><p>Type-safe constants and immutable data carriers in modern Java.</p><div style="margin-top:10px;"><span class="tag tag-feature">Modern</span></div></a>
+</div>
+
+<div class="section" id="principles" style="margin-top:36px;">
+  <div class="subsection">
+    <h3>Core OOP Principles in Practice</h3>
+    <ul class="feature-list">
+      <li><strong>Encapsulation:</strong> protect invariants, expose only valid state transitions.</li>
+      <li><strong>Abstraction:</strong> model what users of a class need, not internal mechanics.</li>
+      <li><strong>Composition over inheritance:</strong> prefer object collaboration when behavior variants are many.</li>
+      <li><strong>Polymorphism:</strong> replace if-else trees with interchangeable strategy implementations.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="readiness">
+  <div class="subsection">
+    <h3>Readiness Checklist</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Modeling</div><div class="hl-value">Clear</div><div class="hl-desc">Can map real domain concepts to classes and value objects.</div></div>
+      <div class="hl-box"><div class="hl-label">Contracts</div><div class="hl-value">Safe</div><div class="hl-desc">Know when to use interface vs abstract class.</div></div>
+      <div class="hl-box"><div class="hl-label">Reuse</div><div class="hl-value">Focused</div><div class="hl-desc">Reuse behavior without building fragile inheritance trees.</div></div>
+      <div class="hl-box"><div class="hl-label">Testing</div><div class="hl-value">Easy</div><div class="hl-desc">Design classes that are simple to unit test.</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - Next chapter: <a href="functional.html" style="color:var(--accent);">Functional Java</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="script.js"></script>
+</body>
+</html>

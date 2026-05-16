@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Modern Java Features – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item active" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(168,85,247,0.15);">🚀</div>
+    <div><h2>Modern Java Features</h2><p>The best quality-of-life improvements added to Java in recent years.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Modern Java as clarity improvement</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Modern Java features are mostly about making intent easier to express. Records reduce data-class boilerplate, switch expressions reduce accidental fallthrough, pattern matching reduces casts, and text blocks make multi-line text readable.</p>
+    <p>New syntax should make code clearer, not trendy. A record is excellent for transparent immutable data but wrong for entities with complex identity and lifecycle. var is useful when the right side is obvious but harmful when it hides important type information.</p>
+    <p>The best way to adopt modern Java is incrementally: use features where they remove noise while preserving explicit meaning.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain modern features in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="var">
+  <div class="subsection">
+    <h3>Local Variable Type Inference (<code class="inline">var</code>): The Detective</h3>
+    <p>Historically, Java was notoriously redundant. You had to tell it the type on the left side, and the exact same type on the right side (<code class="inline">String name = new String()</code>).</p>
+    <p>Java 10 introduced <code class="inline">var</code>. It acts like a detective. When you write <code class="inline">var name = "Alice"</code>, the compiler looks at the right side of the equals sign, deduces that "Alice" is a String, and automatically locks the variable to the <code class="inline">String</code> type. This is <strong>not</strong> dynamic typing (like JavaScript); the variable is strictly typed at compile-time, it just saves you the keystrokes of writing it out.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Old way</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt; map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+<span class="cm">// Modern way</span>
+<span class="kw">var</span> map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;<span class="cl">String</span>, <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt;();
+<span class="kw">var</span> name = <span class="st">"Alice"</span>; <span class="cm">// Inferred as String</span>
+
+<span class="cm">// Works in loops</span>
+<span class="kw">for</span> (<span class="kw">var</span> entry : map.<span class="fn">entrySet</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(entry.<span class="fn">getKey</span>());
+}</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>Restrictions</strong><code class="inline">var</code> can ONLY be used for local variables inside methods. It cannot be used for class fields, method parameters, or return types.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="textblocks">
+  <div class="subsection">
+    <h3>Text Blocks: The Multi-Line Canvas</h3>
+    <p>Before Java 15, pasting a block of JSON, SQL, or HTML into a Java file was a nightmare of plus signs, quotation marks, and <code class="inline">\n</code> newline characters.</p>
+    <p><strong>Text Blocks</strong> (<code class="inline">"""</code>) give you a clean canvas. Anything you type between the triple quotes is preserved exactly as-is, including newlines and indents, making your code infinitely more readable.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Automatically handles indentation and newlines</span>
+<span class="cl">String</span> json = <span class="st">"""
+    {
+        "name": "Alice",
+        "age": 25,
+        "skills": ["Java", "SQL"]
+    }
+    """</span>;
+
+<span class="cm">// Using String.formatted with text blocks</span>
+<span class="cl">String</span> query = <span class="st">"""
+    SELECT * FROM users
+    WHERE age > %d
+    AND status = '%s'
+    """</span>.<span class="fn">formatted</span>(<span class="nm">18</span>, <span class="st">"ACTIVE"</span>);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="pattern">
+  <div class="subsection">
+    <h3>Pattern Matching: The VIP Pass</h3>
+    <p>In old Java, checking an object's type was a two-step process: First you ask, "Are you a String?" Then, if yes, you force the cast: "Okay, I am legally transforming you into a String." This was repetitive.</p>
+    <p><strong>Pattern Matching</strong> combines the check and the cast. It's like a bouncer at a club checking your ID: "Are you over 21? Yes? Here is your VIP wristband (the new variable <code class="inline">s</code>)." You can immediately start using <code class="inline">s</code> without any casting boilerplate.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Pattern Matching for instanceof</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">Object</span> obj = <span class="st">"Hello Java"</span>;
+
+<span class="cm">// Old way</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span>) {
+    <span class="cl">String</span> s = (<span class="cl">String</span>) obj; <span class="cm">// Ugly cast</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">length</span>());
+}
+
+<span class="cm">// Modern way</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">length</span>()); <span class="cm">// s is automatically cast!</span>
+}
+
+<span class="cm">// Can be combined with other conditions</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s &amp;&amp; s.<span class="fn">length</span>() &gt; <span class="nm">5</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Long string: "</span> + s);
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="switch">
+  <div class="subsection">
+    <h3>Modern Switch: The Vending Machine</h3>
+    <p>The original C-style <code class="inline">switch</code> statement was clunky. It required <code class="inline">break</code> keywords (or else it would "fall through" and execute the wrong code), and it couldn't return a value.</p>
+    <p>Java 14 introduced <strong>Switch Expressions</strong>. Think of it like a vending machine: you drop in a coin (the input), and it instantly shoots out a soda (the return value). It uses the arrow syntax (<code class="inline">-&gt;</code>) which guarantees no fall-through bugs. Furthermore, Java 21 allows you to switch over <em>Object Types</em> instead of just constants!</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Modern Switch</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Switch Expression (Returns a value, no fall-through, no breaks needed)</span>
+<span class="cl">String</span> type = <span class="kw">switch</span> (day) {
+    <span class="kw">case</span> MONDAY, FRIDAY, SUNDAY -&gt; <span class="st">"Fun"</span>;
+    <span class="kw">case</span> TUESDAY                -&gt; <span class="st">"Boring"</span>;
+    <span class="kw">default</span>                     -&gt; {
+        <span class="cm">// Multi-line blocks use 'yield' instead of return</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Calculating..."</span>);
+        <span class="kw">yield</span> <span class="st">"Unknown"</span>;
+    }
+};
+
+<span class="cm">// Pattern Matching for Switch (Switching on Types)</span>
+<span class="kw">static</span> <span class="cl">String</span> <span class="fn">formatter</span>(<span class="cl">Object</span> obj) {
+    <span class="kw">return switch</span> (obj) {
+        <span class="kw">case</span> <span class="cl">Integer</span> i -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"int %d"</span>, i);
+        <span class="kw">case</span> <span class="cl">Long</span> l    -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"long %d"</span>, l);
+        <span class="kw">case</span> <span class="cl">Double</span> d  -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"double %f"</span>, d);
+        <span class="kw">case</span> <span class="cl">String</span> s  -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"String %s"</span>, s);
+        <span class="kw">case null</span>      -&gt; <span class="st">"Null value"</span>; <span class="cm">// Nulls handled directly!</span>
+        <span class="kw">default</span>        -&gt; obj.<span class="fn">toString</span>();
+    };
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Modern Microservices</h3>
+    <p>Modern features like Records and Pattern Matching are game-changers for building lightweight REST APIs and microservices.</p>
+    <p>When you receive a JSON payload from another service, you can map it directly to a <code>Record</code> in one line. Then, using <code>switch</code> pattern matching, you can easily route the request based on the specific subtype of the payload without writing brittle <code>if-else</code> chains with manual casting. This makes microservice code incredibly clean, readable, and less prone to bugs.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What are Sealed Classes?</div>
+        <div class="hl-desc">They allow you to restrict which classes can extend or implement them. This is useful for creating strict domain models and enables the compiler to check for exhaustiveness in switch statements.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is Pattern Matching for switch?</div>
+        <div class="hl-desc">It allows you to test expressions against patterns (like checking the type of an object) directly in a switch statement, eliminating the need for explicit casting.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Why use Records?</div>
+        <div class="hl-desc">To create immutable data-carrier classes with zero boilerplate. The compiler auto-generates constructor, getters, equals, hashCode, and toString.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

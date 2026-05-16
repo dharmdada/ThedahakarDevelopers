@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Advanced Java - JavaMaster</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">Advanced</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(239,68,68,0.15);">ADV</div>
+    <div><h2>Advanced Java</h2><p>Move from language fluency to system-level engineering decisions.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>The runtime layer: errors, I/O, time, threads, reflection, memory, and modern syntax.</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Advanced Java is where the language meets operating systems, CPUs, files, clocks, networks, and runtime optimization. At this layer, bugs are less often syntax errors and more often boundary failures: race conditions, resource leaks, bad time zone assumptions, memory pressure, or reflection misuse.</p>
+    <p>The goal is to understand what Java abstracts away and what it still requires you to control. Garbage collection reduces manual memory management but does not prevent leaks through live references. Executors simplify threads but do not remove synchronization concerns. The Date/Time API fixes old design problems but still requires correct zone modeling.</p>
+    <p>Advanced knowledge makes you a better framework user because you can see what frameworks are doing for you: dependency injection uses reflection and annotations, web servers use concurrency, persistence uses I/O, and production services live or die by error boundaries.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Make resource ownership explicit.</li>
+      <li>Design exception boundaries around recoverability and caller responsibility.</li>
+      <li>Treat concurrency as a design concern, not a late optimization.</li>
+      <li>Use modern Java features when they clarify intent.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Catching Exception everywhere and hiding failure causes.</li>
+      <li>Starting raw threads for work that belongs in executors.</li>
+      <li>Using local time for global events.</li>
+      <li>Assuming GC means memory leaks cannot happen.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can diagnose whether a failure is code, I/O, time, threading, reflection, or JVM behavior.</li>
+      <li>You can explain heap, stack, class metadata, and garbage collection at a useful level.</li>
+      <li>You can choose between synchronous, asynchronous, and parallel execution patterns.</li>
+      <li>You can use advanced features without making the code harder to read.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card-grid">
+  <a href="pages/exceptions-io.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">01</div><h4>Exceptions and I/O</h4><p>Error modeling, checked vs unchecked exceptions, and robust file handling.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/io-network.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">02</div><h4>File I/O and Networking</h4><p>NIO channels, paths, sockets, and practical network communication basics.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/datetime.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">03</div><h4>Date and Time API</h4><p>LocalDate, Instant, ZonedDateTime, formatting, and timezone-safe coding.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/concurrency.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">04</div><h4>Concurrency</h4><p>Threads, executors, synchronization, atomics, futures, and virtual threads.</p><div style="margin-top:10px;"><span class="tag tag-advanced">Advanced</span></div></a>
+  <a href="pages/reflection.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">05</div><h4>Reflection and Annotations</h4><p>Metadata introspection and runtime wiring for advanced frameworks.</p><div style="margin-top:10px;"><span class="tag tag-advanced">Advanced</span></div></a>
+  <a href="pages/jvm-internals.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">06</div><h4>JVM Internals</h4><p>Memory model, classloading, garbage collection, and runtime performance.</p><div style="margin-top:10px;"><span class="tag tag-advanced">Advanced</span></div></a>
+  <a href="pages/modern-features.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">07</div><h4>Modern Java Features</h4><p>Pattern matching, records, sealed classes, switch expressions, and more.</p><div style="margin-top:10px;"><span class="tag tag-feature">Modern</span></div></a>
+</div>
+
+<div class="section" id="production" style="margin-top:36px;">
+  <div class="subsection">
+    <h3>Production Readiness Focus</h3>
+    <ul class="feature-list">
+      <li>Fail fast with clear exception boundaries and meaningful diagnostics.</li>
+      <li>Design thread-safe code consciously; avoid accidental shared mutable state.</li>
+      <li>Measure performance before optimization; understand allocation and GC behavior.</li>
+      <li>Use modern language features to reduce boilerplate while keeping readability high.</li>
+      <li>Pair this track with the Professional track (testing, build tools, JDBC, patterns).</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - Continue with <a href="pages/java-project-structure.html" style="color:var(--accent);">Professional Java Modules</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="script.js"></script>
+</body>
+</html>

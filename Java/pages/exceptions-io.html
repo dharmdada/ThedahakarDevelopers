@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Exceptions & I/O – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item active" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(239,68,68,0.15);">⚠️</div>
+    <div><h2>Exceptions & I/O</h2><p>Error handling, file operations, and resource management.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Failure as part of the API contract</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Exceptions are Java's structured mechanism for reporting failure. A method signature and documentation should make it clear which failures callers can handle and which indicate programming errors or unrecoverable conditions.</p>
+    <p>Checked exceptions force callers to acknowledge recoverable external failures such as I/O. Unchecked exceptions are better for invalid arguments, illegal state, and programming defects. The boundary between them should be chosen by caller responsibility, not personal preference.</p>
+    <p>I/O code must also manage resources. Files, sockets, streams, and database connections are outside normal heap memory and must be closed reliably. try-with-resources exists for this reason.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain exceptions io in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="hierarchy">
+  <div class="subsection">
+    <h3>The Exception Hierarchy: Anticipating Disaster</h3>
+    <p>In the real world, things go wrong. Files get deleted, network connections drop, and users type text into number fields. Java forces you to anticipate these disasters using <strong>Exceptions</strong>.</p>
+    <p>There is a strict hierarchy of disasters in Java:</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Errors:</strong> Catastrophic JVM failures (like running out of RAM or a Stack Overflow). Like a meteor striking the data center. You <em>cannot</em> and <em>should not</em> try to catch these.</li>
+      <li><strong>Unchecked Exceptions (RuntimeException):</strong> Programming bugs (like a NullPointerException or an IndexOutOfBoundsException). You don't have to declare these because you should fix the bug instead of catching it.</li>
+      <li><strong>Checked Exceptions:</strong> Anticipated external failures (like a file missing or a network timeout). The Java compiler <strong>forces</strong> you to write a safety net (a try-catch block) for these, or the code won't even compile.</li>
+    </ul>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Exception Tree</strong>
+        <code class="inline">Throwable</code><br>
+        ├── <code class="inline">Error</code> (JVM errors — don't catch these: OutOfMemoryError, StackOverflowError)<br>
+        └── <code class="inline">Exception</code><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;├── <code class="inline">RuntimeException</code> (Unchecked — NullPointerException, ArrayIndexOutOfBoundsException, etc.)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;└── Checked Exceptions (IOException, SQLException — MUST be handled or declared)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="trycatch">
+  <div class="subsection">
+    <h3>Try-Catch-Finally: The Safety Net</h3>
+    <p>When you call a method that might throw an exception (like reading a file), you place it inside a <code class="inline">try</code> block. If the method explodes, it throws an Exception object down to the <code class="inline">catch</code> block, which acts as a safety net.</p>
+    <p>The <code class="inline">finally</code> block is the "clean-up crew". Whether the try block succeeded, or whether the catch block fired, the finally block is <strong>guaranteed</strong> to run. It is traditionally used to close open files or database connections.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">try</span> {
+    <span class="kw">int</span> result = <span class="nm">10</span> / <span class="nm">0</span>;
+} <span class="kw">catch</span> (<span class="cl">ArithmeticException</span> e) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Cannot divide by zero: "</span> + e.<span class="fn">getMessage</span>());
+} <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"General error"</span>);
+} <span class="kw">finally</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Always runs"</span>);
+}
+
+<span class="cm">// Multi-catch (catch multiple types in one block)</span>
+<span class="kw">try</span> {
+    <span class="cm">// risky code</span>
+} <span class="kw">catch</span> (<span class="cl">IOException</span> | <span class="cl">SQLException</span> e) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"IO or SQL error: "</span> + e.<span class="fn">getMessage</span>());
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="twr">
+  <div class="subsection">
+    <h3>Try-With-Resources: The Automated Janitor</h3>
+    <p>Developers used to forget to close files in the <code class="inline">finally</code> block, causing massive memory leaks. Java 7 introduced <strong>Try-With-Resources</strong>.</p>
+    <p>If you declare a resource inside the parentheses of a <code class="inline">try</code> block, Java acts as an automated janitor. As soon as the try block finishes (or crashes), Java will automatically close the file for you. The resource just needs to implement the <code class="inline">AutoCloseable</code> interface.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Resources that implement AutoCloseable are auto-closed</span>
+<span class="kw">try</span> (<span class="kw">var</span> reader = <span class="kw">new</span> <span class="cl">BufferedReader</span>(<span class="kw">new</span> <span class="cl">FileReader</span>(<span class="st">"file.txt"</span>))) {
+    <span class="cl">String</span> line;
+    <span class="kw">while</span> ((line = reader.<span class="fn">readLine</span>()) != <span class="kw">null</span>) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(line);
+    }
+} <span class="cm">// reader.close() called automatically, even if exception occurs!</span>
+
+<span class="cm">// Multiple resources</span>
+<span class="kw">try</span> (
+    <span class="kw">var</span> in = <span class="kw">new</span> <span class="cl">FileInputStream</span>(<span class="st">"input.txt"</span>);
+    <span class="kw">var</span> out = <span class="kw">new</span> <span class="cl">FileOutputStream</span>(<span class="st">"output.txt"</span>)
+) {
+    in.<span class="fn">transferTo</span>(out); <span class="cm">// Copy file!</span>
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="custom">
+  <div class="subsection">
+    <h3>Custom Exceptions</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Checked exception (must be declared with 'throws')</span>
+<span class="kw">public class</span> <span class="cl">InsufficientFundsException</span> <span class="kw">extends</span> <span class="cl">Exception</span> {
+    <span class="kw">private final double</span> amount;
+    <span class="kw">public</span> <span class="fn">InsufficientFundsException</span>(<span class="kw">double</span> amount) {
+        <span class="kw">super</span>(<span class="st">"Short by: "</span> + amount);
+        <span class="kw">this</span>.amount = amount;
+    }
+    <span class="kw">public double</span> <span class="fn">getAmount</span>() { <span class="kw">return</span> amount; }
+}
+
+<span class="cm">// Unchecked exception (no need to declare)</span>
+<span class="kw">public class</span> <span class="cl">InvalidAgeException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    <span class="kw">public</span> <span class="fn">InvalidAgeException</span>(<span class="cl">String</span> msg) { <span class="kw">super</span>(msg); }
+}
+
+<span class="cm">// Usage</span>
+<span class="kw">public void</span> <span class="fn">withdraw</span>(<span class="kw">double</span> amount) <span class="kw">throws</span> <span class="cl">InsufficientFundsException</span> {
+    <span class="kw">if</span> (amount &gt; balance) <span class="kw">throw new</span> <span class="cl">InsufficientFundsException</span>(amount - balance);
+    balance -= amount;
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="nio">
+  <div class="subsection">
+    <h3>Modern File I/O (NIO.2)</h3>
+    <p>In older versions of Java, reading a file required chaining together massive, ugly streams (<code class="inline">new BufferedReader(new InputStreamReader(new FileInputStream...))</code>). It was a nightmare for beginners.</p>
+    <p>Java's <strong>NIO.2</strong> (New I/O) API modernized this. By using the <code class="inline">Path</code> and <code class="inline">Files</code> utility classes, you can read, write, copy, and delete files with single-line commands.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">java.nio.file</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">import</span> java.nio.file.*;
+
+<span class="cl">Path</span> path = <span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"data"</span>, <span class="st">"example.txt"</span>);
+
+<span class="cm">// Write</span>
+<span class="cl">Files</span>.<span class="fn">writeString</span>(path, <span class="st">"Hello World"</span>);
+<span class="cl">Files</span>.<span class="fn">write</span>(path, <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Line 1"</span>, <span class="st">"Line 2"</span>));
+
+<span class="cm">// Read</span>
+<span class="cl">String</span> content = <span class="cl">Files</span>.<span class="fn">readString</span>(path);
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; lines = <span class="cl">Files</span>.<span class="fn">readAllLines</span>(path);
+
+<span class="cm">// Stream lines (lazy — good for huge files)</span>
+<span class="kw">try</span> (<span class="cl">Stream</span>&lt;<span class="cl">String</span>&gt; stream = <span class="cl">Files</span>.<span class="fn">lines</span>(path)) {
+    stream.<span class="fn">filter</span>(l -&gt; l.<span class="fn">contains</span>(<span class="st">"error"</span>)).<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+}
+
+<span class="cm">// File operations</span>
+<span class="cl">Files</span>.<span class="fn">exists</span>(path);
+<span class="cl">Files</span>.<span class="fn">createDirectories</span>(<span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"a/b/c"</span>));
+<span class="cl">Files</span>.<span class="fn">copy</span>(source, target, <span class="cl">StandardCopyOption</span>.REPLACE_EXISTING);
+<span class="cl">Files</span>.<span class="fn">move</span>(source, target);
+<span class="cl">Files</span>.<span class="fn">delete</span>(path);
+
+<span class="cm">// Walk directory tree</span>
+<span class="kw">try</span> (<span class="cl">Stream</span>&lt;<span class="cl">Path</span>&gt; walk = <span class="cl">Files</span>.<span class="fn">walk</span>(<span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"."</span>))) {
+    walk.<span class="fn">filter</span>(p -&gt; p.<span class="fn">toString</span>().<span class="fn">endsWith</span>(<span class="st">".java"</span>))
+        .<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Defensive Programming</h3>
+    <p>In web servers (like Spring Boot applications), exception handling is used to prevent the server from crashing when a user sends invalid data.</p>
+    <p>Instead of letting a <code>NullPointerException</code> or <code>DatabaseException</code> bubble up and show a ugly stack trace to the user, developers use a "Global Exception Handler". This component catches all exceptions, logs the error details for the developers to see, and returns a clean, friendly error message (like "Service temporarily unavailable") to the end user with an appropriate HTTP status code.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Checked vs Unchecked Exceptions?</div>
+        <div class="hl-desc">**Checked exceptions** (e.g., <code>IOException</code>) are checked at compile-time. You MUST handle them using try-catch or declare them with <code>throws</code>. **Unchecked exceptions** (e.g., <code>NullPointerException</code>) happen at runtime and do not force handle-or-declare.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is Try-with-Resources?</div>
+        <div class="hl-desc">Introduced in Java 7, it is a try statement that declares one or more resources. The resource is an object that must be closed after the program is finished with it (implements <code>AutoCloseable</code>). It guarantees that the resource will be closed at the end of the statement.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Error vs Exception?</div>
+        <div class="hl-desc">**Errors** (like <code>OutOfMemoryError</code>) are serious problems that a reasonable application should not try to catch. **Exceptions** indicate conditions that a reasonable application might want to catch.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

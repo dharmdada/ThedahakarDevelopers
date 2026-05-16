@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Functional Java - JavaMaster</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">Functional</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(168,85,247,0.15);">FP</div>
+    <div><h2>Functional Java</h2><p>Write concise, testable data transformations with lambdas and streams.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Functions as values, transformation pipelines, and safer absence handling.</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Functional Java adds a second style to the language. Instead of describing every step of mutation, you can describe transformations: filter these values, map them to another form, group them by key, reduce them to a result. This is especially powerful when working with collections and immutable values.</p>
+    <p>The key mental shift is that a lambda is behavior passed as data. A method can receive a decision, transformation, supplier, or callback. This lets APIs become more flexible without creating a new class for every small variation.</p>
+    <p>Functional style is not automatically better. It works best when operations are local, side effects are limited, and the data flow reads from left to right. When a pipeline becomes hard to name or debug, extract methods or use a normal loop.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Use lambdas to express small behavior, not large hidden workflows.</li>
+      <li>Keep stream operations side-effect free where possible.</li>
+      <li>Use Optional to model possible absence at boundaries.</li>
+      <li>Prefer named helper methods when lambdas become dense.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Mutating external lists inside stream operations.</li>
+      <li>Using Optional as a field everywhere instead of as a return type or boundary signal.</li>
+      <li>Assuming parallel streams are faster without measurement.</li>
+      <li>Writing stream chains that nobody can debug.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can identify which functional interface matches a lambda.</li>
+      <li>You can rewrite simple loops as stream pipelines and know when not to.</li>
+      <li>You can use map, flatMap, filter, reduce, collect, groupingBy, and partitioningBy correctly.</li>
+      <li>You can reason about lazy intermediate operations and terminal execution.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card-grid">
+  <a href="pages/lambdas.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">01</div><h4>Lambdas and Functional Interfaces</h4><p>Function/Supplier/Consumer/Predicate, method references, Optional patterns.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+  <a href="pages/streams.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">02</div><h4>Streams API</h4><p>Intermediate/terminal operations, collector composition, grouping and aggregation.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
+</div>
+
+<div class="section" id="mental-model" style="margin-top:36px;">
+  <div class="subsection">
+    <h3>Functional Mental Model</h3>
+    <ul class="feature-list">
+      <li>Favor <strong>pure transformations</strong> over mutating shared collections.</li>
+      <li>Treat stream pipelines as <strong>declarative queries</strong> over data.</li>
+      <li>Keep lambdas short and intention-revealing.</li>
+      <li>Use Optional for absent values, not for every field in data models.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="pitfalls">
+  <div class="subsection">
+    <h3>High-Impact Pitfalls to Avoid</h3>
+    <ul class="feature-list">
+      <li>Side effects inside <code class="inline">map</code>/<code class="inline">filter</code> break readability and thread safety.</li>
+      <li>Parallel streams are not automatically faster; measure and validate.</li>
+      <li>Nested stream chains can become unreadable; extract named methods.</li>
+      <li>Using streams for every loop can hurt clarity for simple control flow.</li>
+    </ul>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body"><strong>Use streams where they improve readability and composition.</strong> Prefer regular loops for highly stateful algorithms.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - Next chapter: <a href="collections.html" style="color:var(--accent);">Collections and Generics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="script.js"></script>
+</body>
+</html>

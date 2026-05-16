@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Methods – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Pages</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item active" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,197,94,0.15);">⚙️</div>
+    <div><h2>Methods</h2><p>Defining, calling, overloading, recursion, and how Java passes data.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Methods as boundaries of meaning</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>A method is a named unit of behavior. It should take clear input, perform one coherent operation, and return or cause a clear result. Good methods reduce the amount of code a reader must hold in working memory.</p>
+    <p>Java passes arguments by value. For primitives, the value is the primitive itself. For objects, the value is the reference. This means a method cannot reassign the caller's variable, but it can mutate the object that the copied reference points to.</p>
+    <p>Overloading lets methods share a name when they represent the same concept with different inputs. It should not be used to hide unrelated behavior behind the same name.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain methods in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="defining">
+  <div class="subsection">
+    <h3>Defining & Calling Methods: The Verbs of Java</h3>
+    <p>If classes and objects are the "nouns" of Java, then methods are the "verbs." A method is a reusable block of code that performs a specific task. By wrapping logic in a method, you avoid repeating the same code multiple times, making your application easier to maintain and test.</p>
+    <p>Every method defines a strict <strong>contract</strong>: it declares exactly what it needs as input (parameters) and exactly what it promises to give back (return type).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Method Anatomy</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">//  accessModifier  returnType  methodName(parameters)</span>
+    <span class="kw">public</span>          <span class="kw">int</span>        <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+        <span class="kw">return</span> a + b;
+    }
+
+<span class="cm">// void = no return value</span>
+<span class="kw">public void</span> <span class="fn">greet</span>(<span class="cl">String</span> name) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Hello "</span> + name);
+}
+
+<span class="cm">// Calling methods</span>
+<span class="kw">int</span> sum = <span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">5</span>);     <span class="cm">// returns 8</span>
+<span class="fn">greet</span>(<span class="st">"Alice"</span>);           <span class="cm">// prints "Hello Alice"</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="overloading">
+  <div class="subsection">
+    <h3>Method Overloading: Compile-Time Polymorphism</h3>
+    <p>Imagine you have a machine that processes payments. Sometimes you hand it cash, sometimes you hand it a credit card. It's doing the same conceptual action ("process payment"), but the internal mechanics are different depending on what you give it.</p>
+    <p>In Java, <strong>Method Overloading</strong> allows you to define multiple methods with the exact same name, as long as they require different parameters (different types, or a different number of parameters). The Java compiler looks at the arguments you pass in and automatically figures out which version of the method to execute.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Overloading</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a + b; }
+<span class="kw">public double</span> <span class="fn">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a + b; }
+<span class="kw">public int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) { <span class="kw">return</span> a + b + c; }
+
+<span class="fn">add</span>(<span class="nm">1</span>, <span class="nm">2</span>);       <span class="cm">// calls add(int, int)</span>
+<span class="fn">add</span>(<span class="nm">1.5</span>, <span class="nm">2.5</span>);   <span class="cm">// calls add(double, double)</span>
+<span class="fn">add</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>);    <span class="cm">// calls add(int, int, int)</span>
+
+<span class="cm">// NOTE: Overloading is resolved at COMPILE TIME (not runtime)</span>
+<span class="cm">// Return type alone does NOT differentiate overloaded methods</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="varargs">
+  <div class="subsection">
+    <h3>Varargs (Variable Arguments)</h3>
+    <p>Accept any number of arguments of the same type using <code class="inline">...</code> syntax.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Varargs</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// The vararg parameter must be the LAST parameter</span>
+<span class="kw">public int</span> <span class="fn">sum</span>(<span class="kw">int</span>... numbers) {
+    <span class="kw">int</span> total = <span class="nm">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> n : numbers) {
+        total += n;
+    }
+    <span class="kw">return</span> total;
+}
+
+<span class="cm">// Can call with any number of args</span>
+<span class="fn">sum</span>();               <span class="cm">// 0</span>
+<span class="fn">sum</span>(<span class="nm">1</span>);              <span class="cm">// 1</span>
+<span class="fn">sum</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>); <span class="cm">// 15</span>
+<span class="fn">sum</span>(<span class="kw">new</span> <span class="kw">int</span>[]{<span class="nm">1</span>,<span class="nm">2</span>}); <span class="cm">// Can also pass an array</span>
+
+<span class="cm">// Mixing with other params</span>
+<span class="kw">public void</span> <span class="fn">log</span>(<span class="cl">String</span> prefix, <span class="cl">Object</span>... args) { }</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="static">
+  <div class="subsection">
+    <h3>Static vs Instance Methods</h3>
+    <p>This is one of the most important distinctions in Java. Does the action belong to the blueprint, or does it belong to a specific house built from the blueprint?</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Instance Methods:</strong> Require you to create an object first (<code class="inline">new Calculator()</code>). They can access and modify the specific state of that individual object.</li>
+      <li><strong>Static Methods:</strong> Belong to the class itself. You do not need to create an object to use them (e.g., <code class="inline">Math.max()</code>). Because they don't belong to an object, they <em>cannot</em> access instance variables.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Static vs Instance</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Calculator</span> {
+    <span class="kw">private int</span> memory = <span class="nm">0</span>; <span class="cm">// Instance field</span>
+
+    <span class="cm">// Static method: belongs to the CLASS, not any instance</span>
+    <span class="cm">// Call it: Calculator.add(1, 2)</span>
+    <span class="kw">public static int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+        <span class="kw">return</span> a + b;
+        <span class="cm">// CANNOT access 'memory' here — no instance!</span>
+    }
+
+    <span class="cm">// Instance method: belongs to an OBJECT</span>
+    <span class="cm">// Call it: calc.store(42)</span>
+    <span class="kw">public void</span> <span class="fn">store</span>(<span class="kw">int</span> value) {
+        <span class="kw">this</span>.memory = value; <span class="cm">// CAN access instance fields</span>
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="passbyvalue">
+  <div class="subsection">
+    <h3>Pass-by-Value (Java's Golden Rule)</h3>
+    <p>This is a common interview question and a frequent source of confusion. <strong>Java is STRICTLY pass-by-value.</strong> It is never pass-by-reference.</p>
+    <p>When you pass a variable into a method, Java makes a <strong>copy</strong> of that variable's value and hands the copy to the method. </p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>For Primitives:</strong> The method gets a copy of the actual number. Changing the copy inside the method does nothing to the original.</li>
+      <li><strong>For Objects (Reference Types):</strong> The variable holds a <em>remote control</em> (a memory address). Java copies the remote control and hands it to the method. If the method uses that copied remote to turn on the TV (modify the object), the TV turns on for everyone! But if the method throws away its remote and builds a new TV, your original remote still points to the old TV.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Pass-by-Value Demo</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Primitives: changes inside method do NOT affect the caller</span>
+<span class="kw">public void</span> <span class="fn">tryChange</span>(<span class="kw">int</span> x) { x = <span class="nm">99</span>; }
+<span class="kw">int</span> num = <span class="nm">10</span>;
+<span class="fn">tryChange</span>(num);
+<span class="cl">System</span>.out.<span class="fn">println</span>(num); <span class="cm">// Still 10!</span>
+
+<span class="cm">// Objects: the reference is copied, so you CAN modify the object</span>
+<span class="kw">public void</span> <span class="fn">addItem</span>(<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list) { list.<span class="fn">add</span>(<span class="st">"new"</span>); }
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; myList = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+<span class="fn">addItem</span>(myList);
+<span class="cl">System</span>.out.<span class="fn">println</span>(myList); <span class="cm">// [new] — modified!</span>
+
+<span class="cm">// But reassigning the reference does NOT affect the caller</span>
+<span class="kw">public void</span> <span class="fn">tryReplace</span>(<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list) {
+    list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(); <span class="cm">// Only local ref changes</span>
+}
+<span class="fn">tryReplace</span>(myList);
+<span class="cl">System</span>.out.<span class="fn">println</span>(myList); <span class="cm">// Still [new] — unchanged!</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="recursion">
+  <div class="subsection">
+    <h3>Recursion: Inception</h3>
+    <p>Recursion occurs when a method calls itself. It is a powerful technique for solving problems that can be broken down into smaller, identical sub-problems (like navigating a file directory tree or traversing a graph).</p>
+    <p>Every recursive method MUST have a <strong>base case</strong>—a condition that stops the recursion. Without a base case, the method will call itself infinitely, piling up memory on the Call Stack until the JVM crashes with a <code class="inline">StackOverflowError</code>.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Recursion Examples</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Factorial: n! = n × (n-1) × ... × 1</span>
+<span class="kw">public static int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="nm">1</span>) <span class="kw">return</span> <span class="nm">1</span>;     <span class="cm">// Base case</span>
+    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="nm">1</span>); <span class="cm">// Recursive case</span>
+}
+
+<span class="cm">// Fibonacci</span>
+<span class="kw">public static int</span> <span class="fn">fib</span>(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= <span class="nm">1</span>) <span class="kw">return</span> n;
+    <span class="kw">return</span> <span class="fn">fib</span>(n - <span class="nm">1</span>) + <span class="fn">fib</span>(n - <span class="nm">2</span>);
+}
+
+<span class="cm">// Binary search (recursive)</span>
+<span class="kw">public static int</span> <span class="fn">binarySearch</span>(<span class="kw">int</span>[] arr, <span class="kw">int</span> target, <span class="kw">int</span> low, <span class="kw">int</span> high) {
+    <span class="kw">if</span> (low &gt; high) <span class="kw">return</span> -<span class="nm">1</span>;
+    <span class="kw">int</span> mid = (low + high) / <span class="nm">2</span>;
+    <span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;
+    <span class="kw">if</span> (arr[mid] &lt; target) <span class="kw">return</span> <span class="fn">binarySearch</span>(arr, target, mid + <span class="nm">1</span>, high);
+    <span class="kw">return</span> <span class="fn">binarySearch</span>(arr, target, low, mid - <span class="nm">1</span>);
+}</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>StackOverflowError</strong>Every recursive call adds a frame to the call stack. Too many recursive calls (no base case or very deep recursion) will crash with a <code class="inline">StackOverflowError</code>. Java does NOT support tail-call optimization.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: File System Crawlers</h3>
+    <p>Imagine you are building a search feature for your computer's file system. You need to find a file named "secret.txt" inside a deeply nested folder structure.</p>
+    <p>This is a classic use case for <strong>Recursion</strong>. You write a method <code>searchFolder(Folder f)</code>. If the folder contains the file, you return it. If it contains other folders, the method calls itself for each sub-folder. This allows you to traverse arbitrarily deep directory trees with very few lines of code.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Is Java Pass-by-Value or Pass-by-Reference?</div>
+        <div class="hl-desc">Java is strictly **Pass-by-Value**. For primitives, the actual value is copied. For objects, the memory address (reference) is copied, but it is passed by value. This means you can modify the object's contents, but you cannot change which object the caller's variable points to.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What causes a StackOverflowError?</div>
+        <div class="hl-desc">It occurs when the call stack exceeds its allowed memory size. This is almost always caused by infinite recursion (a recursive method that fails to reach its base case).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What are Varargs?</div>
+        <div class="hl-desc">Variable Arguments allow a method to accept zero or more arguments of a specified type. They are treated as an array inside the method (e.g., <code>public void print(String... words)</code>).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

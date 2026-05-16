@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Concurrency & Multithreading – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item active" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(249,115,22,0.15);">🧵</div>
+    <div><h2>Concurrency & Multithreading</h2><p>Running multiple tasks simultaneously, safely sharing state, and modern async programming.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Concurrency as coordinated progress</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Concurrency means multiple tasks make progress during overlapping time periods. Parallelism means tasks literally execute at the same time. Java supports both, but correctness is harder than starting threads.</p>
+    <p>Shared mutable state is the core danger. Without coordination, one thread may see stale data, interleaved writes, or broken invariants. synchronized, locks, atomics, concurrent collections, and immutable data are different tools for controlling this danger.</p>
+    <p>Executors separate task submission from thread management. CompletableFuture separates composition from blocking. Virtual threads make blocking code scale better, but they do not remove the need to protect shared state.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain concurrency in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="threads">
+  <div class="subsection">
+    <h3>Threads vs Processes: The Kitchen Analogy</h3>
+    <p>A <strong>Process</strong> is like a restaurant kitchen. It has its own dedicated space, ingredients (memory), and equipment. If one kitchen burns down, the other kitchens on the block are safe.</p>
+    <p>A <strong>Thread</strong> is like a chef working <em>inside</em> that kitchen. You can have multiple chefs (threads) chopping vegetables and cooking soup at the same time. Because they share the same kitchen (shared memory), they can work together very fast—but if they aren't careful, they might both grab the same knife at the same time and cause a disaster (a race condition).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Thread vs Runnable</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// 1. Extend Thread class</span>
+<span class="kw">class</span> <span class="cl">MyThread</span> <span class="kw">extends</span> <span class="cl">Thread</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Thread running"</span>); }
+}
+<span class="kw">new</span> <span class="cl">MyThread</span>().<span class="fn">start</span>(); <span class="cm">// MUST call start(), not run()</span>
+
+<span class="cm">// 2. Implement Runnable (Better — allows extending other classes)</span>
+<span class="kw">class</span> <span class="cl">MyTask</span> <span class="kw">implements</span> <span class="cl">Runnable</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Task running"</span>); }
+}
+<span class="kw">new</span> <span class="cl">Thread</span>(<span class="kw">new</span> <span class="cl">MyTask</span>()).<span class="fn">start</span>();
+
+<span class="cm">// 3. With Lambda (Best for simple tasks)</span>
+<span class="cl">Thread</span> t = <span class="kw">new</span> <span class="cl">Thread</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Lambda thread"</span>));
+t.<span class="fn">start</span>();
+
+<span class="cm">// Sleep and Join</span>
+<span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>); <span class="cm">// Pause current thread for 1 second</span>
+t.<span class="fn">join</span>();           <span class="cm">// Wait for thread t to finish</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="executors">
+  <div class="subsection">
+    <h3>Executors (The Modern Way)</h3>
+    <p>Managing threads manually is expensive and error-prone. Use thread pools.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">ExecutorService</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">import</span> java.util.concurrent.*;
+
+<span class="cm">// Create a pool of 4 threads</span>
+<span class="cl">ExecutorService</span> pool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(<span class="nm">4</span>);
+
+<span class="cm">// Submit a Runnable (no return value)</span>
+pool.<span class="fn">execute</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running in pool"</span>));
+
+<span class="cm">// Submit a Callable (returns a value via Future)</span>
+<span class="cl">Future</span>&lt;<span class="cl">Integer</span>&gt; future = pool.<span class="fn">submit</span>(() -&gt; {
+    <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>);
+    <span class="kw">return</span> <span class="nm">42</span>;
+});
+
+<span class="cm">// Do other work...</span>
+<span class="cm">// Then get the result (blocks until ready)</span>
+<span class="kw">try</span> {
+    <span class="kw">int</span> result = future.<span class="fn">get</span>(); <span class="cm">// 42</span>
+} <span class="kw">catch</span> (<span class="cl">InterruptedException</span> | <span class="cl">ExecutionException</span> e) {
+    e.<span class="fn">printStackTrace</span>();
+}
+
+<span class="cm">// Always shutdown your pools!</span>
+pool.<span class="fn">shutdown</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="sync">
+  <div class="subsection">
+    <h3>Synchronization: The Shared Bank Account</h3>
+    <p>Imagine you and your spouse have a joint bank account with $100. You both go to different ATMs at the exact same millisecond and withdraw $100. If the bank software doesn't use <strong>Synchronization</strong>, both ATMs check the balance, see $100, and dispense the cash. The bank just lost $100. This is called a <strong>Race Condition</strong>.</p>
+    <p>Synchronization acts as a lock on the bank account. When you start your transaction, you lock the account. Your spouse's ATM must freeze and wait until you are completely finished before it is allowed to check the balance.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Counter</span> {
+    <span class="kw">private int</span> count = <span class="nm">0</span>;
+
+    <span class="cm">// synchronized method: locks the whole object (this)</span>
+    <span class="kw">public synchronized void</span> <span class="fn">increment</span>() {
+        count++;
+    }
+
+    <span class="kw">public void</span> <span class="fn">incrementBlock</span>() {
+        <span class="cm">// synchronized block: locks only specific code</span>
+        <span class="kw">synchronized</span> (<span class="kw">this</span>) {
+            count++;
+        }
+    }
+}
+
+<span class="cm">// Modern alternative: ReentrantLock</span>
+<span class="kw">class</span> <span class="cl">LockedCounter</span> {
+    <span class="kw">private int</span> count = <span class="nm">0</span>;
+    <span class="kw">private final</span> <span class="cl">Lock</span> lock = <span class="kw">new</span> <span class="cl">ReentrantLock</span>();
+
+    <span class="kw">public void</span> <span class="fn">increment</span>() {
+        lock.<span class="fn">lock</span>();
+        <span class="kw">try</span> {
+            count++;
+        } <span class="kw">finally</span> {
+            lock.<span class="fn">unlock</span>(); <span class="cm">// ALWAYS in finally block!</span>
+        }
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="atomic">
+  <div class="subsection">
+    <h3>Atomic Variables & Concurrent Collections</h3>
+    <p>For simple counters and collections, use built-in thread-safe classes instead of manual locks.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Atomic variables (lock-free thread-safe updates)</span>
+<span class="cl">AtomicInteger</span> atomicCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nm">0</span>);
+atomicCount.<span class="fn">incrementAndGet</span>(); <span class="cm">// Safe across threads</span>
+atomicCount.<span class="fn">addAndGet</span>(<span class="nm">5</span>);
+
+<span class="cm">// Concurrent Collections</span>
+<span class="cm">// Fast, thread-safe map (better than Hashtable or synchronized map)</span>
+<span class="cl">ConcurrentMap</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();
+map.<span class="fn">putIfAbsent</span>(<span class="st">"Key"</span>, <span class="nm">1</span>);
+
+<span class="cm">// Thread-safe list (good for many reads, few writes)</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; safeList = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;();
+
+<span class="cm">// Thread-safe queue</span>
+<span class="cl">BlockingQueue</span>&lt;<span class="cl">String</span>&gt; queue = <span class="kw">new</span> <span class="cl">ArrayBlockingQueue</span>&lt;&gt;(<span class="nm">100</span>);
+queue.<span class="fn">put</span>(<span class="st">"item"</span>);  <span class="cm">// Blocks if full</span>
+queue.<span class="fn">take</span>();       <span class="cm">// Blocks if empty</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="completable">
+  <div class="subsection">
+    <h3>CompletableFuture: The Deli Ticket</h3>
+    <p>In the old days, if you wanted the result of a background thread, you had to call <code class="inline">future.get()</code>, which would freeze (block) your current thread until the background job finished. This defeats the purpose of async programming!</p>
+    <p><code class="inline">CompletableFuture</code> is like taking a ticket at a deli counter. You don't stand there staring at the butcher. You take your ticket, give the butcher a list of instructions ("When my sandwich is ready, add mayo, then wrap it, then text my phone"), and you walk away to do other shopping. The pipeline executes automatically when the data is ready.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">CompletableFuture</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Run async task</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="kw">void</span>&gt; task1 = <span class="cl">CompletableFuture</span>.<span class="fn">runAsync</span>(() -&gt; {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Background task"</span>);
+});
+
+<span class="cm">// Run async and return value</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt; fetchUser = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; {
+    <span class="kw">return</span> <span class="st">"Alice"</span>; <span class="cm">// Simulating DB call</span>
+});
+
+<span class="cm">// Chaining operations</span>
+fetchUser
+    .<span class="fn">thenApply</span>(name -&gt; name.<span class="fn">toUpperCase</span>())    <span class="cm">// Transform</span>
+    .<span class="fn">thenAccept</span>(name -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(name)) <span class="cm">// Consume result</span>
+    .<span class="fn">exceptionally</span>(ex -&gt; {                   <span class="cm">// Error handling</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Error: "</span> + ex);
+        <span class="kw">return null</span>;
+    });
+
+<span class="cm">// Combine two futures</span>
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">Integer</span>&gt; price1 = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; <span class="nm">100</span>);
+<span class="cl">CompletableFuture</span>&lt;<span class="cl">Integer</span>&gt; price2 = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; <span class="nm">50</span>);
+
+price1.<span class="fn">thenCombine</span>(price2, (p1, p2) -&gt; p1 + p2)
+      .<span class="fn">thenAccept</span>(total -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Total: "</span> + total));</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="virtual">
+  <div class="subsection">
+    <h3>Virtual Threads: The Infinite Waiters (Java 21)</h3>
+    <p>Traditional Java threads are tied directly to OS threads. OS threads are incredibly heavy (taking ~1MB of memory each). If you try to spawn 100,000 OS threads, your computer will crash.</p>
+    <p><strong>Virtual Threads</strong> (Project Loom) change everything. They are managed by the JVM, not the OS. They are so lightweight that you can easily spawn millions of them. You no longer need complex Thread Pools. The new rule in Java 21+ is: <em>One thread per task.</em></p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Virtual Threads</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Start a virtual thread</span>
+<span class="cl">Thread</span> vThread = <span class="cl">Thread</span>.<span class="fn">startVirtualThread</span>(() -&gt; {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running in a virtual thread"</span>);
+});
+
+<span class="cm">// Executor with virtual threads (Thread-per-task model)</span>
+<span class="kw">try</span> (<span class="kw">var</span> executor = <span class="cl">Executors</span>.<span class="fn">newVirtualThreadPerTaskExecutor</span>()) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">10_000</span>; i++) {
+        executor.<span class="fn">submit</span>(() -&gt; {
+            <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">1</span>));
+            <span class="kw">return</span> <span class="nm">42</span>;
+        });
+    }
+} <span class="cm">// Automatically waits for all 10,000 tasks to finish!</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: High-Throughput Web Servers</h3>
+    <p>In the past, Java web servers (like Tomcat) used a "Thread-per-request" model. If 1,000 users made a request at the same time, the server needed 1,000 OS threads. This consumed massive amounts of memory and caused the CPU to spend more time switching between threads (context switching) than actually doing work.</p>
+    <p>With <strong>Virtual Threads</strong> in Java 21, a single server can handle millions of concurrent requests. When a request waits for a database query to return, the virtual thread is "mounted" off the OS thread, allowing another virtual thread to run. This unlocks massive scalability without changing the familiar synchronous coding style!</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What is a Race Condition?</div>
+        <div class="hl-desc">It occurs when two or more threads access shared data and try to change it at the same time. Because the thread scheduling algorithm can swap between threads at any time, you cannot guarantee the order of execution, leading to unpredictable results.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is the volatile keyword?</div>
+        <div class="hl-desc">It guarantees that a variable will be read directly from the main memory, and not from the CPU cache. It ensures visibility of changes across threads, but does NOT guarantee atomicity.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Virtual Threads vs Platform Threads?</div>
+        <div class="hl-desc">Platform threads are mapped 1:1 to OS threads (heavy, limited in number). Virtual threads are managed by the JVM (extremely lightweight, can create millions of them).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

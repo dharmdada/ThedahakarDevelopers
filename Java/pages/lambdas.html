@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lambdas & Functional Interfaces – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">⚡ Functional</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item active" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(168,85,247,0.15);">λ</div>
+    <div><h2>Lambdas & Functional Interfaces</h2><p>Write concise, expressive code with Java's functional programming features.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Behavior passed as values</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>A lambda is a small implementation of a functional interface. It lets you pass behavior directly to a method: a filter rule, a mapping function, a callback, a supplier, or a consumer.</p>
+    <p>The type of a lambda comes from context. The compiler looks at the target functional interface and checks that the lambda has compatible parameters and return type. This is why the same lambda shape can satisfy different interfaces.</p>
+    <p>Method references are not a separate feature conceptually; they are compact lambdas that call an existing method. Use them when they read naturally, and use explicit lambdas when parameter names improve clarity.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain lambdas in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="funcinterfaces">
+  <div class="subsection">
+    <h3>Functional Interfaces: The SAM Rule</h3>
+    <p>Before Java 8, if you wanted to pass a block of code into a method (like passing a click-handler to a button), you had to create a massive, clunky "Anonymous Inner Class". It was terribly verbose.</p>
+    <p>To fix this, Java introduced <strong>Functional Interfaces</strong>. The rule is incredibly simple: A Functional Interface is any interface that has <strong>exactly one abstract method</strong> (known as the SAM rule - Single Abstract Method). As long as it has only one abstract method, the compiler can mathematically guarantee exactly what method you are trying to implement when you use a lambda.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Custom Functional Interface</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="an">@FunctionalInterface</span>  <span class="cm">// Optional but recommended — compiler enforces the rule</span>
+<span class="kw">interface</span> <span class="cl">Transformer</span>&lt;<span class="cl">T</span>, <span class="cl">R</span>&gt; {
+    <span class="cl">R</span> <span class="fn">transform</span>(<span class="cl">T</span> input);
+}</code></pre>
+    </div>
+    <h4>The Big Four: Built-in Functional Interfaces</h4>
+    <p>Instead of writing custom interfaces every time, Java provides a library of pre-built ones in <code class="inline">java.util.function</code>. You only need to memorize four core concepts:</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Predicate (The Filter):</strong> Takes an input, returns a boolean. Used for filtering.</li>
+      <li><strong>Function (The Transformer):</strong> Takes an input, transforms it, and returns an output. Used for mapping.</li>
+      <li><strong>Consumer (The Black Hole):</strong> Takes an input, does something with it, returns nothing. Used for side-effects (like printing).</li>
+      <li><strong>Supplier (The Factory):</strong> Takes no input, returns a new object. Used for lazy generation.</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Interface</th><th>Method</th><th>Input → Output</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">Predicate&lt;T&gt;</code></td><td><code class="inline">test(T)</code></td><td>T → boolean</td><td><code class="inline">s -> s.isEmpty()</code></td></tr>
+          <tr><td><code class="inline">Function&lt;T,R&gt;</code></td><td><code class="inline">apply(T)</code></td><td>T → R</td><td><code class="inline">s -> s.length()</code></td></tr>
+          <tr><td><code class="inline">Consumer&lt;T&gt;</code></td><td><code class="inline">accept(T)</code></td><td>T → void</td><td><code class="inline">s -> System.out.println(s)</code></td></tr>
+          <tr><td><code class="inline">Supplier&lt;T&gt;</code></td><td><code class="inline">get()</code></td><td>() → T</td><td><code class="inline">() -> new ArrayList<>()</code></td></tr>
+          <tr><td><code class="inline">UnaryOperator&lt;T&gt;</code></td><td><code class="inline">apply(T)</code></td><td>T → T</td><td><code class="inline">s -> s.toUpperCase()</code></td></tr>
+          <tr><td><code class="inline">BinaryOperator&lt;T&gt;</code></td><td><code class="inline">apply(T,T)</code></td><td>(T, T) → T</td><td><code class="inline">(a, b) -> a + b</code></td></tr>
+          <tr><td><code class="inline">BiFunction&lt;T,U,R&gt;</code></td><td><code class="inline">apply(T,U)</code></td><td>(T, U) → R</td><td><code class="inline">(a, b) -> a.equals(b)</code></td></tr>
+          <tr><td><code class="inline">BiConsumer&lt;T,U&gt;</code></td><td><code class="inline">accept(T,U)</code></td><td>(T, U) → void</td><td><code class="inline">(k, v) -> map.put(k, v)</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="lambdas">
+  <div class="subsection">
+    <h3>Lambda Expressions: Code as Data</h3>
+    <p>A Lambda is simply an anonymous method that you can treat as a variable. It allows you to pass <em>behavior</em> into a method just as easily as you pass <em>data</em> into a method.</p>
+    <p>The syntax <code class="inline">(parameters) -&gt; body</code> is just syntactic sugar. Behind the scenes, the JVM takes your lambda and automatically creates an instance of the target Functional Interface.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Lambda Syntax</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Full syntax:         (parameters) -> { statements; }</span>
+<span class="cm">// Single expression:   (parameters) -> expression</span>
+<span class="cm">// Single param:        param -> expression</span>
+<span class="cm">// No params:           () -> expression</span>
+
+<span class="cm">// Examples with Predicate&lt;String&gt;</span>
+<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isEmpty = s -&gt; s.<span class="fn">isEmpty</span>();
+<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isLong = s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">10</span>;
+
+<span class="cm">// Chaining predicates</span>
+<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isShortAndNotEmpty = isEmpty.<span class="fn">negate</span>().<span class="fn">and</span>(s -&gt; s.<span class="fn">length</span>() &lt; <span class="nm">5</span>);
+
+<span class="cm">// Function composition</span>
+<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; trim = <span class="cl">String</span>::trim;
+<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; upper = <span class="cl">String</span>::toUpperCase;
+<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; pipeline = trim.<span class="fn">andThen</span>(upper);
+pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>); <span class="cm">// "HELLO"</span>
+
+<span class="cm">// Multi-line lambda body</span>
+<span class="cl">Function</span>&lt;<span class="cl">Integer</span>, <span class="cl">String</span>&gt; classify = n -&gt; {
+    <span class="kw">if</span> (n &lt; <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"negative"</span>;
+    <span class="kw">if</span> (n == <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"zero"</span>;
+    <span class="kw">return</span> <span class="st">"positive"</span>;
+};</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>Effectively Final Rule</strong>Lambdas can capture local variables from the enclosing scope, but those variables must be <strong>effectively final</strong> (never reassigned after initialization). This prevents concurrency bugs.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="methodref">
+  <div class="subsection">
+    <h3>Method References</h3>
+    <p>A shorthand for lambdas that just call an existing method. Uses <code class="inline">::</code> syntax.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Syntax</th><th>Lambda Equivalent</th></tr></thead>
+        <tbody>
+          <tr><td>Static method</td><td><code class="inline">Integer::parseInt</code></td><td><code class="inline">s -> Integer.parseInt(s)</code></td></tr>
+          <tr><td>Instance method (bound)</td><td><code class="inline">System.out::println</code></td><td><code class="inline">x -> System.out.println(x)</code></td></tr>
+          <tr><td>Instance method (unbound)</td><td><code class="inline">String::toUpperCase</code></td><td><code class="inline">s -> s.toUpperCase()</code></td></tr>
+          <tr><td>Constructor</td><td><code class="inline">ArrayList::new</code></td><td><code class="inline">() -> new ArrayList<>()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Method References in Action</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
+
+<span class="cm">// Instead of: names.forEach(n -> System.out.println(n))</span>
+names.<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+
+<span class="cm">// Instead of: names.stream().map(s -> s.toUpperCase())</span>
+names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase).<span class="fn">toList</span>();
+
+<span class="cm">// Constructor reference</span>
+<span class="cl">Supplier</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; factory = <span class="cl">ArrayList</span>::<span class="kw">new</span>;
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; newList = factory.<span class="fn">get</span>();
+
+<span class="cm">// Parse strings to integers</span>
+<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>)
+    .<span class="fn">stream</span>()
+    .<span class="fn">map</span>(<span class="cl">Integer</span>::parseInt)
+    .<span class="fn">toList</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="optional">
+  <div class="subsection">
+    <h3>Optional&lt;T&gt;: The Null Cure</h3>
+    <p>The creator of the <code class="inline">null</code> reference called it his "Billion Dollar Mistake". NullPointerExceptions crash more Java applications than any other bug. The problem with <code class="inline">null</code> is that it's invisible—you don't know a variable is null until your app crashes.</p>
+    <p><code class="inline">Optional</code> is a box. Instead of returning a <code class="inline">User</code> (which might secretly be null), your method returns an <code class="inline">Optional&lt;User&gt;</code>. This explicitly tells the developer: <em>"Hey, I might not have a User for you. You are forced to deal with the possibility that this box is empty before you can open it."</em></p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Optional Usage</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Creating Optionals</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; full = <span class="cl">Optional</span>.<span class="fn">of</span>(<span class="st">"Hello"</span>);       <span class="cm">// Throws if null!</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; maybe = <span class="cl">Optional</span>.<span class="fn">ofNullable</span>(<span class="kw">null</span>); <span class="cm">// Safe for null</span>
+<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; empty = <span class="cl">Optional</span>.<span class="fn">empty</span>();
+
+<span class="cm">// ❌ WRONG: defeats the purpose</span>
+<span class="cm">// if (opt.isPresent()) { return opt.get(); }</span>
+
+<span class="cm">// ✅ RIGHT: functional style</span>
+maybe.<span class="fn">orElse</span>(<span class="st">"default"</span>);                 <span class="cm">// value or default</span>
+maybe.<span class="fn">orElseGet</span>(() -&gt; <span class="fn">computeDefault</span>()); <span class="cm">// lazy default</span>
+maybe.<span class="fn">orElseThrow</span>();                     <span class="cm">// throw NoSuchElementException</span>
+maybe.<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"Not found"</span>));
+
+<span class="cm">// Transform / chain</span>
+maybe.<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase);           <span class="cm">// Optional&lt;String&gt;</span>
+maybe.<span class="fn">filter</span>(s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">3</span>);       <span class="cm">// Optional&lt;String&gt; or empty</span>
+maybe.<span class="fn">flatMap</span>(<span class="kw">this</span>::<span class="fn">findByName</span>);          <span class="cm">// Unwraps nested Optionals</span>
+maybe.<span class="fn">ifPresent</span>(<span class="cl">System</span>.out::println);     <span class="cm">// Only runs if present</span>
+maybe.<span class="fn">ifPresentOrElse</span>(
+    <span class="cl">System</span>.out::println,                   <span class="cm">// If present</span>
+    () -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Empty!"</span>)    <span class="cm">// If empty</span>
+);</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>When NOT to Use Optional</strong>Don't use Optional for fields, method parameters, or in collections. It's designed for return types only — to signal "this method might not return a value."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Event Handling and Async APIs</h3>
+    <p>Lambdas are heavily used in GUI applications (like JavaFX) and asynchronous event handling.</p>
+    <p>Instead of writing a massive anonymous inner class to handle a button click, you can do it in one line: <code>button.setOnAction(event -> System.out.println("Clicked!"));</code>. Similarly, when fetching data from a database asynchronously, you pass a lambda to handle the result whenever it arrives, keeping the UI responsive.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What is a Functional Interface?</div>
+        <div class="hl-desc">An interface with exactly one abstract method (like <code>Runnable</code> or <code>Callable</code>). They can be annotated with <code>@FunctionalInterface</code> and are the targets for lambda expressions.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is Method Reference?</div>
+        <div class="hl-desc">It is a shorthand syntax for a lambda expression that simply calls an existing method. Syntax: <code>ClassName::methodName</code> (e.g., <code>System.out::println</code>).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Why was Optional introduced?</div>
+        <div class="hl-desc">To represent the presence or absence of a value, forcing the caller to handle the empty case and reducing the occurrence of <code>NullPointerException</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../functional.html" style="color:var(--accent);">← Back to Functional</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

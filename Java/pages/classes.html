@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Classes & Objects – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item active" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">On This Page</div>
+    <a class="nav-item" data-section="anatomy" href="#anatomy"><span class="dot"></span>Class Anatomy</a>
+    <a class="nav-item" data-section="constructors" href="#constructors"><span class="dot"></span>Constructors</a>
+    <a class="nav-item" data-section="this" href="#this"><span class="dot"></span>this Keyword</a>
+    <a class="nav-item" data-section="static" href="#static"><span class="dot"></span>Static Members</a>
+    <a class="nav-item" data-section="access" href="#access"><span class="dot"></span>Access Modifiers</a>
+    <a class="nav-item" data-section="getset" href="#getset"><span class="dot"></span>Getters & Setters</a>
+    <a class="nav-item" data-section="inner" href="#inner"><span class="dot"></span>Inner Classes</a>
+    <a class="nav-item" data-section="final" href="#final"><span class="dot"></span>Final Classes</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(249,115,22,0.15);">🏗️</div>
+    <div><h2>Classes & Objects</h2><p>The blueprint of everything in Java — fields, constructors, methods, access control.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Classes as enforceable domain boundaries</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>A class bundles state and behavior under one name. Its job is to protect invariants: rules that must always remain true for objects of that type. Constructors establish invariants, methods preserve them, and visibility prevents invalid outside mutation.</p>
+    <p>Fields are implementation details unless there is a deliberate reason to expose them. Getters and setters are not automatic good design; they are only useful when reading or changing the value is part of the object's valid contract.</p>
+    <p>Static members belong to the class rather than an object. They are useful for constants and stateless helpers, but overuse of static state makes code harder to test and reason about.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain classes in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="anatomy">
+  <div class="subsection">
+    <h3>The Blueprint Analogy</h3>
+    <p>To understand Object-Oriented Programming (OOP), you must understand the difference between a <strong>Class</strong> and an <strong>Object</strong>. The easiest way to think about this is through the lens of architecture.</p>
+    <p>Imagine you are an architect designing a house. You draw a highly detailed <strong>blueprint</strong> that specifies how many doors the house has, what color the walls are, and where the plumbing goes. This blueprint is the <strong>Class</strong>. You cannot live inside a blueprint, and the blueprint itself doesn't take up any physical space on a street.</p>
+    <p>When a construction company takes your blueprint and builds an actual, physical house from it, that physical house is the <strong>Object</strong> (also known as an <strong>Instance</strong>). You can build thousands of distinct houses from the exact same blueprint. They might have different owners or different paint colors, but they all share the identical structure defined by the class.</p>
+    <p>In Java, every single piece of data and logic must reside inside a class. Let's look at the anatomical structure of a Java class.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Complete Class Structure</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Student</span> {
+
+    <span class="cm">// ── FIELDS (State) ────────────────────────</span>
+    <span class="kw">private</span> <span class="cl">String</span> name;          <span class="cm">// Instance field</span>
+    <span class="kw">private int</span> age;
+    <span class="kw">private static int</span> count = <span class="nm">0</span>; <span class="cm">// Class field (shared)</span>
+
+    <span class="cm">// ── CONSTRUCTOR ──────────────────────────</span>
+    <span class="kw">public</span> <span class="fn">Student</span>(<span class="cl">String</span> name, <span class="kw">int</span> age) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.age = age;
+        count++;
+    }
+
+    <span class="cm">// ── METHODS (Behavior) ──────────────────</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+    <span class="kw">public void</span> <span class="fn">setName</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+
+    <span class="cm">// Static method — called on class, not instance</span>
+    <span class="kw">public static int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+
+    <span class="cm">// ── toString ────────────────────────────</span>
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
+        <span class="kw">return</span> <span class="st">"Student{name='%s', age=%d}"</span>.<span class="fn">formatted</span>(name, age);
+    }
+}
+
+<span class="cm">// Creating objects</span>
+<span class="cl">Student</span> s1 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Alice"</span>, <span class="nm">20</span>);
+<span class="cl">Student</span> s2 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Bob"</span>, <span class="nm">22</span>);
+<span class="cl">System</span>.out.<span class="fn">println</span>(s1);           <span class="cm">// Student{name='Alice', age=20}</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Student</span>.<span class="fn">getCount</span>()); <span class="cm">// 2</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="constructors">
+  <div class="subsection">
+    <h3>Constructors: Bringing Objects to Life</h3>
+    <p>When you use the <code class="inline">new</code> keyword (like <code class="inline">new Student()</code>), the JVM allocates memory on the Heap for the new object. But before you can use it, the object needs to be set up. This is the job of the <strong>Constructor</strong>.</p>
+    <p>A constructor is a special block of code that runs exactly once per object, at the exact moment the object is created. Its primary purpose is to initialize the object's state (its fields) so that the object starts its life in a valid, usable condition.</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Naming Rule:</strong> Constructors must have the exact same name as the class.</li>
+      <li><strong>No Return Type:</strong> Unlike methods, constructors do not have a return type (not even <code class="inline">void</code>).</li>
+      <li><strong>Overloading:</strong> You can have multiple constructors in the same class, as long as they take different parameters.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Constructor Types</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Car</span> {
+    <span class="kw">private</span> <span class="cl">String</span> brand;
+    <span class="kw">private int</span> year;
+
+    <span class="cm">// Default constructor (no args)</span>
+    <span class="kw">public</span> <span class="fn">Car</span>() {
+        <span class="kw">this</span>(<span class="st">"Unknown"</span>, <span class="nm">2024</span>); <span class="cm">// Constructor chaining with this()</span>
+    }
+
+    <span class="cm">// Parameterized constructor</span>
+    <span class="kw">public</span> <span class="fn">Car</span>(<span class="cl">String</span> brand, <span class="kw">int</span> year) {
+        <span class="kw">this</span>.brand = brand;
+        <span class="kw">this</span>.year = year;
+    }
+
+    <span class="cm">// Copy constructor</span>
+    <span class="kw">public</span> <span class="fn">Car</span>(<span class="cl">Car</span> other) {
+        <span class="kw">this</span>.brand = other.brand;
+        <span class="kw">this</span>.year = other.year;
+    }
+}
+
+<span class="cl">Car</span> c1 = <span class="kw">new</span> <span class="cl">Car</span>();                    <span class="cm">// Default</span>
+<span class="cl">Car</span> c2 = <span class="kw">new</span> <span class="cl">Car</span>(<span class="st">"Toyota"</span>, <span class="nm">2023</span>);      <span class="cm">// Parameterized</span>
+<span class="cl">Car</span> c3 = <span class="kw">new</span> <span class="cl">Car</span>(c2);                  <span class="cm">// Copy</span></code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>No-Arg Constructor Rule</strong>If you define NO constructors, Java provides a default no-arg one. But if you define ANY constructor, the default is NOT provided — you must explicitly add a no-arg constructor if you need one.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="this">
+  <div class="subsection">
+    <h3>The <code class="inline">this</code> Keyword: Self-Reference</h3>
+    <p>Imagine you are in a crowded room, and someone asks, "Who wants pizza?" If you want pizza, you don't say your own name ("John wants pizza!"); you say, "<strong>I</strong> want pizza."</p>
+    <p>In Java, the <code class="inline">this</code> keyword is how an object refers to <em>itself</em>. When code inside a method needs to access the fields or methods of the specific object that invoked it, it uses <code class="inline">this</code>.</p>
+    <p>The most common use case is resolving naming collisions. If a method parameter has the exact same name as a class field (which is very common in constructors and setters), the compiler gets confused. By prefixing the variable with <code class="inline">this.</code>, you explicitly tell the compiler: "I am talking about the field that belongs to this object, not the parameter you just handed me."</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// 1. Distinguish field from parameter</span>
+<span class="kw">public void</span> <span class="fn">setName</span>(<span class="cl">String</span> name) {
+    <span class="kw">this</span>.name = name; <span class="cm">// this.name = field, name = parameter</span>
+}
+
+<span class="cm">// 2. Call another constructor (must be FIRST statement)</span>
+<span class="kw">public</span> <span class="fn">Car</span>() {
+    <span class="kw">this</span>(<span class="st">"Default"</span>, <span class="nm">2024</span>); <span class="cm">// Calls Car(String, int)</span>
+}
+
+<span class="cm">// 3. Return current object (for method chaining / fluent API)</span>
+<span class="kw">public</span> <span class="cl">Car</span> <span class="fn">setBrand</span>(<span class="cl">String</span> brand) {
+    <span class="kw">this</span>.brand = brand;
+    <span class="kw">return</span> <span class="kw">this</span>;
+}
+<span class="cm">// Allows: new Car().setBrand("BMW").setYear(2024);</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="static">
+  <div class="subsection">
+    <h3>Static Members</h3>
+    <p><code class="inline">static</code> means "belongs to the class, not to any instance". Shared across all objects.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">MathUtils</span> {
+    <span class="cm">// Static field — one copy shared by all instances</span>
+    <span class="kw">public static final double</span> PI = <span class="nm">3.14159265</span>;
+
+    <span class="cm">// Static method — no need to create an object</span>
+    <span class="kw">public static int</span> <span class="fn">max</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+        <span class="kw">return</span> (a &gt; b) ? a : b;
+    }
+
+    <span class="cm">// Static initializer block — runs once when class loads</span>
+    <span class="kw">private static</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; cache;
+    <span class="kw">static</span> {
+        cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+        cache.<span class="fn">put</span>(<span class="st">"default"</span>, <span class="nm">0</span>);
+    }
+}
+
+<span class="cm">// Called on the CLASS, not an object</span>
+<span class="kw">int</span> result = <span class="cl">MathUtils</span>.<span class="fn">max</span>(<span class="nm">5</span>, <span class="nm">10</span>);</code></pre>
+    </div>
+    <div class="callout danger">
+      <span class="callout-icon">🔥</span>
+      <div class="callout-body"><strong>Static Cannot Access Instance</strong>A <code class="inline">static</code> method cannot access instance fields or instance methods directly. It has no <code class="inline">this</code> reference. But an instance method CAN access static members.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="access">
+  <div class="subsection">
+    <h3>Access Modifiers</h3>
+    <p>Control who can see and use your classes, fields, and methods.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Modifier</th><th>Class</th><th>Package</th><th>Subclass</th><th>World</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">public</code></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td><code class="inline">protected</code></td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td><em>(default/package)</em></td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+          <tr><td><code class="inline">private</code></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Best Practice</strong>Make fields <code class="inline">private</code> by default. Use <code class="inline">public</code> methods to control access. This is the foundation of encapsulation.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="getset">
+  <div class="subsection">
+    <h3>Encapsulation: The First Pillar of OOP</h3>
+    <p>Encapsulation is the practice of hiding the internal state (fields) of an object and requiring all interaction to be performed through an object's methods. But why is this necessary?</p>
+    <p>Imagine a <code class="inline">BankAccount</code> object. If the <code class="inline">balance</code> field is <code class="inline">public</code>, any other piece of code in your entire application can directly change it: <code class="inline">account.balance = -999999;</code>. This is incredibly dangerous. An object should be in complete control of its own destiny and its own data integrity.</p>
+    <p>To enforce this, we make the fields <code class="inline">private</code> (hiding them from the outside world), and expose <code class="inline">public</code> methods (Getters and Setters). This allows the class to inject <strong>validation logic</strong> whenever someone tries to change the data.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">BankAccount</span> {
+    <span class="kw">private double</span> balance; <span class="cm">// Hidden from outside</span>
+
+    <span class="cm">// Getter: read-only access</span>
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
+
+    <span class="cm">// Setter with VALIDATION — this is the power of encapsulation</span>
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &lt;= <span class="nm">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Amount must be positive"</span>);
+        <span class="kw">this</span>.balance += amount;
+    }
+
+    <span class="kw">public void</span> <span class="fn">withdraw</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount &gt; balance) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Insufficient funds"</span>);
+        <span class="kw">this</span>.balance -= amount;
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="inner">
+  <div class="subsection">
+    <h3>Inner & Nested Classes</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Outer</span> {
+    <span class="kw">private int</span> x = <span class="nm">10</span>;
+
+    <span class="cm">// Inner class (non-static) — can access outer's fields</span>
+    <span class="kw">class</span> <span class="cl">Inner</span> {
+        <span class="kw">void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(x); } <span class="cm">// Accesses outer x!</span>
+    }
+
+    <span class="cm">// Static nested class — cannot access outer's instance fields</span>
+    <span class="kw">static class</span> <span class="cl">StaticNested</span> {
+        <span class="kw">void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"I'm static nested"</span>); }
+    }
+
+    <span class="kw">void</span> <span class="fn">demo</span>() {
+        <span class="cm">// Anonymous inner class</span>
+        <span class="cl">Runnable</span> r = <span class="kw">new</span> <span class="cl">Runnable</span>() {
+            <span class="an">@Override</span>
+            <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Anonymous!"</span>); }
+        };
+
+        <span class="cm">// Local class (inside a method)</span>
+        <span class="kw">class</span> <span class="cl">LocalClass</span> {
+            <span class="kw">void</span> <span class="fn">greet</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"I'm local"</span>); }
+        }
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="cl">Outer</span> outer = <span class="kw">new</span> <span class="cl">Outer</span>();
+<span class="cl">Outer</span>.<span class="cl">Inner</span> inner = outer.<span class="kw">new</span> <span class="cl">Inner</span>();        <span class="cm">// Needs outer instance</span>
+<span class="cl">Outer</span>.<span class="cl">StaticNested</span> sn = <span class="kw">new</span> <span class="cl">Outer</span>.<span class="cl">StaticNested</span>(); <span class="cm">// No outer needed</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="final">
+  <div class="subsection">
+    <h3>Final Classes & Methods</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Final class: CANNOT be subclassed</span>
+<span class="kw">public final class</span> <span class="cl">Constants</span> {
+    <span class="kw">public static final int</span> MAX = <span class="nm">100</span>;
+}
+<span class="cm">// class Sub extends Constants {}  →  ❌ Compile error!</span>
+
+<span class="cm">// Final method: CANNOT be overridden by subclasses</span>
+<span class="kw">class</span> <span class="cl">Base</span> {
+    <span class="kw">public final void</span> <span class="fn">important</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Cannot change me"</span>);
+    }
+}
+
+<span class="cm">// Final variable: assigned once, cannot change</span>
+<span class="kw">final int</span> x = <span class="nm">10</span>;
+<span class="cm">// x = 20;  →  ❌ Compile error!</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: The Domain Model</h3>
+    <p>In a standard Spring Boot Enterprise Application, Classes are heavily used to create the <strong>Domain Model</strong>. If you are building Twitter, you don't pass raw Strings and Integers around; you encapsulate everything into a <code>User</code> class, a <code>Tweet</code> class, and a <code>FollowerGraph</code> class.</p>
+    <p>By using <strong>Encapsulation</strong>, you ensure that someone cannot accidentally set a user's follower count to -500. The <code>setFollowerCount()</code> method will contain validation logic to prevent invalid states, protecting the entire architecture from bad data.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What is the difference between a Class and an Object?</div>
+        <div class="hl-desc">A Class is a blueprint (the architectural drawings) stored in Metaspace. An Object is an actual physical instance (the built house) stored in the Heap memory.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">Explain Encapsulation.</div>
+        <div class="hl-desc">It is the bundling of data (fields) and methods that operate on that data into a single unit (class), while hiding the internal state by making fields <code>private</code> and requiring all interactions to happen via <code>public</code> methods (getters/setters).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What does the 'static' keyword mean?</div>
+        <div class="hl-desc">It means the field or method belongs to the Class itself, not to any specific instance. All objects share the exact same static field.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

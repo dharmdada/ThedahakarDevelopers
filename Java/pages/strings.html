@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Strings – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Pages</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item active" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">On This Page</div>
+    <a class="nav-item" data-section="creating" href="#creating"><span class="dot"></span>Creating Strings</a>
+    <a class="nav-item" data-section="methods" href="#methods"><span class="dot"></span>All String Methods</a>
+    <a class="nav-item" data-section="format" href="#format"><span class="dot"></span>String Formatting</a>
+    <a class="nav-item" data-section="textblocks" href="#textblocks"><span class="dot"></span>Text Blocks</a>
+    <a class="nav-item" data-section="builder" href="#builder"><span class="dot"></span>StringBuilder</a>
+    <a class="nav-item" data-section="comparison" href="#comparison"><span class="dot"></span>String Comparison</a>
+    <a class="nav-item" data-section="regex" href="#regex"><span class="dot"></span>Regex Basics</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(6,182,212,0.15);">🔤</div>
+    <div><h2>Strings</h2><p>Everything about Java's most used class. Strings are immutable objects.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Text as immutable value data</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>String is immutable: once created, its character content cannot change. Operations like replace, substring, and toUpperCase return new strings. This design makes strings safe to share, cache, intern, and use as map keys.</p>
+    <p>Because strings are objects, equality must be understood carefully. The == operator checks whether two references point to the same object. The equals method checks text content. This distinction is one of the first object identity lessons in Java.</p>
+    <p>StringBuilder exists because repeated concatenation in loops can create unnecessary temporary objects. Use String for stable text, StringBuilder for incremental construction, and formatter APIs when structure matters.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain strings in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="creating">
+  <div class="subsection">
+    <h3>The String Pool: The Public Library</h3>
+    <p>In Java, Strings are <strong>Immutable</strong>. Once a String is created, it can never be changed. If you try to modify a String, Java actually creates a brand new String and throws the old one away.</p>
+    <p>Because Strings are used so heavily, Java uses an optimization called the <strong>String Pool</strong>. Think of it like a public library. If you create the string <code class="inline">"Hello"</code>, Java puts that book in the library. If another variable asks for <code class="inline">"Hello"</code>, Java doesn't print a new book; it just gives them the exact same book from the library to save RAM.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// String literal — stored in String Pool (shared)</span>
+<span class="cl">String</span> s1 = <span class="st">"Hello"</span>;
+
+<span class="cm">// Using new — creates a new object on the heap (avoid this)</span>
+<span class="cl">String</span> s2 = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"Hello"</span>);
+
+<span class="cm">// From char array</span>
+<span class="kw">char</span>[] chars = {<span class="st">'H'</span>, <span class="st">'i'</span>};
+<span class="cl">String</span> s3 = <span class="kw">new</span> <span class="cl">String</span>(chars); <span class="cm">// "Hi"</span>
+
+<span class="cm">// Concatenation</span>
+<span class="cl">String</span> full = <span class="st">"Hello"</span> + <span class="st">" "</span> + <span class="st">"World"</span>;
+<span class="cl">String</span> joined = <span class="cl">String</span>.<span class="fn">join</span>(<span class="st">", "</span>, <span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>); <span class="cm">// "a, b, c"</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="methods">
+  <div class="subsection">
+    <h3>All Essential String Methods</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Returns</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">length()</code></td><td>int</td><td>Number of characters</td></tr>
+          <tr><td><code class="inline">charAt(i)</code></td><td>char</td><td>Character at index i</td></tr>
+          <tr><td><code class="inline">indexOf("x")</code></td><td>int</td><td>First index of "x", or -1</td></tr>
+          <tr><td><code class="inline">lastIndexOf("x")</code></td><td>int</td><td>Last index of "x"</td></tr>
+          <tr><td><code class="inline">substring(a, b)</code></td><td>String</td><td>From index a to b-1</td></tr>
+          <tr><td><code class="inline">toUpperCase()</code></td><td>String</td><td>All uppercase</td></tr>
+          <tr><td><code class="inline">toLowerCase()</code></td><td>String</td><td>All lowercase</td></tr>
+          <tr><td><code class="inline">trim()</code></td><td>String</td><td>Remove leading/trailing whitespace</td></tr>
+          <tr><td><code class="inline">strip()</code></td><td>String</td><td>Like trim but Unicode-aware</td></tr>
+          <tr><td><code class="inline">contains("x")</code></td><td>boolean</td><td>True if contains "x"</td></tr>
+          <tr><td><code class="inline">startsWith("x")</code></td><td>boolean</td><td>True if starts with "x"</td></tr>
+          <tr><td><code class="inline">endsWith("x")</code></td><td>boolean</td><td>True if ends with "x"</td></tr>
+          <tr><td><code class="inline">isEmpty()</code></td><td>boolean</td><td>True if length is 0</td></tr>
+          <tr><td><code class="inline">isBlank()</code></td><td>boolean</td><td>True if empty or only whitespace</td></tr>
+          <tr><td><code class="inline">replace(a, b)</code></td><td>String</td><td>Replace all 'a' with 'b'</td></tr>
+          <tr><td><code class="inline">replaceAll(regex, b)</code></td><td>String</td><td>Regex replace</td></tr>
+          <tr><td><code class="inline">split(regex)</code></td><td>String[]</td><td>Split into array by pattern</td></tr>
+          <tr><td><code class="inline">toCharArray()</code></td><td>char[]</td><td>Convert to char array</td></tr>
+          <tr><td><code class="inline">repeat(n)</code></td><td>String</td><td>Repeat string n times</td></tr>
+          <tr><td><code class="inline">chars()</code></td><td>IntStream</td><td>Stream of character codes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Methods in Action</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">String</span> s = <span class="st">"  Hello World  "</span>;
+s.<span class="fn">trim</span>();                   <span class="cm">// "Hello World"</span>
+s.<span class="fn">strip</span>();                  <span class="cm">// "Hello World" (Unicode-aware)</span>
+<span class="st">"Hello"</span>.<span class="fn">substring</span>(<span class="nm">1</span>, <span class="nm">4</span>);   <span class="cm">// "ell"</span>
+<span class="st">"abc"</span>.<span class="fn">repeat</span>(<span class="nm">3</span>);           <span class="cm">// "abcabcabc"</span>
+<span class="st">"a,b,c"</span>.<span class="fn">split</span>(<span class="st">","</span>);        <span class="cm">// ["a", "b", "c"]</span>
+<span class="st">"Hello"</span>.<span class="fn">replace</span>(<span class="st">'l'</span>, <span class="st">'r'</span>); <span class="cm">// "Herro"</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="format">
+  <div class="subsection">
+    <h3>String Formatting</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// printf-style</span>
+<span class="cl">String</span> formatted = <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"Name: %s, Age: %d, Score: %.2f"</span>, <span class="st">"Alice"</span>, <span class="nm">25</span>, <span class="nm">95.5</span>);
+<span class="cm">// "Name: Alice, Age: 25, Score: 95.50"</span>
+
+<span class="cm">// Common format specifiers:</span>
+<span class="cm">// %s = String   %d = integer   %f = float/double</span>
+<span class="cm">// %b = boolean  %c = char      %n = newline</span>
+<span class="cm">// %10s = right-padded   %-10s = left-padded</span>
+<span class="cm">// %.2f = 2 decimal places</span>
+
+<span class="cm">// Modern: formatted() method (same as format but instance method)</span>
+<span class="cl">String</span> s = <span class="st">"Hello %s, you are %d years old"</span>.<span class="fn">formatted</span>(<span class="st">"Bob"</span>, <span class="nm">30</span>);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="textblocks">
+  <div class="subsection">
+    <h3>Text Blocks (Multi-line Strings)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Text blocks use triple quotes: """</span>
+<span class="cl">String</span> json = <span class="st">"""
+        {
+            "name": "Alice",
+            "age": 25,
+            "skills": ["Java", "Python"]
+        }
+        """</span>;
+
+<span class="cl">String</span> html = <span class="st">"""
+        &lt;html&gt;
+            &lt;body&gt;
+                &lt;p&gt;Hello World&lt;/p&gt;
+            &lt;/body&gt;
+        &lt;/html&gt;
+        """</span>;
+
+<span class="cm">// The indentation of the closing """ determines the base indentation</span>
+<span class="cm">// Trailing whitespace is stripped by default</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="builder">
+  <div class="subsection">
+    <h3>StringBuilder: The Scratchpad</h3>
+    <p>Because Strings are immutable, concatenating Strings inside a loop is a massive performance killer. Every time you write <code class="inline">str += "a"</code>, Java is forced to build a brand new String object, copy all the old data into it, add the "a", and throw the old one in the trash. Doing this 1,000 times creates 1,000 abandoned objects in your Heap.</p>
+    <p><code class="inline">StringBuilder</code> solves this. It acts like a mutable scratchpad. You can write, erase, and append to it infinitely without creating new objects. Only when you are completely finished do you call <code class="inline">.toString()</code> to mint the final, immutable String.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// ❌ Bad: creates 1000 temporary String objects</span>
+<span class="cl">String</span> s = <span class="st">""</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">1000</span>; i++) {
+    s += i; <span class="cm">// Creates new String each time!</span>
+}
+
+<span class="cm">// ✅ Good: uses a mutable buffer</span>
+<span class="cl">StringBuilder</span> sb = <span class="kw">new</span> <span class="cl">StringBuilder</span>();
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">1000</span>; i++) {
+    sb.<span class="fn">append</span>(i);
+}
+<span class="cl">String</span> result = sb.<span class="fn">toString</span>();
+
+<span class="cm">// StringBuilder methods: append, insert, delete, reverse, replace</span>
+sb.<span class="fn">insert</span>(<span class="nm">0</span>, <span class="st">"Start: "</span>);
+sb.<span class="fn">reverse</span>();
+sb.<span class="fn">delete</span>(<span class="nm">0</span>, <span class="nm">5</span>);</code></pre>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>StringBuilder vs StringBuffer</strong><code class="inline">StringBuilder</code> is NOT thread-safe (faster). <code class="inline">StringBuffer</code> IS thread-safe (slower). Use <code class="inline">StringBuilder</code> unless multiple threads are modifying the same string.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="comparison">
+  <div class="subsection">
+    <h3>String Comparison: Identity vs Value</h3>
+    <p>This is the most common bug for Java beginners. Never use <code class="inline">==</code> to compare Strings.</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>== (Identity):</strong> Asks the question: "Are these two remote controls pointing to the exact same physical object in memory?"</li>
+      <li><strong>.equals() (Value):</strong> Asks the question: "Do these two objects contain the exact same characters?"</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">String</span> a = <span class="st">"hello"</span>;
+<span class="cl">String</span> b = <span class="st">"hello"</span>;
+<span class="cl">String</span> c = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"hello"</span>);
+
+<span class="cm">// == compares REFERENCES (memory address)</span>
+a == b   <span class="cm">// true (same string pool object)</span>
+a == c   <span class="cm">// FALSE! (different objects in memory!)</span>
+
+<span class="cm">// .equals() compares VALUES (correct way!)</span>
+a.<span class="fn">equals</span>(c)             <span class="cm">// true</span>
+a.<span class="fn">equalsIgnoreCase</span>(<span class="st">"HELLO"</span>) <span class="cm">// true</span>
+
+<span class="cm">// compareTo returns: negative, 0, or positive</span>
+<span class="st">"apple"</span>.<span class="fn">compareTo</span>(<span class="st">"banana"</span>)  <span class="cm">// negative (a &lt; b)</span>
+<span class="st">"banana"</span>.<span class="fn">compareTo</span>(<span class="st">"apple"</span>)  <span class="cm">// positive (b &gt; a)</span>
+<span class="st">"apple"</span>.<span class="fn">compareTo</span>(<span class="st">"apple"</span>)   <span class="cm">// 0 (equal)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="regex">
+  <div class="subsection">
+    <h3>Regular Expressions (Basics)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">import</span> java.util.regex.*;
+
+<span class="cm">// Simple matching</span>
+<span class="kw">boolean</span> match = <span class="st">"hello123"</span>.<span class="fn">matches</span>(<span class="st">"[a-z]+\\d+"</span>); <span class="cm">// true</span>
+
+<span class="cm">// Pattern + Matcher (for complex use)</span>
+<span class="cl">Pattern</span> p = <span class="cl">Pattern</span>.<span class="fn">compile</span>(<span class="st">"\\d+"</span>); <span class="cm">// Match digits</span>
+<span class="cl">Matcher</span> m = p.<span class="fn">matcher</span>(<span class="st">"abc 123 def 456"</span>);
+<span class="kw">while</span> (m.<span class="fn">find</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(m.<span class="fn">group</span>()); <span class="cm">// "123", then "456"</span>
+}
+
+<span class="cm">// Common patterns:</span>
+<span class="cm">// \\d  = digit       \\D  = non-digit</span>
+<span class="cm">// \\w  = word char   \\W  = non-word</span>
+<span class="cm">// \\s  = whitespace  \\S  = non-whitespace</span>
+<span class="cm">// .    = any char    +    = one or more</span>
+<span class="cm">// *    = zero or more  ?  = zero or one</span>
+<span class="cm">// [abc]= any of a,b,c  [^abc]= NOT a,b,c</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Log Parsers</h3>
+    <p>Imagine you are building a log analysis tool for a server. The server generates millions of lines of text logs every day. You need to scan these logs to find error codes and IP addresses.</p>
+    <p>By using <strong>Regular Expressions</strong> and <strong>StringBuilder</strong>, you can parse these massive files efficiently. You use Regex to find patterns (like IP addresses) and use <code>StringBuilder</code> to aggregate report summaries without crashing the server's memory with millions of temporary String objects.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Why are Strings immutable in Java?</div>
+        <div class="hl-desc">For security (strings hold passwords/URLs), caching (String Pool saves memory), and thread-safety (immutable objects are inherently thread-safe).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">StringBuilder vs StringBuffer?</div>
+        <div class="hl-desc">Both are used for mutable strings. <code>StringBuilder</code> is faster but not thread-safe. <code>StringBuffer</code> is synchronized and thread-safe but slower.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is the String Pool?</div>
+        <div class="hl-desc">A special storage area in the Heap where Java stores string literals. If you create a string that already exists in the pool, Java returns the existing reference instead of creating a new object.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

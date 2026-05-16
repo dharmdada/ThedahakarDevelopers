@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Enums & Records – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item active" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(234,179,8,0.15);">📋</div>
+    <div><h2>Enums & Records</h2><p>Type-safe constants and immutable data carriers — two of Java's most useful features.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Restricted values and transparent data carriers</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Enums model a closed set of named values. They are safer than strings or integers because the compiler knows all valid options. An enum can also own fields and behavior, which keeps logic close to the value it belongs to.</p>
+    <p>Records model shallowly immutable data. They automatically provide constructor, accessors, equals, hashCode, and toString based on components. This makes them excellent for DTOs, value results, messages, and simple domain facts.</p>
+    <p>Enums and records both reduce accidental complexity. They make illegal states harder to represent and remove boilerplate that often hides the real intent of code.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain enums records in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="enums">
+  <div class="subsection">
+    <h3>Enums: Type-Safe Constants</h3>
+    <p>Imagine you are writing a program that processes orders, and an order can have a status: Pending, Shipped, or Delivered. In old languages, programmers would just use integer constants (1=Pending, 2=Shipped, 3=Delivered). The problem? Someone could pass <code class="inline">99</code> into your method, and your code would break. There was no <strong>Type Safety</strong>.</p>
+    <p>An <code class="inline">enum</code> (short for Enumeration) fixes this. It is a special Java class that represents a fixed, unchangeable set of values. If a method asks for an <code class="inline">OrderStatus</code> enum, it is physically impossible to pass it anything other than the exact values you defined.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Basic Enum</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public enum</span> <span class="cl">Season</span> {
+    SPRING, SUMMER, AUTUMN, WINTER
+}
+
+<span class="cl">Season</span> s = <span class="cl">Season</span>.SUMMER;
+
+<span class="cm">// Switch with enum</span>
+<span class="cl">String</span> msg = <span class="kw">switch</span> (s) {
+    <span class="kw">case</span> SPRING -&gt; <span class="st">"Flowers bloom"</span>;
+    <span class="kw">case</span> SUMMER -&gt; <span class="st">"Beach time"</span>;
+    <span class="kw">case</span> AUTUMN -&gt; <span class="st">"Leaves fall"</span>;
+    <span class="kw">case</span> WINTER -&gt; <span class="st">"Stay warm"</span>;
+};
+
+<span class="cm">// Useful methods</span>
+<span class="cl">Season</span>.<span class="fn">values</span>();             <span class="cm">// Array of all values</span>
+<span class="cl">Season</span>.<span class="fn">valueOf</span>(<span class="st">"SUMMER"</span>);    <span class="cm">// String → enum</span>
+s.<span class="fn">name</span>();                   <span class="cm">// "SUMMER"</span>
+s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (position, 0-indexed)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="advanced-enums">
+  <div class="subsection">
+    <h3>Advanced Enums: Not Just Labels</h3>
+    <p>In languages like C, enums are just glorified integers. In Java, <strong>Enums are full-fledged Classes</strong>. This means an enum constant isn't just a label—it's an actual object. You can give these objects fields, constructors, and even custom behavior.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Powerful Enum</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public enum</span> <span class="cl">Planet</span> {
+    MERCURY(<span class="nm">3.303e+23</span>, <span class="nm">2.4397e6</span>),
+    VENUS(<span class="nm">4.869e+24</span>, <span class="nm">6.0518e6</span>),
+    EARTH(<span class="nm">5.976e+24</span>, <span class="nm">6.37814e6</span>),
+    MARS(<span class="nm">6.421e+23</span>, <span class="nm">3.3972e6</span>);
+
+    <span class="kw">private final double</span> mass;    <span class="cm">// in kg</span>
+    <span class="kw">private final double</span> radius;  <span class="cm">// in meters</span>
+
+    <span class="cm">// Enum constructor (always private)</span>
+    <span class="fn">Planet</span>(<span class="kw">double</span> mass, <span class="kw">double</span> radius) {
+        <span class="kw">this</span>.mass = mass;
+        <span class="kw">this</span>.radius = radius;
+    }
+
+    <span class="cm">// Method</span>
+    <span class="kw">public double</span> <span class="fn">surfaceGravity</span>() {
+        <span class="kw">final double</span> G = <span class="nm">6.67300E-11</span>;
+        <span class="kw">return</span> G * mass / (radius * radius);
+    }
+
+    <span class="kw">public double</span> <span class="fn">surfaceWeight</span>(<span class="kw">double</span> otherMass) {
+        <span class="kw">return</span> otherMass * <span class="fn">surfaceGravity</span>();
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="kw">double</span> weight = <span class="cl">Planet</span>.EARTH.<span class="fn">surfaceWeight</span>(<span class="nm">75</span>);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="enum-interface">
+  <div class="subsection">
+    <h3>Enums Implementing Interfaces</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">interface</span> <span class="cl">Printable</span> {
+    <span class="cl">String</span> <span class="fn">toPrettyString</span>();
+}
+
+<span class="kw">enum</span> <span class="cl">Status</span> <span class="kw">implements</span> <span class="cl">Printable</span> {
+    ACTIVE {
+        <span class="an">@Override</span>
+        <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toPrettyString</span>() { <span class="kw">return</span> <span class="st">"✅ Active"</span>; }
+    },
+    INACTIVE {
+        <span class="an">@Override</span>
+        <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toPrettyString</span>() { <span class="kw">return</span> <span class="st">"❌ Inactive"</span>; }
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="records">
+  <div class="subsection">
+    <h3>Records: The End of Boilerplate</h3>
+    <p>For decades, Java developers complained about how much code it took to create a simple "Data Carrier" class. To make a class that just held an <code class="inline">x</code> and <code class="inline">y</code> coordinate, you had to write the fields, write the constructor, write the getters, override <code class="inline">equals()</code>, override <code class="inline">hashCode()</code>, and override <code class="inline">toString()</code>. A tiny concept required 40 lines of code.</p>
+    <p>Java 14 introduced <strong>Records</strong>. A Record is a special type of class designed strictly to hold immutable data. You provide the components (fields) in the declaration, and the Java compiler magically generates the constructor, the accessors, and the foundational Object methods for you behind the scenes.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Record vs Class</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// ❌ Old way: ~30 lines of boilerplate</span>
+<span class="kw">public class</span> <span class="cl">PointClass</span> {
+    <span class="kw">private final int</span> x, y;
+    <span class="kw">public</span> <span class="fn">PointClass</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="kw">this</span>.x = x; <span class="kw">this</span>.y = y; }
+    <span class="kw">public int</span> <span class="fn">x</span>() { <span class="kw">return</span> x; }
+    <span class="kw">public int</span> <span class="fn">y</span>() { <span class="kw">return</span> y; }
+    <span class="cm">// + equals, hashCode, toString...</span>
+}
+
+<span class="cm">// ✅ Record: ONE LINE does it all</span>
+<span class="kw">public record</span> <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {}
+
+<span class="cm">// Auto-generated:</span>
+<span class="cl">Point</span> p = <span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>);
+p.<span class="fn">x</span>();        <span class="cm">// 3 (accessor, no 'get' prefix!)</span>
+p.<span class="fn">y</span>();        <span class="cm">// 5</span>
+p.<span class="fn">toString</span>(); <span class="cm">// "Point[x=3, y=5]"</span>
+p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>)); <span class="cm">// true</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="record-features">
+  <div class="subsection">
+    <h3>Record Features</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Advanced Records</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public record</span> <span class="cl">User</span>(<span class="cl">String</span> name, <span class="cl">String</span> email, <span class="kw">int</span> age) {
+
+    <span class="cm">// Compact constructor — validation without repeating params</span>
+    <span class="kw">public</span> <span class="fn">User</span> {
+        <span class="kw">if</span> (age &lt; <span class="nm">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Age can't be negative"</span>);
+        name = name.<span class="fn">trim</span>();     <span class="cm">// Can modify before assignment</span>
+        email = email.<span class="fn">toLowerCase</span>();
+    }
+
+    <span class="cm">// Custom methods</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">displayName</span>() {
+        <span class="kw">return</span> name + <span class="st">" ("</span> + email + <span class="st">")"</span>;
+    }
+
+    <span class="cm">// Static factory method</span>
+    <span class="kw">public static</span> <span class="cl">User</span> <span class="fn">of</span>(<span class="cl">String</span> name) {
+        <span class="kw">return new</span> <span class="cl">User</span>(name, name.<span class="fn">toLowerCase</span>() + <span class="st">"@mail.com"</span>, <span class="nm">0</span>);
+    }
+}
+
+<span class="cm">// Records can implement interfaces</span>
+<span class="kw">public record</span> <span class="cl">Employee</span>(<span class="cl">String</span> name, <span class="kw">double</span> salary)
+    <span class="kw">implements</span> <span class="cl">Comparable</span>&lt;<span class="cl">Employee</span>&gt; {
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Employee</span> other) {
+        <span class="kw">return</span> <span class="cl">Double</span>.<span class="fn">compare</span>(<span class="kw">this</span>.salary, other.salary);
+    }
+}
+
+<span class="cm">// Records CANNOT:</span>
+<span class="cm">// ❌ extend other classes (they implicitly extend Record)</span>
+<span class="cm">// ❌ have mutable instance fields</span>
+<span class="cm">// ❌ be abstract</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: State Machines and DTOs</h3>
+    <p><strong>Enums</strong> are perfect for state machines. If you are building a food delivery app like UberEats, the order status (PLACED, COOKING, DELIVERING, COMPLETED) is an Enum. This prevents a developer from accidentally typing "cooking" with a lowercase 'c', which would break the system. It guarantees type safety.</p>
+    <p><strong>Records</strong> are the ultimate choice for DTOs (Data Transfer Objects). When you fetch a user's profile from a database or receive it via a REST API, you don't need to modify that data; you just need to carry it. A Record allows you to define that carrier in a single line, keeping your codebase clean and readable.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Are Enums thread-safe?</div>
+        <div class="hl-desc">Yes, Enums are inherently thread-safe. The JVM guarantees that only one instance of each enum constant is ever created, making them perfect for implementing the Singleton design pattern.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">Can a Record have instance variables?</div>
+        <div class="hl-desc">No. A Record can only have the fields defined in its header. All of these fields are implicitly <code>final</code>. You cannot add additional instance fields, but you can add <code>static</code> variables.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is a compact constructor in a Record?</div>
+        <div class="hl-desc">It is a constructor that does not repeat the parameters in its declaration. It is used to validate or normalize data before it is assigned to the record's final fields.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

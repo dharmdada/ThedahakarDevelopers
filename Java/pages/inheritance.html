@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Inheritance & Polymorphism – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item active" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,197,94,0.15);">🧬</div>
+    <div><h2>Inheritance & Polymorphism</h2><p>Reuse code through class hierarchies and write flexible, extensible programs.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Inheritance as substitutable specialization</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Inheritance means an object of the child type can be used where the parent type is expected. That substitution promise is more important than code reuse. If a subclass breaks expectations of the parent, the design is wrong even if it compiles.</p>
+    <p>Overriding enables runtime polymorphism: Java chooses the implementation based on the actual object, not the variable type. This is powerful because callers can depend on a stable parent contract while implementations vary.</p>
+    <p>The Object methods equals, hashCode, and toString influence how objects behave in collections, logs, debugging, and comparisons. Poor implementations create bugs far from the class where the mistake was made.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain inheritance in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="inheritance">
+  <div class="subsection">
+    <h3>Inheritance: The "IS-A" Relationship</h3>
+    <p>Inheritance allows a new class (the Child or Subclass) to inherit all the non-private fields and methods from an existing class (the Parent or Superclass). We use inheritance to model an <strong>IS-A</strong> relationship (e.g., a <code class="inline">Dog</code> IS-A <code class="inline">Animal</code>).</p>
+    <p>Unlike languages like C++, Java strictly enforces <strong>single inheritance</strong> for classes. A class can only <code class="inline">extend</code> one parent. This prevents the infamous "Deadly Diamond of Death" (where a child inherits conflicting methods from two parents).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Basic Inheritance</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Animal</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> name;
+
+    <span class="kw">public</span> <span class="fn">Animal</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+
+    <span class="kw">public void</span> <span class="fn">eat</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(name + <span class="st">" is eating"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Dog</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="kw">private</span> <span class="cl">String</span> breed;
+
+    <span class="kw">public</span> <span class="fn">Dog</span>(<span class="cl">String</span> name, <span class="cl">String</span> breed) {
+        <span class="kw">super</span>(name);           <span class="cm">// MUST call parent constructor first</span>
+        <span class="kw">this</span>.breed = breed;
+    }
+
+    <span class="kw">public void</span> <span class="fn">bark</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Woof!"</span>); }
+}
+
+<span class="cl">Dog</span> d = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
+d.<span class="fn">eat</span>();  <span class="cm">// Inherited from Animal</span>
+d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="super">
+  <div class="subsection">
+    <h3>The <code class="inline">super</code> Keyword: Calling the Parent</h3>
+    <p>Just as <code class="inline">this</code> refers to "myself", the <code class="inline">super</code> keyword refers to "my parent". When a child class is created, the JVM must first fully create the parent portion of that object. Therefore, the very first line of any child constructor must be a call to <code class="inline">super()</code> to initialize the parent.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Parent</span> {
+    <span class="kw">protected int</span> x = <span class="nm">10</span>;
+    <span class="kw">public void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Parent"</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">Child</span> <span class="kw">extends</span> <span class="cl">Parent</span> {
+    <span class="kw">private int</span> x = <span class="nm">20</span>; <span class="cm">// Hides parent's x</span>
+
+    <span class="kw">public void</span> <span class="fn">demo</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(x);        <span class="cm">// 20 (own field)</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="kw">super</span>.x);  <span class="cm">// 10 (parent's field)</span>
+        <span class="kw">super</span>.<span class="fn">show</span>();                <span class="cm">// Call parent's method</span>
+    }
+}
+
+<span class="cm">// super() in constructor must be the FIRST statement</span>
+<span class="cm">// If you don't call super(), Java inserts super() automatically</span>
+<span class="cm">// (only works if parent has a no-arg constructor)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="overriding">
+  <div class="subsection">
+    <h3>Method Overriding</h3>
+    <p>A subclass provides its own implementation of a method defined in its parent. The method signature must match exactly.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Shape</span> {
+    <span class="kw">public double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="nm">0</span>; }
+}
+
+<span class="kw">class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private double</span> radius;
+    <span class="kw">public</span> <span class="fn">Circle</span>(<span class="kw">double</span> r) { <span class="kw">this</span>.radius = r; }
+
+    <span class="an">@Override</span>  <span class="cm">// Always use this annotation — catches typos at compile time</span>
+    <span class="kw">public double</span> <span class="fn">area</span>() {
+        <span class="kw">return</span> <span class="cl">Math</span>.PI * radius * radius;
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private double</span> w, h;
+    <span class="kw">public</span> <span class="fn">Rectangle</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) { <span class="kw">this</span>.w = w; <span class="kw">this</span>.h = h; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">area</span>() { <span class="kw">return</span> w * h; }
+}</code></pre>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Overriding Rules</strong>
+        • Same method name and parameters<br>
+        • Return type must be same or a subtype (covariant return)<br>
+        • Access modifier can be same or MORE visible (not less)<br>
+        • Cannot override <code class="inline">final</code>, <code class="inline">static</code>, or <code class="inline">private</code> methods
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="polymorphism">
+  <div class="subsection">
+    <h3>Polymorphism: Many Forms</h3>
+    <p>Polymorphism is the true superpower of Object-Oriented Programming. The word literally translates to "many forms". In Java, it means that a variable of a Parent type can safely hold a reference to an object of ANY Child type.</p>
+    <p>If you have an <code class="inline">Animal</code> remote control, you can point it at a <code class="inline">Dog</code> TV, a <code class="inline">Cat</code> TV, or a <code class="inline">Bird</code> TV. When you press the <code class="inline">speak()</code> button on the remote, Java dynamically figures out which TV it is pointing to at <strong>runtime</strong>, and executes the correct overridden method (bark, meow, or chirp).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Runtime Polymorphism</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Parent reference → child object</span>
+<span class="cl">Shape</span> s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">5</span>);
+<span class="cl">Shape</span> s2 = <span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">4</span>, <span class="nm">6</span>);
+
+<span class="cm">// Java calls the OVERRIDDEN method based on actual object type</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(s1.<span class="fn">area</span>()); <span class="cm">// Circle's area: 78.54</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(s2.<span class="fn">area</span>()); <span class="cm">// Rectangle's area: 24.0</span>
+
+<span class="cm">// Power of polymorphism: one method handles ALL shapes</span>
+<span class="kw">public void</span> <span class="fn">printArea</span>(<span class="cl">Shape</span> shape) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Area: "</span> + shape.<span class="fn">area</span>());
+}
+<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">3</span>));
+<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">2</span>, <span class="nm">5</span>));
+
+<span class="cm">// Compile-time vs Runtime polymorphism:</span>
+<span class="cm">// Compile-time = Method Overloading (same name, different params)</span>
+<span class="cm">// Runtime = Method Overriding (same signature, different class)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="casting">
+  <div class="subsection">
+    <h3>Upcasting & Downcasting: Changing Perspectives</h3>
+    <p>Casting objects doesn't physically change the object in memory. It only changes the <em>type of the remote control</em> you are using to interact with the object.</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Upcasting (Safe):</strong> Treating a <code class="inline">Dog</code> as an <code class="inline">Animal</code>. You lose access to dog-specific methods (like <code class="inline">fetch()</code>) because the Animal remote control doesn't have a fetch button. This is done automatically by Java.</li>
+      <li><strong>Downcasting (Risky):</strong> You have an <code class="inline">Animal</code> remote control, and you want to swap it for a <code class="inline">Dog</code> remote control to press the <code class="inline">fetch()</code> button. If the object isn't actually a Dog, the JVM will throw a massive <code class="inline">ClassCastException</code> crash. You must explicitly cast it.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Upcasting: child → parent (always safe, automatic)</span>
+<span class="cl">Dog</span> dog = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
+<span class="cl">Animal</span> animal = dog; <span class="cm">// Automatic upcasting</span>
+animal.<span class="fn">eat</span>();     <span class="cm">// ✅ Works</span>
+<span class="cm">// animal.bark();  →  ❌ Compile error! Animal doesn't have bark()</span>
+
+<span class="cm">// Downcasting: parent → child (risky, manual)</span>
+<span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span> d) {  <span class="cm">// Pattern matching — safe check + cast</span>
+    d.<span class="fn">bark</span>(); <span class="cm">// ✅ Safe!</span>
+}
+
+<span class="cm">// Without pattern matching (older style)</span>
+<span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span>) {
+    <span class="cl">Dog</span> d2 = (<span class="cl">Dog</span>) animal; <span class="cm">// Manual cast</span>
+    d2.<span class="fn">bark</span>();
+}
+
+<span class="cm">// Bad downcast → ClassCastException at runtime!</span>
+<span class="cm">// Cat cat = (Cat) animal;  →  💥 animal is actually a Dog!</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="object">
+  <div class="subsection">
+    <h3>The Object Class: The Ancestor of Everything</h3>
+    <p>In Java, the <code class="inline">java.lang.Object</code> class is the absolute root of the inheritance tree. Even if you don't write <code class="inline">extends</code>, your class secretly <code class="inline">extends Object</code>. This guarantees that every single object in Java shares a common set of foundational methods.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Person</span> {
+    <span class="kw">private</span> <span class="cl">String</span> name;
+    <span class="kw">private int</span> age;
+
+    <span class="cm">// toString — called by println, string concat, debugging</span>
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
+        <span class="kw">return</span> <span class="st">"Person{name='%s', age=%d}"</span>.<span class="fn">formatted</span>(name, age);
+    }
+
+    <span class="cm">// equals — defines logical equality</span>
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">equals</span>(<span class="cl">Object</span> o) {
+        <span class="kw">if</span> (<span class="kw">this</span> == o) <span class="kw">return</span> <span class="kw">true</span>;
+        <span class="kw">if</span> (!(o <span class="kw">instanceof</span> <span class="cl">Person</span> p)) <span class="kw">return</span> <span class="kw">false</span>;
+        <span class="kw">return</span> age == p.age &amp;&amp; <span class="cl">Objects</span>.<span class="fn">equals</span>(name, p.name);
+    }
+
+    <span class="cm">// hashCode — MUST override if you override equals</span>
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">hashCode</span>() {
+        <span class="kw">return</span> <span class="cl">Objects</span>.<span class="fn">hash</span>(name, age);
+    }
+}</code></pre>
+    </div>
+    <div class="callout danger">
+      <span class="callout-icon">🔥</span>
+      <div class="callout-body"><strong>equals/hashCode Contract</strong>If two objects are <code class="inline">equal()</code>, they MUST have the same <code class="inline">hashCode()</code>. Violating this breaks HashMap, HashSet, and other hash-based collections.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: UI Frameworks</h3>
+    <p>Look at Android Development or JavaFX. Every single button, text field, and image on the screen is a subclass of a parent <code>View</code> class.</p>
+    <p>The OS rendering engine doesn't care if it's a Button or a TextField. It just loops through a <code>List&lt;View&gt;</code> and calls <code>view.draw()</code>. Thanks to <strong>Polymorphism</strong>, the Button draws itself as a rectangle with text, and the Image draws pixels. This is the exact reason UI engines can render thousands of completely different components using just one loop.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Does Java support Multiple Inheritance?</div>
+        <div class="hl-desc">No, Java does not support multiple class inheritance (the "Diamond Problem"). A class can only <code>extend</code> one parent. However, a class can <code>implement</code> multiple Interfaces.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is Method Overriding vs Overloading?</div>
+        <div class="hl-desc">Overriding provides a new implementation for a parent's method (same signature). Overloading creates a new method in the same class with the same name but different parameters.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What does 'super()' do?</div>
+        <div class="hl-desc">It calls the parent class's constructor. It MUST be the very first line inside the child's constructor. If you don't write it, the compiler invisibly inserts <code>super()</code> for you.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

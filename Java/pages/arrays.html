@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Arrays – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Pages</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item active" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(249,115,22,0.15);">📦</div>
+    <div><h2>Arrays</h2><p>Fixed-size data structures — 1D, 2D, jagged, and the Arrays utility class.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Arrays as fixed-size indexed memory</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>An array is a fixed-size container whose elements are accessed by numeric index. That simplicity makes arrays fast and predictable, but also inflexible. You choose arrays when size is known, performance matters, or APIs require them.</p>
+    <p>Array variables are references. Passing an array to a method copies the reference, not the elements. The method can mutate the same underlying array, which is useful for performance but dangerous when ownership is unclear.</p>
+    <p>Multi-dimensional arrays in Java are arrays of arrays, not true rectangular memory blocks. This enables jagged arrays where rows can have different lengths, but it means you must reason about each nested array separately.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain arrays in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="onedim">
+  <div class="subsection">
+    <h3>One-Dimensional Arrays: Contiguous Memory</h3>
+    <p>An array is the simplest and most fundamental data structure in Java. When you create an array, you are telling the JVM: <em>"Find me a single, continuous block of memory large enough to hold X items side-by-side."</em></p>
+    <p>Because the memory is contiguous (side-by-side), the JVM can instantly calculate the exact memory address of any element using simple math. This makes reading and writing to an array incredibly fast (O(1) time complexity).</p>
+    <p>However, this speed comes with a strict limitation: <strong>Arrays are fixed-size.</strong> Once you create an array of size 5, you cannot add a 6th element. If you need more space, you must create a brand new, larger array and copy all the old elements over.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Creating Arrays</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Declaration + initialization</span>
+<span class="kw">int</span>[] numbers = {<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>, <span class="nm">50</span>};
+
+<span class="cm">// Declaration with size (default values: 0 for int, null for objects)</span>
+<span class="kw">int</span>[] scores = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">5</span>];
+
+<span class="cm">// Accessing elements (0-indexed)</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(numbers[<span class="nm">0</span>]); <span class="cm">// 10</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(numbers[<span class="nm">4</span>]); <span class="cm">// 50</span>
+<span class="cm">// numbers[5] → ArrayIndexOutOfBoundsException!</span>
+
+<span class="cm">// Modifying elements</span>
+numbers[<span class="nm">2</span>] = <span class="nm">99</span>;
+
+<span class="cm">// Array length (it's a FIELD, not a method!)</span>
+<span class="kw">int</span> len = numbers.length; <span class="cm">// 5 (no parentheses!)</span>
+
+<span class="cm">// Iterating</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; numbers.length; i++) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(numbers[i]);
+}
+<span class="kw">for</span> (<span class="kw">int</span> num : numbers) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(num);
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="twodim">
+  <div class="subsection">
+    <h3>Multi-Dimensional Arrays: Arrays of Arrays</h3>
+    <p>In Java, a 2D array is not actually a mathematical grid. Instead, it is simply an <strong>array of arrays</strong>. The "outer" array holds references (remote controls) pointing to several "inner" arrays.</p>
+    <p>This architecture allows for <strong>Jagged Arrays</strong>. Because each row is technically its own independent array object, row 0 could have 2 elements, while row 1 has 5 elements.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">2D & Jagged Arrays</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// 2D Array (3 rows, 4 columns)</span>
+<span class="kw">int</span>[][] matrix = {
+    {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>},
+    {<span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>},
+    {<span class="nm">9</span>, <span class="nm">10</span>, <span class="nm">11</span>, <span class="nm">12</span>}
+};
+<span class="cl">System</span>.out.<span class="fn">println</span>(matrix[<span class="nm">1</span>][<span class="nm">2</span>]); <span class="cm">// 7 (row 1, col 2)</span>
+
+<span class="cm">// Jagged Array (rows of different lengths)</span>
+<span class="kw">int</span>[][] jagged = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">3</span>][];
+jagged[<span class="nm">0</span>] = <span class="kw">new</span> <span class="kw">int</span>[]{<span class="nm">1</span>, <span class="nm">2</span>};
+jagged[<span class="nm">1</span>] = <span class="kw">new</span> <span class="kw">int</span>[]{<span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>};
+jagged[<span class="nm">2</span>] = <span class="kw">new</span> <span class="kw">int</span>[]{<span class="nm">6</span>};
+
+<span class="cm">// Iterating 2D array</span>
+<span class="kw">for</span> (<span class="kw">int</span>[] row : matrix) {
+    <span class="kw">for</span> (<span class="kw">int</span> val : row) {
+        <span class="cl">System</span>.out.<span class="fn">print</span>(val + <span class="st">" "</span>);
+    }
+    <span class="cl">System</span>.out.<span class="fn">println</span>();
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="utility">
+  <div class="subsection">
+    <h3>The <code class="inline">java.util.Arrays</code> Utility Class</h3>
+    <p>Because arrays are so primitive, they don't have built-in methods like <code class="inline">.sort()</code> or <code class="inline">.contains()</code>. To manipulate them easily, Java provides a powerful static utility class called <code class="inline">Arrays</code>.</p>
+    <p>If you ever find yourself writing a manual <code class="inline">for</code> loop to copy an array, compare two arrays, or print an array, stop! The <code class="inline">Arrays</code> utility class already has a highly optimized method for it.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Arrays Utility Methods</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">import</span> java.util.Arrays;
+
+<span class="kw">int</span>[] arr = {<span class="nm">5</span>, <span class="nm">3</span>, <span class="nm">8</span>, <span class="nm">1</span>, <span class="nm">9</span>};
+
+<span class="cm">// Sort</span>
+<span class="cl">Arrays</span>.<span class="fn">sort</span>(arr); <span class="cm">// [1, 3, 5, 8, 9]</span>
+
+<span class="cm">// Binary Search (array MUST be sorted first!)</span>
+<span class="kw">int</span> idx = <span class="cl">Arrays</span>.<span class="fn">binarySearch</span>(arr, <span class="nm">5</span>); <span class="cm">// 2</span>
+
+<span class="cm">// Fill</span>
+<span class="kw">int</span>[] filled = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">5</span>];
+<span class="cl">Arrays</span>.<span class="fn">fill</span>(filled, <span class="nm">42</span>); <span class="cm">// [42, 42, 42, 42, 42]</span>
+
+<span class="cm">// Copy</span>
+<span class="kw">int</span>[] copy = <span class="cl">Arrays</span>.<span class="fn">copyOf</span>(arr, <span class="nm">3</span>); <span class="cm">// [1, 3, 5]</span>
+<span class="kw">int</span>[] range = <span class="cl">Arrays</span>.<span class="fn">copyOfRange</span>(arr, <span class="nm">1</span>, <span class="nm">4</span>); <span class="cm">// [3, 5, 8]</span>
+
+<span class="cm">// Compare</span>
+<span class="kw">boolean</span> eq = <span class="cl">Arrays</span>.<span class="fn">equals</span>(arr, copy); <span class="cm">// false</span>
+<span class="cl">Arrays</span>.<span class="fn">deepEquals</span>(matrix1, matrix2); <span class="cm">// For 2D arrays</span>
+
+<span class="cm">// Print (don't use toString on arrays!)</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Arrays</span>.<span class="fn">toString</span>(arr)); <span class="cm">// [1, 3, 5, 8, 9]</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Arrays</span>.<span class="fn">deepToString</span>(matrix)); <span class="cm">// For 2D</span>
+
+<span class="cm">// Convert to List</span>
+<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; list = <span class="cl">Arrays</span>.<span class="fn">asList</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>);
+
+<span class="cm">// Stream from array</span>
+<span class="cl">Arrays</span>.<span class="fn">stream</span>(arr).<span class="fn">sum</span>(); <span class="cm">// 26</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="patterns">
+  <div class="subsection">
+    <h3>Common Array Patterns</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Patterns</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Find max value</span>
+<span class="kw">int</span> max = arr[<span class="nm">0</span>];
+<span class="kw">for</span> (<span class="kw">int</span> n : arr) { <span class="kw">if</span> (n &gt; max) max = n; }
+
+<span class="cm">// Reverse an array</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>, j = arr.length - <span class="nm">1</span>; i &lt; j; i++, j--) {
+    <span class="kw">int</span> temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+<span class="cm">// Check if array contains value</span>
+<span class="kw">boolean</span> found = <span class="cl">Arrays</span>.<span class="fn">stream</span>(arr).<span class="fn">anyMatch</span>(x -&gt; x == <span class="nm">5</span>);
+
+<span class="cm">// Remove duplicates (using a Set)</span>
+<span class="kw">int</span>[] unique = <span class="cl">Arrays</span>.<span class="fn">stream</span>(arr).<span class="fn">distinct</span>().<span class="fn">toArray</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Fast Caching</h3>
+    <p>In highly performance-sensitive applications like video game engines or high-frequency trading platforms, arrays are preferred over dynamic collections like <code>ArrayList</code>.</p>
+    <p>Because arrays have a fixed size and are stored in a contiguous block of memory, the CPU can read them incredibly fast due to "Cache Locality". If the CPU loads index 0, it automatically pulls the next several indexes into its high-speed L1 cache, making reads nearly instantaneous compared to traversing connected nodes in memory.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Array vs ArrayList?</div>
+        <div class="hl-desc">Arrays have a fixed size and can hold both primitives and objects. <code>ArrayList</code> can grow dynamically but can ONLY hold objects (not primitives).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is an IndexOutOfBoundsException?</div>
+        <div class="hl-desc">It is a runtime exception thrown when you try to access an array index that is negative or greater than or equal to the array's length.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">How do you copy an array in Java?</div>
+        <div class="hl-desc">You can use <code>Arrays.copyOf()</code>, <code>System.arraycopy()</code> (most efficient), or the <code>.clone()</code> method.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

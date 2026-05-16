@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Interfaces & Abstract Classes – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item active" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(168,85,247,0.15);">🔌</div>
+    <div><h2>Interfaces & Abstract Classes</h2><p>Contracts, blueprints, and how to design flexible, extensible APIs.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Interfaces as behavior contracts</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>An interface describes what an object can do without committing to how it does it. This separation lets high-level code depend on behavior and lets low-level implementations change independently.</p>
+    <p>Abstract classes are different: they can share partial implementation and state. Use an abstract class when subclasses truly share a base mechanism. Use an interface when callers only need a capability contract.</p>
+    <p>Default methods were added to let interfaces evolve without breaking all implementers. They are useful, but too many default methods can turn an interface into a hidden abstract class.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain interfaces in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="abstract">
+  <div class="subsection">
+    <h3>Abstract Classes: The Unfinished Blueprint</h3>
+    <p>Sometimes you want to create a parent class that is so generic, it doesn't make sense to ever build an actual object out of it. For example, a generic <code class="inline">Vehicle</code>. What does a "Vehicle" look like? You can build a <code class="inline">Car</code> or a <code class="inline">Truck</code>, but you can't just build a "Vehicle".</p>
+    <p>By declaring a class <code class="inline">abstract</code>, you prevent anyone from instantiating it with <code class="inline">new</code>. It becomes an unfinished blueprint. You can define <strong>abstract methods</strong> (methods with no body) that force the child classes to fill in the blanks, while also providing regular methods that all children will share.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">abstract class</span> <span class="cl">Vehicle</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> brand;
+
+    <span class="kw">public</span> <span class="fn">Vehicle</span>(<span class="cl">String</span> brand) { <span class="kw">this</span>.brand = brand; }
+
+    <span class="cm">// Abstract method — subclasses MUST implement</span>
+    <span class="kw">public abstract void</span> <span class="fn">start</span>();
+
+    <span class="cm">// Concrete method — shared by all subclasses</span>
+    <span class="kw">public void</span> <span class="fn">stop</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(brand + <span class="st">" stopped"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="cl">ElectricCar</span> <span class="kw">extends</span> <span class="cl">Vehicle</span> {
+    <span class="kw">public</span> <span class="fn">ElectricCar</span>(<span class="cl">String</span> brand) { <span class="kw">super</span>(brand); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">start</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(brand + <span class="st">" silently starts"</span>);
+    }
+}
+
+<span class="cm">// Vehicle v = new Vehicle("X");  →  ❌ Cannot instantiate abstract class</span>
+<span class="cl">Vehicle</span> v = <span class="kw">new</span> <span class="cl">ElectricCar</span>(<span class="st">"Tesla"</span>); <span class="cm">// ✅ Polymorphism</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interfaces">
+  <div class="subsection">
+    <h3>Interfaces: The Universal Contract</h3>
+    <p>If an Abstract Class is about <em>what an object is</em>, an Interface is about <em>what an object can do</em>. Interfaces are the foundation of loose coupling and plug-and-play architecture in Java.</p>
+    <p>Think of a USB port. Your computer doesn't care if you plug in a mouse, a keyboard, or a fan. It only cares that the device strictly follows the USB <strong>contract</strong> (the physical shape and electrical pins). In Java, an Interface is that contract. Any class that <code class="inline">implements</code> an interface signs a legal contract promising to provide the methods defined in it.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Interface Definition</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">interface</span> <span class="cl">Flyable</span> {
+    <span class="kw">void</span> <span class="fn">fly</span>();                      <span class="cm">// Abstract (implicitly public abstract)</span>
+    <span class="kw">int</span> MAX_ALTITUDE = <span class="nm">10000</span>;       <span class="cm">// Constants (implicitly public static final)</span>
+}
+
+<span class="kw">interface</span> <span class="cl">Swimmable</span> {
+    <span class="kw">void</span> <span class="fn">swim</span>();
+}
+
+<span class="cm">// A class can implement MULTIPLE interfaces</span>
+<span class="kw">class</span> <span class="cl">Duck</span> <span class="kw">implements</span> <span class="cl">Flyable</span>, <span class="cl">Swimmable</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">fly</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Duck flying"</span>); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">swim</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Duck swimming"</span>); }
+}
+
+<span class="cm">// Use interface as type</span>
+<span class="cl">Flyable</span> f = <span class="kw">new</span> <span class="cl">Duck</span>();
+f.<span class="fn">fly</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="default">
+  <div class="subsection">
+    <h3>Default Methods: Saving Backward Compatibility</h3>
+    <p>Before Java 8, if you added a new method to a popular Interface, you would instantly break every single class in the world that implemented it (because they wouldn't have the new method implemented). </p>
+    <p>To fix this, Java introduced <code class="inline">default</code> methods. These allow you to add a method <em>with a body</em> directly inside the Interface. If a class implements the interface, it automatically inherits this default behavior without breaking, but can still choose to override it.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">interface</span> <span class="cl">Logger</span> {
+    <span class="cm">// Abstract method</span>
+    <span class="kw">void</span> <span class="fn">log</span>(<span class="cl">String</span> msg);
+
+    <span class="cm">// Default method — provides an implementation, can be overridden</span>
+    <span class="kw">default void</span> <span class="fn">info</span>(<span class="cl">String</span> msg) {
+        <span class="fn">log</span>(<span class="st">"[INFO] "</span> + msg);
+    }
+
+    <span class="cm">// Static method — called on the interface itself</span>
+    <span class="kw">static</span> <span class="cl">Logger</span> <span class="fn">getDefault</span>() {
+        <span class="kw">return</span> msg -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(msg); <span class="cm">// Lambda!</span>
+    }
+
+    <span class="cm">// Private method — helper for default methods (not visible outside)</span>
+    <span class="kw">private</span> <span class="cl">String</span> <span class="fn">format</span>(<span class="cl">String</span> msg) {
+        <span class="kw">return</span> <span class="st">"["</span> + java.time.<span class="cl">LocalTime</span>.<span class="fn">now</span>() + <span class="st">"] "</span> + msg;
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="cl">Logger</span> logger = <span class="cl">Logger</span>.<span class="fn">getDefault</span>();
+logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="vs">
+  <div class="subsection">
+    <h3>Abstract Class vs Interface — When to Use Which</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Abstract Class</th><th>Interface</th></tr></thead>
+        <tbody>
+          <tr><td>Multiple inheritance</td><td>❌ Single only</td><td>✅ Multiple</td></tr>
+          <tr><td>Constructor</td><td>✅ Can have</td><td>❌ Cannot</td></tr>
+          <tr><td>Instance fields</td><td>✅ Any type</td><td>❌ Only constants</td></tr>
+          <tr><td>Method implementations</td><td>✅ Any methods</td><td>✅ default/static/private</td></tr>
+          <tr><td>Access modifiers</td><td>✅ All</td><td>Only public (methods)</td></tr>
+          <tr><td><strong>Use when</strong></td><td>Shared state + code</td><td>Defining a contract/capability</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Rule of Thumb</strong>Use interfaces to define <em>what</em> something can do (capabilities). Use abstract classes to define <em>what</em> something is (shared identity + code). A class can be both: <code class="inline">abstract class Animal implements Flyable, Swimmable</code>.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="sealed">
+  <div class="subsection">
+    <h3>Sealed Classes (Modern Java)</h3>
+    <p>In traditional Java, if you make a class <code class="inline">public</code>, anyone in the world can extend it. But sometimes you are building a strict domain model (like the states of a network request: Success, Error, Loading) and you want to mathematically guarantee that NO other states can ever exist.</p>
+    <p>Sealed classes allow you to definitively restrict which classes are allowed to extend your parent class. This gives the compiler superpowers—when you write a <code class="inline">switch</code> statement, the compiler knows exactly how many children exist, allowing for exhaustive pattern matching.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Only Circle, Rectangle, and Triangle can extend Shape</span>
+<span class="kw">public sealed class</span> <span class="cl">Shape</span>
+    <span class="kw">permits</span> <span class="cl">Circle</span>, <span class="cl">Rectangle</span>, <span class="cl">Triangle</span> {
+}
+
+<span class="cm">// Subclass options:</span>
+<span class="kw">final class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> { }        <span class="cm">// Cannot be extended further</span>
+<span class="kw">sealed class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span>
+    <span class="kw">permits</span> <span class="cl">Square</span> { }                       <span class="cm">// Can only be extended by Square</span>
+<span class="kw">non-sealed class</span> <span class="cl">Triangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> { } <span class="cm">// Open to any subclass</span>
+
+<span class="cm">// Exhaustive switch (compiler checks all cases)</span>
+<span class="cl">String</span> desc = <span class="kw">switch</span> (shape) {
+    <span class="kw">case</span> <span class="cl">Circle</span> c    -&gt; <span class="st">"Circle"</span>;
+    <span class="kw">case</span> <span class="cl">Rectangle</span> r -&gt; <span class="st">"Rectangle"</span>;
+    <span class="kw">case</span> <span class="cl">Triangle</span> t  -&gt; <span class="st">"Triangle"</span>;
+    <span class="cm">// No default needed — compiler knows all subtypes!</span>
+};</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Plugin Architecture</h3>
+    <p>Think about how web browsers support extensions. They define a strict contract (an interface). If you want to build an ad blocker, you must implement the <code>AdBlockerInterface</code>. The browser doesn't know who you are, but it knows you have the required buttons to press.</p>
+    <p>In Java applications, this is heavily used for database connections. The <code>java.sql.Connection</code> is an interface. Oracle, MySQL, and PostgreSQL all write classes that implement this interface. You can switch your database by changing a single line of configuration because your code only interacts with the interface, not the database-specific classes!</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Interface vs Abstract Class?</div>
+        <div class="hl-desc">Interfaces define a contract (what it can do) and allow multiple inheritance. Abstract classes define an identity (what it is), share state/code, and only allow single inheritance.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What are default methods in interfaces?</div>
+        <div class="hl-desc">Introduced in Java 8, they allow you to add new methods to existing interfaces with a default implementation without breaking the classes that already implement the interface.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is a Functional Interface?</div>
+        <div class="hl-desc">An interface with exactly one abstract method. They are the foundation of Lambda expressions in Java (SAM rule).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

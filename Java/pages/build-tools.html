@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Maven and Gradle - JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">Professional</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(16,185,129,0.15);">BUILD</div>
+    <div><h2>Maven and Gradle</h2><p>Dependency management, repeatable builds, test automation, and packaging for real Java projects.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Build tools as reproducibility engines</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Maven and Gradle do more than download dependencies. They define the lifecycle of the project: compile, test, package, publish, run checks, and produce artifacts that CI and deployment systems can trust.</p>
+    <p>Dependency management is risk management. Each dependency adds functionality but also version conflicts, transitive libraries, security exposure, and upgrade responsibility. A good build file is explicit, minimal, and repeatable.</p>
+    <p>Wrappers matter because they make the build independent of whatever tool version happens to be installed on a developer's machine. The command should behave the same locally and in CI.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain build tools in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="compare">
+  <div class="subsection">
+    <h3>Maven vs Gradle</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Maven</div><div class="hl-value">Convention</div><div class="hl-desc">XML-based, strict lifecycle, predictable structure.</div></div>
+      <div class="hl-box"><div class="hl-label">Gradle</div><div class="hl-value">Flexibility</div><div class="hl-desc">DSL-based, faster incremental builds, custom tasks.</div></div>
+      <div class="hl-box"><div class="hl-label">Both</div><div class="hl-value">Mature</div><div class="hl-desc">Use central repositories, plugins, CI integration.</div></div>
+    </div>
+    <p>Pick one per repository and standardize. Mixed toolchains in one codebase usually increase maintenance overhead.</p>
+  </div>
+</div>
+
+<div class="section" id="maven">
+  <div class="subsection">
+    <h3>Minimal Maven <code class="inline">pom.xml</code></h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><button class="copy-btn">Copy</button></div>
+      <pre><code>&lt;project xmlns="http://maven.apache.org/POM/4.0.0"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+  &lt;groupId&gt;com.example&lt;/groupId&gt;
+  &lt;artifactId&gt;inventory-service&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+
+  &lt;properties&gt;
+    &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+    &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+    &lt;junit.version&gt;5.10.2&lt;/junit.version&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+      &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+      &lt;version&gt;${junit.version}&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="gradle">
+  <div class="subsection">
+    <h3>Minimal Gradle <code class="inline">build.gradle</code></h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Groovy</span><button class="copy-btn">Copy</button></div>
+      <pre><code>plugins {
+    id 'java'
+}
+
+group = 'com.example'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+test {
+    useJUnitPlatform()
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="scopes">
+  <div class="subsection">
+    <h3>Dependency Scopes and Configurations</h3>
+    <ul class="feature-list">
+      <li><strong>Maven <code class="inline">compile</code> / Gradle <code class="inline">implementation</code>:</strong> needed by production code.</li>
+      <li><strong>Maven <code class="inline">provided</code> / Gradle <code class="inline">compileOnly</code>:</strong> present at compile-time, not packaged.</li>
+      <li><strong>Maven <code class="inline">runtime</code> / Gradle <code class="inline">runtimeOnly</code>:</strong> only needed at runtime.</li>
+      <li><strong>Maven <code class="inline">test</code> / Gradle <code class="inline">testImplementation</code>:</strong> only for tests.</li>
+    </ul>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Avoid dependency leaks</strong>. Keep API contracts stable by exposing as little third-party type surface as possible from public methods.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="commands">
+  <div class="subsection">
+    <h3>Core Commands You Should Know</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn">Copy</button></div>
+      <pre><code># Maven
+mvn clean test
+mvn clean package
+mvn dependency:tree
+
+# Gradle wrapper
+./gradlew clean test
+./gradlew build
+./gradlew dependencies</code></pre>
+    </div>
+    <p>Always use wrapper scripts in team projects (<code class="inline">mvnw</code> / <code class="inline">gradlew</code>) to lock tool versions in CI and developer machines.</p>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - <a href="testing.html" style="color:var(--accent);">Next: Testing with JUnit and Mockito</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

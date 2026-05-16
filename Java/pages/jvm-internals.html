@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>JVM & Memory Management – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item active" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(239,68,68,0.15);">🧠</div>
+    <div><h2>JVM & Memory Management</h2><p>How the Java Virtual Machine runs your code and manages memory.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>The runtime beneath Java code</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>The JVM loads classes, verifies bytecode, manages memory, compiles hot methods, and collects unused objects. Understanding these layers helps you diagnose performance and production behavior without guessing.</p>
+    <p>Heap memory stores objects. Stack frames store method calls, local variables, and references. Garbage collection frees objects that are no longer reachable from live roots, but any object still reachable is considered alive even if your application no longer logically needs it.</p>
+    <p>JIT compilation means Java performance changes over time. Frequently executed code can be optimized aggressively after the JVM observes runtime behavior. This is why microbenchmarking Java requires special care.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain jvm internals in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="architecture">
+  <div class="subsection">
+    <h3>JVM Architecture Overview: The Universal Translator</h3>
+    <p>Java's motto is "Write Once, Run Anywhere". In languages like C++, your code is compiled directly into Windows code or Mac code. If you want to run it on both, you have to compile it twice.</p>
+    <p>Java is different. Your code is compiled into an intermediate language called <strong>Bytecode</strong> (<code class="inline">.class</code> files). The Java Virtual Machine (JVM) acts as a universal translator. It takes that Bytecode and translates it into the specific machine code of whatever operating system it happens to be running on at that exact moment.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Component</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Classloader</strong></td><td>Loads, links, and initializes class files from disk/network into RAM.</td></tr>
+          <tr><td><strong>Memory Area</strong></td><td>Where data and code are stored (Heap, Stack, Metaspace).</td></tr>
+          <tr><td><strong>Execution Engine</strong></td><td>Interprets bytecode and uses the JIT compiler for hot spots.</td></tr>
+          <tr><td><strong>Garbage Collector</strong></td><td>Automatically reclaims unused memory from the Heap.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="memory">
+  <div class="subsection">
+    <h3>Heap vs Stack: The Desk and The Warehouse</h3>
+    <p>Memory management in Java is split into two massive concepts: the Stack and the Heap.</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>The Stack (The Desk):</strong> This is your workspace. It's incredibly fast, but very small. Every time you call a method, Java puts a sticky note (a Stack Frame) on your desk. This note holds local primitive variables and <em>references</em> (remote controls). When the method finishes, the sticky note is instantly thrown away.</li>
+      <li><strong>The Heap (The Warehouse):</strong> This is where the actual, heavy objects live. When you use the <code class="inline">new</code> keyword, Java builds the object in the massive Heap warehouse, and then hands you a remote control (reference) to keep on your Stack desk. The Heap is huge, but accessing it is slower.</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Memory Allocation Example</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public void</span> <span class="fn">doSomething</span>() {
+    <span class="kw">int</span> x = <span class="nm">10</span>;                 <span class="cm">// Primitive: Stored on the Stack</span>
+    <span class="cl">String</span> name = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"A"</span>); <span class="cm">// Object: Stored on the Heap. Reference 'name' is on the Stack.</span>
+} <span class="cm">// Method ends: Stack frame is popped, 'x' and 'name' reference destroyed. Object "A" becomes eligible for GC.</span></code></pre>
+    </div>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Stack Memory</div><div class="hl-value">Thread-Local</div><div class="hl-desc">Stores local variables, method calls, references. Extremely fast, very small. Cleared when method ends.</div></div>
+      <div class="hl-box"><div class="hl-label">Heap Memory</div><div class="hl-value">Shared</div><div class="hl-desc">Stores all Objects and JRE classes. Slower, very large. Managed by Garbage Collector.</div></div>
+      <div class="hl-box"><div class="hl-label">Metaspace</div><div class="hl-value">Shared</div><div class="hl-desc">Stores class definitions, static variables, and metadata. Uses native memory.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="gc">
+  <div class="subsection">
+    <h3>Garbage Collection: The Nightclub Bouncer</h3>
+    <p>In languages like C, if you build an object in the warehouse (Heap), you are personally responsible for destroying it when you're done. If you forget, your app runs out of memory and crashes. Java handles this automatically using a <strong>Garbage Collector (GC)</strong>.</p>
+    <p>The GC acts like a relentless janitor. It constantly scans the Heap. If it finds an object that has NO remote controls pointing to it from the Stack, it assumes the object is abandoned and deletes it to free up space.</p>
+    
+    <h4>Generational Hypothesis: The Nightclub</h4>
+    <p>Scanning the entire Heap takes a long time. However, computer scientists noticed a pattern: <em>Most objects die young.</em> (e.g., temporary variables in a loop). To optimize cleanup, the Heap is split like a nightclub:</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>Young Generation:</strong> Where new objects are created. Collected frequently (Minor GC).</li>
+      <li><strong>Old (Tenured) Generation:</strong> Objects that survive multiple Minor GCs are moved here. Collected rarely (Major GC).</li>
+    </ul>
+
+    <h4>Modern GC Algorithms</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Algorithm</th><th>Best For</th><th>Characteristics</th></tr></thead>
+        <tbody>
+          <tr><td><strong>G1 GC</strong> (Default since Java 9)</td><td>General purpose servers</td><td>Balances throughput and latency. Divides heap into regions.</td></tr>
+          <tr><td><strong>ZGC</strong> (Since Java 15)</td><td>Ultra-low latency</td><td>Pause times under 1ms, handles terabyte-sized heaps.</td></tr>
+          <tr><td><strong>Parallel GC</strong></td><td>High throughput</td><td>Maximizes CPU usage for batch jobs, but has longer pauses.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="leaks">
+  <div class="subsection">
+    <h3>Memory Leaks in Java</h3>
+    <p>Even with GC, you can have memory leaks if you maintain references to objects you no longer need.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Common Memory Leak</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">Cache</span> {
+    <span class="cm">// Static map holds references forever!</span>
+    <span class="kw">private static final</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Object</span>&gt; cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public static void</span> <span class="fn">add</span>(<span class="cl">String</span> key, <span class="cl">Object</span> val) {
+        cache.<span class="fn">put</span>(key, val); 
+    }
+    <span class="cm">// Objects in this map will NEVER be garbage collected</span>
+    <span class="cm">// unless explicitly removed, causing OutOfMemoryError.</span>
+}</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>WeakReferences</strong>To prevent caching leaks, use <code class="inline">WeakHashMap</code>. Keys in a WeakHashMap don't prevent their objects from being garbage collected if no other references exist.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Performance Tuning</h3>
+    <p>Understanding JVM internals is critical for optimizing high-load applications like e-commerce backends during Black Friday sales.</p>
+    <p>When the application starts slowing down and throwing <code>OutOfMemoryError</code>, developers use tools like **VisualVM** or **JProfiler** to inspect the Heap. By understanding how the Garbage Collector works (splitting objects into Young and Old generations), they can tune the JVM arguments (like <code>-Xmx</code> to increase max heap size or switching to the G1 Garbage Collector) to reduce pause times and keep the site responsive under heavy traffic.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Stack vs Heap?</div>
+        <div class="hl-desc">**Stack** stores local variables and method calls (fast, automatic cleanup, limited size). **Heap** stores all objects (slower, managed by Garbage Collector, shared across threads).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">How does Garbage Collection work?</div>
+        <div class="hl-desc">The GC automatically identifies and deletes objects that are no longer referenced by any part of the program. It uses the "Mark and Sweep" algorithm and divides the Heap into generations based on object lifetime.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is a Memory Leak in Java?</div>
+        <div class="hl-desc">It happens when objects are no longer needed but are still referenced by static variables or active collections, preventing the Garbage Collector from freeing up their memory.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

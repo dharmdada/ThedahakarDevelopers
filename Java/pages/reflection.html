@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reflection & Annotations – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item active" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(234,179,8,0.15);">🔍</div>
+    <div><h2>Reflection & Annotations</h2><p>Inspect and modify code at runtime, and attach metadata to your classes.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Runtime metadata and controlled dynamism</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Reflection lets Java inspect and interact with classes, methods, fields, constructors, and annotations at runtime. This is how many frameworks discover components, inject dependencies, map JSON, run tests, and connect annotations to behavior.</p>
+    <p>Reflection is powerful because it bypasses normal compile-time relationships. That same power makes it slower, harder to refactor, and easier to misuse. Use it for framework-like infrastructure, not ordinary business logic.</p>
+    <p>Annotations are metadata, not behavior by themselves. Something must read the annotation and decide what it means. Understanding that separation makes frameworks feel less magical.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain reflection in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="reflection">
+  <div class="subsection">
+    <h3>Reflection: X-Ray Vision for Java</h3>
+    <p>Normally, a Java program is like a machine: it runs the code you wrote, but it doesn't know <em>what</em> it's running. It can't look at itself.</p>
+    <p><strong>Reflection</strong> gives Java X-Ray vision. It allows a running program to inspect its own code. At runtime, a program can say, "Show me every method inside the `User` class," or "What are the names of all the private variables here?" This is the magic that allows frameworks like Spring to automatically find and wire your classes together without you writing explicit setup code.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Inspecting a Class</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// 1. Get the Class object</span>
+<span class="cl">Class</span>&lt;?&gt; clazz = <span class="cl">String</span>.<span class="kw">class</span>;
+<span class="cm">// Or from an instance: "Hello".getClass()</span>
+<span class="cm">// Or by name: Class.forName("java.lang.String")</span>
+
+<span class="cm">// 2. Inspecting</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Name: "</span> + clazz.<span class="fn">getName</span>());
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Is Interface? "</span> + clazz.<span class="fn">isInterface</span>());
+
+<span class="cm">// Get all public methods</span>
+<span class="cl">Method</span>[] methods = clazz.<span class="fn">getMethods</span>();
+<span class="kw">for</span> (<span class="cl">Method</span> m : methods) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(m.<span class="fn">getName</span>());
+}
+
+<span class="cm">// Get all fields (including private)</span>
+<span class="cl">Field</span>[] fields = clazz.<span class="fn">getDeclaredFields</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="dynamic">
+  <div class="subsection">
+    <h3>Dynamic Interaction: The Lockpick</h3>
+    <p>Reflection isn't just for looking—it's for touching. Have you ever been told that a <code class="inline">private</code> variable is strictly hidden and can never be accessed from the outside? That is a lie.</p>
+    <p>Using Reflection, you can act like a lockpick. You can dynamically find a <code class="inline">private</code> variable, force it to become accessible using <code class="inline">setAccessible(true)</code>, and change its value. This breaks all rules of Encapsulation, which is why it is considered highly dangerous in normal application code.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Modifying Private Fields</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Secret</span> {
+    <span class="kw">private</span> <span class="cl">String</span> password = <span class="st">"12345"</span>;
+}
+
+<span class="kw">public class</span> <span class="cl">Demo</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="cl">Secret</span> obj = <span class="kw">new</span> <span class="cl">Secret</span>();
+        <span class="cl">Class</span>&lt;?&gt; clazz = obj.<span class="fn">getClass</span>();
+
+        <span class="cm">// Access private field</span>
+        <span class="cl">Field</span> field = clazz.<span class="fn">getDeclaredField</span>(<span class="st">"password"</span>);
+        field.<span class="fn">setAccessible</span>(<span class="kw">true</span>); <span class="cm">// BYPASS PRIVATE MODIFIER!</span>
+
+        <span class="cm">// Read value</span>
+        <span class="cl">String</span> val = (<span class="cl">String</span>) field.<span class="fn">get</span>(obj);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Old: "</span> + val);
+
+        <span class="cm">// Change value</span>
+        field.<span class="fn">set</span>(obj, <span class="st">"hacked!"</span>);
+    }
+}</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>Reflection is Slow and Dangerous</strong>Reflection bypasses compile-time safety and is significantly slower than direct access. Use it only when writing frameworks or highly generic utility code, never for regular application logic.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="annotations">
+  <div class="subsection">
+    <h3>Annotations: Sticky Notes for the Compiler</h3>
+    <p>An <strong>Annotation</strong> (<code class="inline">@</code>) is literally just a sticky note you attach to your code. If you put an <code class="inline">@Deprecated</code> sticky note on a method, it doesn't magically change how the method executes. It simply sits there.</p>
+    <p>The magic happens when <em>other programs</em> read those sticky notes. The Java Compiler reads the <code class="inline">@Override</code> sticky note and verifies your syntax. Spring reads the <code class="inline">@RestController</code> sticky note and automatically sets up a web server for that class. They are pure metadata.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Built-in Annotations</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="an">@Override</span>
+<span class="cm">// Tells compiler this method MUST override a superclass method.</span>
+
+<span class="an">@Deprecated</span>(<span class="kw">since</span> = <span class="st">"1.5"</span>, <span class="kw">forRemoval</span> = <span class="kw">true</span>)
+<span class="cm">// Marks API as obsolete. Compiler warns if someone uses it.</span>
+
+<span class="an">@SuppressWarnings</span>(<span class="st">"unchecked"</span>)
+<span class="cm">// Tells compiler to ignore specific warnings in this block.</span>
+
+<span class="an">@FunctionalInterface</span>
+<span class="cm">// Ensures an interface has exactly one abstract method.</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="custom-annotations">
+  <div class="subsection">
+    <h3>Creating Custom Annotations</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Custom Annotation</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">import</span> java.lang.annotation.*;
+
+<span class="cm">// 1. Define the annotation</span>
+<span class="an">@Retention</span>(<span class="cl">RetentionPolicy</span>.RUNTIME) <span class="cm">// Available at runtime via Reflection</span>
+<span class="an">@Target</span>({<span class="cl">ElementType</span>.METHOD, <span class="cl">ElementType</span>.TYPE}) <span class="cm">// Where it can be used</span>
+<span class="kw">public</span> <span class="an">@interface</span> <span class="cl">TestInfo</span> {
+    <span class="cl">String</span> <span class="fn">author</span>() <span class="kw">default</span> <span class="st">"unknown"</span>;
+    <span class="kw">int</span> <span class="fn">priority</span>() <span class="kw">default</span> <span class="nm">1</span>;
+    <span class="cl">String</span>[] <span class="fn">tags</span>() <span class="kw">default</span> {};
+}
+
+<span class="cm">// 2. Use it</span>
+<span class="an">@TestInfo</span>(<span class="kw">author</span> = <span class="st">"Alice"</span>, <span class="kw">priority</span> = <span class="nm">5</span>, <span class="kw">tags</span> = {<span class="st">"fast"</span>, <span class="st">"db"</span>})
+<span class="kw">public class</span> <span class="cl">MyTests</span> {
+
+    <span class="an">@TestInfo</span> <span class="cm">// Uses defaults</span>
+    <span class="kw">public void</span> <span class="fn">test1</span>() {}
+}
+
+<span class="cm">// 3. Read it via Reflection</span>
+<span class="cl">Class</span>&lt;?&gt; clazz = <span class="cl">MyTests</span>.<span class="kw">class</span>;
+<span class="kw">if</span> (clazz.<span class="fn">isAnnotationPresent</span>(<span class="cl">TestInfo</span>.<span class="kw">class</span>)) {
+    <span class="cl">TestInfo</span> info = clazz.<span class="fn">getAnnotation</span>(<span class="cl">TestInfo</span>.<span class="kw">class</span>);
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Author: "</span> + info.<span class="fn">author</span>());
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Frameworks like Spring and JUnit</h3>
+    <p>Reflection is the magic engine behind almost all modern Java frameworks.</p>
+    <p>When you use **Spring Boot** and add the <code>@Autowired</code> annotation, Spring uses reflection to scan your classes, find private fields, and inject dependencies directly into them—even if they have no setter methods! Similarly, **JUnit** uses reflection to scan your test classes, find all methods marked with <code>@Test</code>, and execute them automatically. Without reflection, you would have to write thousands of lines of manual configuration code.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What are the drawbacks of Reflection?</div>
+        <div class="hl-desc">1. **Performance Overhead**: It is slower than direct code because types are resolved at runtime. 2. **Security Vulnerabilities**: It can break encapsulation by accessing private fields. 3. **Maintenance**: Code becomes harder to read and refactor since errors happen at runtime instead of compile-time.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">How do you access private fields using Reflection?</div>
+        <div class="hl-desc">By obtaining the <code>Field</code> object from the class, calling <code>field.setAccessible(true)</code> to bypass Java's access control checks, and then using <code>field.get()</code> or <code>field.set()</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is a Custom Annotation?</div>
+        <div class="hl-desc">It is a user-defined annotation created using the <code>@interface</code> keyword. They are used to add metadata to code, which can then be processed at compile-time or runtime using reflection.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

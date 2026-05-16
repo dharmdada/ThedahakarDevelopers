@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Collections Deep Dive – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📦 Collections</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Course</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item active" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(6,182,212,0.15);">📦</div>
+    <div><h2>Collections Deep Dive</h2><p>Every collection type, when to use each, performance characteristics, and real patterns.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Collections as algorithmic choices</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Collection classes encode algorithmic tradeoffs. Hash-based structures optimize lookup by hash distribution, tree-based structures maintain sorted order, array-backed structures optimize indexed access, and linked structures optimize some insert/remove patterns.</p>
+    <p>A collection API should reveal what the caller may rely on. If ordering matters, return List or SortedSet. If uniqueness matters, use Set. If key lookup matters, use Map. Vague types and undocumented contracts create hidden bugs.</p>
+    <p>Performance discussions should include data size, operation frequency, memory overhead, and mutation pattern. Big-O is a starting point, not a complete performance guarantee.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain collections deep in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="hierarchy">
+  <div class="subsection">
+    <h3>Collections Hierarchy</h3>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Key Interfaces</strong>
+        <code class="inline">Iterable</code> → <code class="inline">Collection</code> → <code class="inline">List</code>, <code class="inline">Set</code>, <code class="inline">Queue</code><br>
+        <code class="inline">Map</code> (separate hierarchy — not a Collection!)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="list">
+  <div class="subsection">
+    <h3>List Implementations: The Ordered Sequence</h3>
+    <p>A <code class="inline">List</code> is exactly what it sounds like: an ordered sequence of elements. You can have duplicates, and you access items by their exact position (index 0, 1, 2...).</p>
+    <p>The choice between <code class="inline">ArrayList</code> and <code class="inline">LinkedList</code> is a classic computer science trade-off:</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>ArrayList:</strong> Under the hood, this is just a standard array. If it gets full, Java silently creates a bigger one and copies the data over. It is blazing fast for reading data randomly (O(1)), but slow if you want to insert a value into the middle (because every subsequent element must be shifted over).</li>
+      <li><strong>LinkedList:</strong> Elements are scattered across memory, with each element holding a pointer to the next one (like a scavenger hunt). It is extremely fast to insert or delete elements in the middle (just change the pointers), but very slow to read a random element (you have to traverse from the beginning every time).</li>
+    </ul>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Implementation</th><th>get(i)</th><th>add(end)</th><th>add(mid)</th><th>remove</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">ArrayList</code></td><td>O(1)</td><td>O(1)*</td><td>O(n)</td><td>O(n)</td><td>Random access, most use cases</td></tr>
+          <tr><td><code class="inline">LinkedList</code></td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(1)</td><td>Frequent insert/remove at ends</td></tr>
+          <tr><td><code class="inline">CopyOnWriteArrayList</code></td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>Concurrent reads, rare writes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">List Operations</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Creating lists</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; mutable = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"a"</span>, <span class="st">"b"</span>));
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; immutable = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"x"</span>, <span class="st">"y"</span>);      <span class="cm">// Unmodifiable!</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; copy = <span class="cl">List</span>.<span class="fn">copyOf</span>(mutable);          <span class="cm">// Unmodifiable copy</span>
+
+<span class="cm">// Common operations</span>
+mutable.<span class="fn">add</span>(<span class="st">"c"</span>);
+mutable.<span class="fn">add</span>(<span class="nm">0</span>, <span class="st">"first"</span>);    <span class="cm">// Insert at index</span>
+mutable.<span class="fn">set</span>(<span class="nm">1</span>, <span class="st">"replaced"</span>);  <span class="cm">// Replace at index</span>
+mutable.<span class="fn">remove</span>(<span class="st">"c"</span>);         <span class="cm">// Remove by value</span>
+mutable.<span class="fn">remove</span>(<span class="nm">0</span>);            <span class="cm">// Remove by index</span>
+mutable.<span class="fn">contains</span>(<span class="st">"a"</span>);       <span class="cm">// true/false</span>
+mutable.<span class="fn">indexOf</span>(<span class="st">"a"</span>);        <span class="cm">// Index or -1</span>
+mutable.<span class="fn">subList</span>(<span class="nm">0</span>, <span class="nm">2</span>);       <span class="cm">// View of range</span>
+
+<span class="cm">// Sorting</span>
+mutable.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">naturalOrder</span>());
+mutable.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">comparing</span>(<span class="cl">String</span>::length).<span class="fn">reversed</span>());</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="set">
+  <div class="subsection">
+    <h3>Set Implementations: Uniqueness Guarantee</h3>
+    <p>A <code class="inline">Set</code> is a collection that mathematically guarantees <strong>no duplicate elements</strong>. If you try to add "Apple" to a Set that already contains "Apple", the Set will simply ignore you.</p>
+    <p>The most common implementation is <code class="inline">HashSet</code>. It achieves O(1) lightning-fast performance by utilizing the <code class="inline">hashCode()</code> method to instantly calculate exactly where an object belongs in memory, completely eliminating the need to search.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Implementation</th><th>Order</th><th>add/remove/contains</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">HashSet</code></td><td>None</td><td>O(1)</td><td>Fastest, general purpose</td></tr>
+          <tr><td><code class="inline">LinkedHashSet</code></td><td>Insertion order</td><td>O(1)</td><td>Ordered + fast</td></tr>
+          <tr><td><code class="inline">TreeSet</code></td><td>Sorted (natural/comparator)</td><td>O(log n)</td><td>Sorted unique values</td></tr>
+          <tr><td><code class="inline">EnumSet</code></td><td>Enum order</td><td>O(1)</td><td>Sets of enum values</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Set Operations</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; a = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>));
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; b = <span class="cl">Set</span>.<span class="fn">of</span>(<span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>);
+
+<span class="cm">// Union</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; union = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+union.<span class="fn">addAll</span>(b); <span class="cm">// {A, B, C, D}</span>
+
+<span class="cm">// Intersection</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; inter = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+inter.<span class="fn">retainAll</span>(b); <span class="cm">// {B, C}</span>
+
+<span class="cm">// Difference</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; diff = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
+diff.<span class="fn">removeAll</span>(b); <span class="cm">// {A}</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="map">
+  <div class="subsection">
+    <h3>Map Implementations: The Dictionary</h3>
+    <p>A <code class="inline">Map</code> (often called a Dictionary in other languages) does not store single values; it stores <strong>Key-Value pairs</strong>. You provide a unique Key to look up a specific Value.</p>
+    <p>Think of a phone book: The Key is the person's name (which must be unique), and the Value is their phone number. If you know the exact name, finding the number takes O(1) time using a <code class="inline">HashMap</code>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Implementation</th><th>Order</th><th>get/put</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">HashMap</code></td><td>None</td><td>O(1)</td><td>Fastest, general purpose</td></tr>
+          <tr><td><code class="inline">LinkedHashMap</code></td><td>Insertion order</td><td>O(1)</td><td>Ordered + fast</td></tr>
+          <tr><td><code class="inline">TreeMap</code></td><td>Sorted by key</td><td>O(log n)</td><td>Sorted keys</td></tr>
+          <tr><td><code class="inline">ConcurrentHashMap</code></td><td>None</td><td>O(1)</td><td>Thread-safe</td></tr>
+          <tr><td><code class="inline">EnumMap</code></td><td>Enum order</td><td>O(1)</td><td>Enum keys</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Map Operations</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+map.<span class="fn">put</span>(<span class="st">"Alice"</span>, <span class="nm">25</span>);
+map.<span class="fn">put</span>(<span class="st">"Bob"</span>, <span class="nm">30</span>);
+
+<span class="cm">// Safe get with default</span>
+<span class="kw">int</span> age = map.<span class="fn">getOrDefault</span>(<span class="st">"Charlie"</span>, <span class="nm">0</span>); <span class="cm">// 0</span>
+
+<span class="cm">// putIfAbsent — only adds if key doesn't exist</span>
+map.<span class="fn">putIfAbsent</span>(<span class="st">"Alice"</span>, <span class="nm">99</span>); <span class="cm">// Ignored, Alice already exists</span>
+
+<span class="cm">// computeIfAbsent — lazy initialization</span>
+map.<span class="fn">computeIfAbsent</span>(<span class="st">"Dave"</span>, k -&gt; k.<span class="fn">length</span>()); <span class="cm">// Dave=4</span>
+
+<span class="cm">// merge — combine old + new value</span>
+map.<span class="fn">merge</span>(<span class="st">"Alice"</span>, <span class="nm">5</span>, <span class="cl">Integer</span>::sum); <span class="cm">// Alice=30 (25+5)</span>
+
+<span class="cm">// Iterating</span>
+map.<span class="fn">forEach</span>((key, val) -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(key + <span class="st">": "</span> + val));
+
+<span class="cm">// Immutable maps</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; imm = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="nm">1</span>, <span class="st">"B"</span>, <span class="nm">2</span>);
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; imm2 = <span class="cl">Map</span>.<span class="fn">ofEntries</span>(
+    <span class="cl">Map</span>.<span class="fn">entry</span>(<span class="st">"A"</span>, <span class="nm">1</span>),
+    <span class="cl">Map</span>.<span class="fn">entry</span>(<span class="st">"B"</span>, <span class="nm">2</span>)
+);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="queue">
+  <div class="subsection">
+    <h3>Queue & Deque: Line Up</h3>
+    <p>A <code class="inline">Queue</code> represents a line at a grocery store. It enforces <strong>FIFO</strong> (First-In, First-Out). The first element added to the queue is the first one processed.</p>
+    <p>A <code class="inline">Deque</code> (Double Ended Queue) is a line where you can add or remove from <em>either</em> the front or the back. Because of this, it is the standard class used to implement <strong>Stacks</strong> (LIFO - Last-In, First-Out), like a stack of plates.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Queue (FIFO)</span>
+<span class="cl">Queue</span>&lt;<span class="cl">String</span>&gt; queue = <span class="kw">new</span> <span class="cl">LinkedList</span>&lt;&gt;();
+queue.<span class="fn">offer</span>(<span class="st">"First"</span>);   <span class="cm">// Add to tail</span>
+queue.<span class="fn">offer</span>(<span class="st">"Second"</span>);
+queue.<span class="fn">peek</span>();            <span class="cm">// View head: "First" (doesn't remove)</span>
+queue.<span class="fn">poll</span>();            <span class="cm">// Remove head: "First"</span>
+
+<span class="cm">// PriorityQueue (sorted by priority)</span>
+<span class="cl">PriorityQueue</span>&lt;<span class="cl">Integer</span>&gt; pq = <span class="kw">new</span> <span class="cl">PriorityQueue</span>&lt;&gt;();
+pq.<span class="fn">offer</span>(<span class="nm">30</span>); pq.<span class="fn">offer</span>(<span class="nm">10</span>); pq.<span class="fn">offer</span>(<span class="nm">20</span>);
+pq.<span class="fn">poll</span>(); <span class="cm">// 10 (smallest first)</span>
+
+<span class="cm">// Deque (Double-ended queue — also used as Stack)</span>
+<span class="cl">Deque</span>&lt;<span class="cl">String</span>&gt; deque = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
+deque.<span class="fn">push</span>(<span class="st">"A"</span>);   <span class="cm">// Stack: push to front</span>
+deque.<span class="fn">push</span>(<span class="st">"B"</span>);
+deque.<span class="fn">pop</span>();         <span class="cm">// Stack: pop from front → "B"</span>
+
+deque.<span class="fn">offerFirst</span>(<span class="st">"Front"</span>);
+deque.<span class="fn">offerLast</span>(<span class="st">"Back"</span>);</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Don't Use Stack Class</strong>The legacy <code class="inline">java.util.Stack</code> class is synchronized and slow. Use <code class="inline">ArrayDeque</code> as your stack instead — it's faster and more correct.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="generics">
+  <div class="subsection">
+    <h3>Generics & Wildcards: PECS</h3>
+    <p>Generics (<code class="inline">&lt;T&gt;</code>) allow you to write classes and methods that work with <em>any</em> object type, while still providing strict compile-time type safety.</p>
+    <p>Wildcards (<code class="inline">?</code>) are used when dealing with generic collections. The golden rule of wildcards is <strong>PECS</strong> (Producer Extends, Consumer Super). If you only need to <em>read</em> from a collection, use <code class="inline">extends</code>. If you only need to <em>write</em> to it, use <code class="inline">super</code>.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Wildcards</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Upper bounded: ? extends T — read-only, accepts T and subclasses</span>
+<span class="kw">public double</span> <span class="fn">sum</span>(<span class="cl">List</span>&lt;? <span class="kw">extends</span> <span class="cl">Number</span>&gt; list) {
+    <span class="kw">return</span> list.<span class="fn">stream</span>().<span class="fn">mapToDouble</span>(<span class="cl">Number</span>::doubleValue).<span class="fn">sum</span>();
+}
+<span class="fn">sum</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>));      <span class="cm">// ✅ List&lt;Integer&gt;</span>
+<span class="fn">sum</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1.5</span>, <span class="nm">2.5</span>));    <span class="cm">// ✅ List&lt;Double&gt;</span>
+
+<span class="cm">// Lower bounded: ? super T — write-only, accepts T and superclasses</span>
+<span class="kw">public void</span> <span class="fn">addNumbers</span>(<span class="cl">List</span>&lt;? <span class="kw">super</span> <span class="cl">Integer</span>&gt; list) {
+    list.<span class="fn">add</span>(<span class="nm">1</span>);
+    list.<span class="fn">add</span>(<span class="nm">2</span>);
+}
+
+<span class="cm">// PECS: Producer Extends, Consumer Super</span>
+<span class="cm">// Reading FROM a collection → use extends (producer)</span>
+<span class="cm">// Writing TO a collection → use super (consumer)</span>
+
+<span class="cm">// Generic method</span>
+<span class="kw">public</span> &lt;<span class="cl">T</span> <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;<span class="cl">T</span>&gt;&gt; <span class="cl">T</span> <span class="fn">max</span>(<span class="cl">T</span> a, <span class="cl">T</span> b) {
+    <span class="kw">return</span> (a.<span class="fn">compareTo</span>(b) &gt;= <span class="nm">0</span>) ? a : b;
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="comparable">
+  <div class="subsection">
+    <h3>Comparable vs Comparator</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Comparable — natural ordering defined INSIDE the class</span>
+<span class="kw">public record</span> <span class="cl">Employee</span>(<span class="cl">String</span> name, <span class="kw">double</span> salary)
+    <span class="kw">implements</span> <span class="cl">Comparable</span>&lt;<span class="cl">Employee</span>&gt; {
+
+    <span class="an">@Override</span>
+    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Employee</span> other) {
+        <span class="kw">return</span> <span class="cl">Double</span>.<span class="fn">compare</span>(<span class="kw">this</span>.salary, other.salary);
+    }
+}
+<span class="cl">Collections</span>.<span class="fn">sort</span>(employees); <span class="cm">// Uses compareTo</span>
+
+<span class="cm">// Comparator — external sorting, can have multiple</span>
+<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; byName = <span class="cl">Comparator</span>.<span class="fn">comparing</span>(<span class="cl">Employee</span>::name);
+<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; bySalaryDesc = <span class="cl">Comparator</span>
+    .<span class="fn">comparingDouble</span>(<span class="cl">Employee</span>::salary).<span class="fn">reversed</span>();
+
+<span class="cm">// Chain comparators</span>
+<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; byNameThenSalary = <span class="cl">Comparator</span>
+    .<span class="fn">comparing</span>(<span class="cl">Employee</span>::name)
+    .<span class="fn">thenComparingDouble</span>(<span class="cl">Employee</span>::salary);
+
+employees.<span class="fn">sort</span>(byNameThenSalary);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Task Schedulers</h3>
+    <p>Imagine you are building a print job spooler or a background task processor in a server. Tasks arrive with different priorities: some are urgent system alerts, and others are low-priority email notifications.</p>
+    <p>A <strong>PriorityQueue</strong> is the perfect data structure for this. Instead of processing tasks in the exact order they arrive (FIFO), the <code>PriorityQueue</code> ensures that the highest-priority task is always at the head of the queue, ready to be processed next, regardless of when it arrived.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">How does HashMap handle collisions?</div>
+        <div class="hl-desc">When two keys produce the same hash, they are stored in the same bucket. In Java 8+, if a bucket grows too large (threshold of 8), the linked list transforms into a balanced red-black tree, improving search time from O(n) to O(log n).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">Comparable vs Comparator?</div>
+        <div class="hl-desc"><code>Comparable</code> is used for natural ordering and is implemented inside the class itself (<code>compareTo</code>). <code>Comparator</code> is used for custom/external sorting and is passed as a separate object.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Why not use legacy Stack class?</div>
+        <div class="hl-desc">Because <code>java.util.Stack</code> extends <code>Vector</code> and is synchronized. This causes unnecessary overhead. You should use <code>ArrayDeque</code> instead for stack operations.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../collections.html" style="color:var(--accent);">← Back to Collections</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

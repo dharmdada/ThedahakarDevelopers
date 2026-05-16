@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Operators – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Pages</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item active" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">On This Page</div>
+    <a class="nav-item" data-section="arithmetic" href="#arithmetic"><span class="dot"></span>Arithmetic</a>
+    <a class="nav-item" data-section="assignment" href="#assignment"><span class="dot"></span>Assignment</a>
+    <a class="nav-item" data-section="comparison" href="#comparison"><span class="dot"></span>Comparison</a>
+    <a class="nav-item" data-section="logical" href="#logical"><span class="dot"></span>Logical</a>
+    <a class="nav-item" data-section="bitwise" href="#bitwise"><span class="dot"></span>Bitwise</a>
+    <a class="nav-item" data-section="ternary" href="#ternary"><span class="dot"></span>Ternary</a>
+    <a class="nav-item" data-section="instanceof" href="#instanceof"><span class="dot"></span>instanceof</a>
+    <a class="nav-item" data-section="precedence" href="#precedence"><span class="dot"></span>Precedence</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(168,85,247,0.15);">🔣</div>
+    <div><h2>Operators</h2><p>Every operator Java offers — with examples and edge cases.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Operators as controlled transformations</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Operators are compact syntax for transformations and comparisons. The same symbol can behave differently depending on operand type: plus can add numbers or concatenate strings, equals can compare primitives or references, and shift operators operate at the bit level.</p>
+    <p>Operator precedence controls grouping before execution. Relying on memory of precedence makes code fragile; parentheses are cheap clarity. In business code, readability usually matters more than saving two characters.</p>
+    <p>The hardest operator bugs often come from side effects. Increment and compound assignment mutate state while producing a value, so expressions like i++ + ++i are legal but hostile to readers.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain operators in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ARITHMETIC -->
+<div class="section" id="arithmetic">
+  <div class="subsection">
+    <h3>Arithmetic Operators</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Name</th><th>Example</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">+</code></td><td>Addition</td><td><code class="inline">10 + 3</code></td><td>13</td></tr>
+          <tr><td><code class="inline">-</code></td><td>Subtraction</td><td><code class="inline">10 - 3</code></td><td>7</td></tr>
+          <tr><td><code class="inline">*</code></td><td>Multiplication</td><td><code class="inline">10 * 3</code></td><td>30</td></tr>
+          <tr><td><code class="inline">/</code></td><td>Division</td><td><code class="inline">10 / 3</code></td><td>3 (integer!)</td></tr>
+          <tr><td><code class="inline">%</code></td><td>Modulo (Remainder)</td><td><code class="inline">10 % 3</code></td><td>1</td></tr>
+          <tr><td><code class="inline">++</code></td><td>Increment</td><td><code class="inline">x++</code> or <code class="inline">++x</code></td><td>x + 1</td></tr>
+          <tr><td><code class="inline">--</code></td><td>Decrement</td><td><code class="inline">x--</code> or <code class="inline">--x</code></td><td>x - 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Arithmetic Gotchas</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Integer division truncates!</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10</span> / <span class="nm">3</span>);     <span class="cm">// 3, NOT 3.333</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10.0</span> / <span class="nm">3</span>);   <span class="cm">// 3.333... (use double!)</span>
+
+<span class="cm">// Pre-increment vs Post-increment</span>
+<span class="kw">int</span> a = <span class="nm">5</span>;
+<span class="kw">int</span> b = a++;  <span class="cm">// b = 5, a = 6  (assign THEN increment)</span>
+<span class="kw">int</span> c = ++a;  <span class="cm">// c = 7, a = 7  (increment THEN assign)</span>
+
+<span class="cm">// Integer overflow (silent!)</span>
+<span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;  <span class="cm">// 2,147,483,647</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(max + <span class="nm">1</span>);  <span class="cm">// -2,147,483,648 (wraps!)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGNMENT -->
+<div class="section" id="assignment">
+  <div class="subsection">
+    <h3>Assignment Operators</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Compound Assignment</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">int</span> x = <span class="nm">10</span>;
+x += <span class="nm">5</span>;  <span class="cm">// x = x + 5  → 15</span>
+x -= <span class="nm">3</span>;  <span class="cm">// x = x - 3  → 12</span>
+x *= <span class="nm">2</span>;  <span class="cm">// x = x * 2  → 24</span>
+x /= <span class="nm">4</span>;  <span class="cm">// x = x / 4  → 6</span>
+x %= <span class="nm">4</span>;  <span class="cm">// x = x % 4  → 2</span>
+x &amp;= <span class="nm">3</span>;  <span class="cm">// x = x &amp; 3  (bitwise AND)</span>
+x |= <span class="nm">5</span>;  <span class="cm">// x = x | 5  (bitwise OR)</span>
+x ^= <span class="nm">2</span>;  <span class="cm">// x = x ^ 2  (bitwise XOR)</span>
+x &lt;&lt;= <span class="nm">1</span>; <span class="cm">// x = x &lt;&lt; 1 (left shift)</span>
+x &gt;&gt;= <span class="nm">1</span>; <span class="cm">// x = x &gt;&gt; 1 (right shift)</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISON -->
+<div class="section" id="comparison">
+  <div class="subsection">
+    <h3>Comparison / Relational Operators</h3>
+    <p>These always return a <code class="inline">boolean</code> value (<code class="inline">true</code> or <code class="inline">false</code>).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">==</code></td><td>Equal to</td><td><code class="inline">5 == 5</code></td><td>true</td></tr>
+          <tr><td><code class="inline">!=</code></td><td>Not equal</td><td><code class="inline">5 != 3</code></td><td>true</td></tr>
+          <tr><td><code class="inline">&gt;</code></td><td>Greater than</td><td><code class="inline">5 &gt; 3</code></td><td>true</td></tr>
+          <tr><td><code class="inline">&lt;</code></td><td>Less than</td><td><code class="inline">5 &lt; 3</code></td><td>false</td></tr>
+          <tr><td><code class="inline">&gt;=</code></td><td>Greater or equal</td><td><code class="inline">5 &gt;= 5</code></td><td>true</td></tr>
+          <tr><td><code class="inline">&lt;=</code></td><td>Less or equal</td><td><code class="inline">5 &lt;= 3</code></td><td>false</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout danger">
+      <span class="callout-icon">🔥</span>
+      <div class="callout-body"><strong>== vs .equals() for Objects</strong><code class="inline">==</code> compares memory addresses (are they the same object?). <code class="inline">.equals()</code> compares values (are they logically equal?). For Strings and all objects, always use <code class="inline">.equals()</code>!</div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGICAL -->
+<div class="section" id="logical">
+  <div class="subsection">
+    <h3>Logical Operators: The Lazy Security Guard</h3>
+    <p>Logical operators allow you to combine multiple boolean conditions. Java uses <strong>Short-Circuit Evaluation</strong> to optimize these checks, much like a lazy security guard.</p>
+    <p>If the guard checks <code class="inline">condition A AND condition B</code>, and <code class="inline">A</code> is false, the guard completely ignores <code class="inline">B</code> because the overall result is already doomed to be false. This is incredibly useful for preventing errors (like checking if an object is null <em>before</em> calling a method on it).</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Logical Operators</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">boolean</span> a = <span class="kw">true</span>, b = <span class="kw">false</span>;
+
+<span class="cm">// AND — both must be true</span>
+a &amp;&amp; b   <span class="cm">// false</span>
+
+<span class="cm">// OR — at least one must be true</span>
+a || b   <span class="cm">// true</span>
+
+<span class="cm">// NOT — flips the value</span>
+!a       <span class="cm">// false</span>
+
+<span class="cm">// Short-circuit evaluation:</span>
+<span class="cm">// With &amp;&amp;, if left is false, right is NEVER evaluated</span>
+<span class="cm">// With ||, if left is true, right is NEVER evaluated</span>
+<span class="cl">String</span> s = <span class="kw">null</span>;
+<span class="kw">if</span> (s != <span class="kw">null</span> &amp;&amp; s.<span class="fn">length</span>() &gt; <span class="nm">0</span>) { <span class="cm">// Safe! s.length() won't run if s is null</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(s);
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- BITWISE -->
+<div class="section" id="bitwise">
+  <div class="subsection">
+    <h3>Bitwise Operators</h3>
+    <p>Operate on individual bits. Used in low-level programming, flags, and performance-critical code.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Name</th><th>Example (5=0101, 3=0011)</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">&amp;</code></td><td>AND</td><td><code class="inline">5 &amp; 3</code></td><td>1 (0001)</td></tr>
+          <tr><td><code class="inline">|</code></td><td>OR</td><td><code class="inline">5 | 3</code></td><td>7 (0111)</td></tr>
+          <tr><td><code class="inline">^</code></td><td>XOR</td><td><code class="inline">5 ^ 3</code></td><td>6 (0110)</td></tr>
+          <tr><td><code class="inline">~</code></td><td>NOT (complement)</td><td><code class="inline">~5</code></td><td>-6</td></tr>
+          <tr><td><code class="inline">&lt;&lt;</code></td><td>Left shift</td><td><code class="inline">5 &lt;&lt; 1</code></td><td>10 (×2)</td></tr>
+          <tr><td><code class="inline">&gt;&gt;</code></td><td>Right shift</td><td><code class="inline">5 &gt;&gt; 1</code></td><td>2 (÷2)</td></tr>
+          <tr><td><code class="inline">&gt;&gt;&gt;</code></td><td>Unsigned right shift</td><td><code class="inline">-1 &gt;&gt;&gt; 28</code></td><td>15</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TERNARY -->
+<div class="section" id="ternary">
+  <div class="subsection">
+    <h3>Ternary Operator</h3>
+    <p>A shorthand for <code class="inline">if-else</code> that returns a value:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Ternary</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Syntax: condition ? valueIfTrue : valueIfFalse</span>
+<span class="kw">int</span> age = <span class="nm">20</span>;
+<span class="cl">String</span> status = (age &gt;= <span class="nm">18</span>) ? <span class="st">"Adult"</span> : <span class="st">"Minor"</span>;
+
+<span class="cm">// Nested ternary (use sparingly!)</span>
+<span class="cl">String</span> grade = (score &gt;= <span class="nm">90</span>) ? <span class="st">"A"</span>
+             : (score &gt;= <span class="nm">80</span>) ? <span class="st">"B"</span>
+             : (score &gt;= <span class="nm">70</span>) ? <span class="st">"C"</span> : <span class="st">"F"</span>;</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- INSTANCEOF -->
+<div class="section" id="instanceof">
+  <div class="subsection">
+    <h3>instanceof Operator</h3>
+    <p>Checks whether an object is an instance of a specific class or interface.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">instanceof</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">Object</span> obj = <span class="st">"Hello"</span>;
+
+<span class="cm">// Classic instanceof</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span>) {
+    <span class="cl">String</span> s = (<span class="cl">String</span>) obj; <span class="cm">// Manual cast needed</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>());
+}
+
+<span class="cm">// Modern Pattern Matching instanceof (no cast needed!)</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>()); <span class="cm">// s is already typed!</span>
+}
+
+<span class="cm">// Works with negation too</span>
+<span class="kw">if</span> (!(obj <span class="kw">instanceof</span> <span class="cl">String</span> s)) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Not a string"</span>);
+    <span class="kw">return</span>;
+}
+<span class="cm">// s is in scope here!</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- PRECEDENCE -->
+<div class="section" id="precedence">
+  <div class="subsection">
+    <h3>Operator Precedence (Highest → Lowest)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Priority</th><th>Operators</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><code class="inline">() [] .</code></td><td>Parentheses, array access, member access</td></tr>
+          <tr><td>2</td><td><code class="inline">++ -- ! ~ + -</code></td><td>Unary operators</td></tr>
+          <tr><td>3</td><td><code class="inline">* / %</code></td><td>Multiplicative</td></tr>
+          <tr><td>4</td><td><code class="inline">+ -</code></td><td>Additive</td></tr>
+          <tr><td>5</td><td><code class="inline">&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td><td>Shift</td></tr>
+          <tr><td>6</td><td><code class="inline">&lt; &gt; &lt;= &gt;= instanceof</code></td><td>Relational</td></tr>
+          <tr><td>7</td><td><code class="inline">== !=</code></td><td>Equality</td></tr>
+          <tr><td>8</td><td><code class="inline">&amp;</code></td><td>Bitwise AND</td></tr>
+          <tr><td>9</td><td><code class="inline">^</code></td><td>Bitwise XOR</td></tr>
+          <tr><td>10</td><td><code class="inline">|</code></td><td>Bitwise OR</td></tr>
+          <tr><td>11</td><td><code class="inline">&amp;&amp;</code></td><td>Logical AND</td></tr>
+          <tr><td>12</td><td><code class="inline">||</code></td><td>Logical OR</td></tr>
+          <tr><td>13</td><td><code class="inline">?:</code></td><td>Ternary</td></tr>
+          <tr><td>14</td><td><code class="inline">= += -= *=</code> etc.</td><td>Assignment</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Pro Tip</strong>When in doubt, use parentheses <code class="inline">()</code> to make your intent explicit. Readable code beats clever code.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Permission Flags</h3>
+    <p>Bitwise operators are used for extremely fast permission checks in security systems.</p>
+    <p>Imagine a user can have permissions: READ (1), WRITE (2), and EXECUTE (4). In binary, these are <code>001</code>, <code>010</code>, and <code>100</code>. If a user has both READ and WRITE, their permission integer is <code>3</code> (011). To check if they have WRITE permission, you simply use the bitwise AND operator: <code>(permissions &amp; 2) == 2</code>. This operation takes a single CPU cycle, making it the fastest possible way to handle authorization in massive systems.</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">What is Short-Circuit Evaluation?</div>
+        <div class="hl-desc">It is a behavior where the JVM skips evaluating the right side of a logical expression if the result is already determined by the left side (e.g., in <code>A &amp;&amp; B</code>, if A is false, B is never evaluated).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">Difference between == and .equals()?</div>
+        <div class="hl-desc"><code>==</code> compares memory references (are they the same object?). <code>.equals()</code> compares the actual content/value inside the objects.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What does the Ternary operator do?</div>
+        <div class="hl-desc">It is a shorthand for an <code>if-else</code> statement that returns a value. Syntax: <code>condition ? value_if_true : value_if_false</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

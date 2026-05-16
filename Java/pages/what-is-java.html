@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>What is Java? - JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">Basics</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,197,94,0.15);">JVM</div>
+    <div><h2>What is Java?</h2><p>Platform, language model, runtime architecture, and why Java still dominates long-lived systems.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>What Java is beyond syntax</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Java is both a programming language and an execution platform. The language gives you syntax, types, classes, and APIs. The platform gives you bytecode, the JVM, garbage collection, class loading, security boundaries, diagnostics, and runtime optimization. Treating Java as only syntax misses why it remains useful in large systems.</p>
+    <p>The central design idea is portability through abstraction. Source code is compiled once into bytecode, and each JVM implementation translates that bytecode to native execution for its operating system and CPU. This model lets teams standardize application behavior without standardizing every machine underneath.</p>
+    <p>Java also values long-term compatibility. A serious enterprise language must let old code keep running while new features arrive. This is why Java evolves cautiously: records, lambdas, modules, pattern matching, and virtual threads were introduced in ways that preserve the older ecosystem.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain what is java in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="wora">
+  <div class="subsection">
+    <h3>Write Once, Run Anywhere</h3>
+    <p>Java source code is compiled into bytecode (<code class="inline">.class</code>) that runs on any compatible JVM. This separation between source language and runtime is the reason Java scales across operating systems and hardware.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn">Copy</button></div>
+      <pre><code>javac HelloWorld.java   # compile to bytecode
+java HelloWorld         # execute on JVM</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="jvm-jdk-jre">
+  <div class="subsection">
+    <h3>JDK vs JRE vs JVM</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">JVM</div><div class="hl-value">Runtime Engine</div><div class="hl-desc">Executes bytecode, manages memory, JIT compilation, GC.</div></div>
+      <div class="hl-box"><div class="hl-label">JRE</div><div class="hl-value">Runtime Bundle</div><div class="hl-desc">JVM + core libraries to run Java applications.</div></div>
+      <div class="hl-box"><div class="hl-label">JDK</div><div class="hl-value">Developer Kit</div><div class="hl-desc">JRE + tools such as javac, javadoc, jdeps, jlink.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="ecosystem">
+  <div class="subsection">
+    <h3>Where Java Is Used</h3>
+    <ul class="feature-list">
+      <li>Backend APIs and microservices (Spring, Quarkus, Micronaut).</li>
+      <li>Financial and high-throughput transaction systems.</li>
+      <li>Android app development (language foundations still highly relevant).</li>
+      <li>Data processing pipelines and distributed systems.</li>
+      <li>Large enterprise monoliths that evolve over many years.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="language-strengths">
+  <div class="subsection">
+    <h3>Why Teams Choose Java</h3>
+    <ul class="feature-list">
+      <li><strong>Strong typing:</strong> catches many defects before runtime.</li>
+      <li><strong>Mature tooling:</strong> static analysis, debugging, observability, profiling.</li>
+      <li><strong>Backward compatibility:</strong> stable long-term maintenance story.</li>
+      <li><strong>Performance:</strong> modern JIT and GC are highly optimized.</li>
+      <li><strong>Talent and ecosystem:</strong> broad community and library support.</li>
+    </ul>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body"><strong>Java is not just a language.</strong> It is a platform strategy that combines language, runtime, tools, and ecosystem for maintainable long-life software.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - <a href="setup.html" style="color:var(--accent);">Next: Setup and Hello World</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

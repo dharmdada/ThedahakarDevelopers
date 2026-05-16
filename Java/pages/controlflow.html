@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Control Flow – JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
+</header>
+<nav id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Pages</div>
+    <a class="nav-item" href="../index.html"><span class="dot"></span>Home</a>
+    <a class="nav-item active" href="../basics.html"><span class="dot"></span>Basics</a>
+    <a class="nav-item" href="../oop.html"><span class="dot"></span>OOP</a>
+    <a class="nav-item" href="../functional.html"><span class="dot"></span>Functional</a>
+    <a class="nav-item" href="../collections.html"><span class="dot"></span>Collections</a>
+    <a class="nav-item" href="../advanced.html"><span class="dot"></span>Advanced</a>
+  </div>
+</nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,197,94,0.15);">🔀</div>
+    <div><h2>Control Flow</h2><p>Decision making, loops, and flow control — every variation.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Control flow as decision architecture</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Control flow decides which code runs and how often. Every if statement expresses a business rule, every loop expresses repetition, and every switch represents a finite set of alternatives. Clear control flow makes program behavior predictable.</p>
+    <p>Branches should encode meaningful cases, not accidental implementation details. Deeply nested conditions often signal that a method has too many responsibilities or that guard clauses would expose the main path more clearly.</p>
+    <p>Loops require a termination story. A loop has an initial state, a condition, progress toward completion, and a body. When one of these is unclear, bugs appear as infinite loops, skipped elements, duplicated work, or off-by-one errors.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain controlflow in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="ifelse">
+  <div class="subsection">
+    <h3>If / Else If / Else: Branching Logic</h3>
+    <p>By default, Java executes code line by line, from top to bottom. Control flow statements allow you to branch off that path based on conditions. The most fundamental branching mechanism is the <code class="inline">if</code> statement.</p>
+    <p>Think of <code class="inline">if</code> statements as a train track switch. If the condition inside the parentheses evaluates to <code class="inline">true</code>, the train goes down the first track (the first block of code). If it is <code class="inline">false</code>, the train continues to the next <code class="inline">else if</code> or <code class="inline">else</code> block.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">int</span> score = <span class="nm">85</span>;
+
+<span class="kw">if</span> (score &gt;= <span class="nm">90</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade: A"</span>);
+} <span class="kw">else if</span> (score &gt;= <span class="nm">80</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade: B"</span>);
+} <span class="kw">else if</span> (score &gt;= <span class="nm">70</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade: C"</span>);
+} <span class="kw">else</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Grade: F"</span>);
+}
+
+<span class="cm">// Nested if</span>
+<span class="kw">if</span> (age &gt;= <span class="nm">18</span>) {
+    <span class="kw">if</span> (hasLicense) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Can drive"</span>);
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="switch">
+  <div class="subsection">
+    <h3>Switch Statement (Classic)</h3>
+    <p>When you have a single variable and you want to check it against many possible exact values, a long chain of <code class="inline">if / else if</code> becomes very hard to read. The <code class="inline">switch</code> statement provides a cleaner alternative.</p>
+    <p>In older versions of Java, the switch statement had a "fall-through" behavior inherited from C. This meant if you didn't explicitly write <code class="inline">break;</code> at the end of a case, it would execute the next case below it automatically, which caused countless bugs.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">String</span> day = <span class="st">"MONDAY"</span>;
+<span class="kw">switch</span> (day) {
+    <span class="kw">case</span> <span class="st">"MONDAY"</span>: <span class="kw">case</span> <span class="st">"TUESDAY"</span>: <span class="kw">case</span> <span class="st">"WEDNESDAY"</span>:
+    <span class="kw">case</span> <span class="st">"THURSDAY"</span>: <span class="kw">case</span> <span class="st">"FRIDAY"</span>:
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Weekday"</span>);
+        <span class="kw">break</span>; <span class="cm">// Without break, it falls through!</span>
+    <span class="kw">case</span> <span class="st">"SATURDAY"</span>: <span class="kw">case</span> <span class="st">"SUNDAY"</span>:
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Weekend"</span>);
+        <span class="kw">break</span>;
+    <span class="kw">default</span>:
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Invalid"</span>);
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="switchexpr">
+  <div class="subsection">
+    <h3>Switch Expressions: The Modern Upgrade</h3>
+    <p>To fix the notorious "fall-through" bugs of the classic switch, Java 14 introduced <strong>Switch Expressions</strong>. This modern syntax uses an arrow (<code class="inline">-&gt;</code>) instead of a colon.</p>
+    <ul class="feature-list" style="margin-bottom: 20px;">
+      <li><strong>No Fall-Through:</strong> You don't need <code class="inline">break;</code> anymore. Only the matched block executes.</li>
+      <li><strong>Returns a Value:</strong> The entire switch block can be assigned to a variable.</li>
+      <li><strong>Exhaustiveness:</strong> If you are returning a value, the compiler forces you to cover every possible case (or provide a default).</li>
+    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Arrow syntax — no break needed, no fall-through, returns a value</span>
+<span class="cl">String</span> type = <span class="kw">switch</span> (day) {
+    <span class="kw">case</span> <span class="st">"MONDAY"</span>, <span class="st">"TUESDAY"</span>, <span class="st">"WEDNESDAY"</span>,
+         <span class="st">"THURSDAY"</span>, <span class="st">"FRIDAY"</span>    -&gt; <span class="st">"Weekday"</span>;
+    <span class="kw">case</span> <span class="st">"SATURDAY"</span>, <span class="st">"SUNDAY"</span> -&gt; <span class="st">"Weekend"</span>;
+    <span class="kw">default</span>                    -&gt; <span class="st">"Invalid"</span>;
+};
+
+<span class="cm">// Multi-line case with yield</span>
+<span class="kw">int</span> len = <span class="kw">switch</span> (day) {
+    <span class="kw">case</span> <span class="st">"MONDAY"</span> -&gt; <span class="nm">6</span>;
+    <span class="kw">default</span> -&gt; {
+        <span class="cl">String</span> trimmed = day.<span class="fn">trim</span>();
+        <span class="kw">yield</span> trimmed.<span class="fn">length</span>();
+    }
+};
+
+<span class="cm">// Pattern matching in switch</span>
+<span class="cl">Object</span> obj = <span class="nm">42</span>;
+<span class="cl">String</span> result = <span class="kw">switch</span> (obj) {
+    <span class="kw">case</span> <span class="cl">Integer</span> i -&gt; <span class="st">"Integer: "</span> + i;
+    <span class="kw">case</span> <span class="cl">String</span> s  -&gt; <span class="st">"String: "</span> + s;
+    <span class="kw">case</span> <span class="kw">null</span>     -&gt; <span class="st">"null!"</span>;
+    <span class="kw">default</span>       -&gt; <span class="st">"Other"</span>;
+};</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="forloop">
+  <div class="subsection">
+    <h3>The Traditional For Loop</h3>
+    <p>When you know exactly how many times you want a block of code to run, you use a <code class="inline">for</code> loop. It is composed of three parts inside the parentheses, separated by semicolons:</p>
+    <ol style="margin-left: 20px; margin-bottom: 15px;">
+      <li><strong>Initialization:</strong> Executes exactly once before the loop starts (e.g., <code class="inline">int i = 0</code>).</li>
+      <li><strong>Condition:</strong> Checked before <em>every</em> iteration. If true, the loop runs (e.g., <code class="inline">i < 10</code>).</li>
+      <li><strong>Increment:</strong> Executes exactly once after <em>every</em> iteration (e.g., <code class="inline">i++</code>).</li>
+    </ol>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Standard</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">10</span>; i++) { <span class="cl">System</span>.out.<span class="fn">println</span>(i); }
+
+<span class="cm">// Counting down</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">10</span>; i &gt;= <span class="nm">0</span>; i--) { }
+
+<span class="cm">// Multiple variables</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>, j = <span class="nm">10</span>; i &lt; j; i++, j--) { }
+
+<span class="cm">// Infinite loop</span>
+<span class="kw">for</span> (;;) { <span class="kw">break</span>; }</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="foreach">
+  <div class="subsection">
+    <h3>Enhanced For-Each</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">String</span>[] fruits = {<span class="st">"Apple"</span>, <span class="st">"Banana"</span>, <span class="st">"Cherry"</span>};
+<span class="kw">for</span> (<span class="cl">String</span> fruit : fruits) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(fruit);
+}
+
+<span class="cm">// Works with any Iterable (List, Set, etc.)</span>
+<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">10</span>, <span class="nm">20</span>, <span class="nm">30</span>);
+<span class="kw">for</span> (<span class="kw">int</span> n : nums) { <span class="cl">System</span>.out.<span class="fn">println</span>(n); }
+
+<span class="cm">// Map iteration</span>
+<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; ages = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="nm">25</span>);
+<span class="kw">for</span> (<span class="kw">var</span> entry : ages.<span class="fn">entrySet</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(entry.<span class="fn">getKey</span>() + <span class="st">": "</span> + entry.<span class="fn">getValue</span>());
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="while">
+  <div class="subsection">
+    <h3>While & Do-While: Unknown Iterations</h3>
+    <p>What if you don't know how many times a loop should run? For example, "keep reading the file until there is no more text." In this case, you use a <code class="inline">while</code> loop.</p>
+    <p>The difference between <code class="inline">while</code> and <code class="inline">do-while</code> is simply <em>when</em> the condition is checked. A <code class="inline">while</code> loop checks before running, so it might run zero times. A <code class="inline">do-while</code> loop runs the code first, and then checks the condition, guaranteeing it runs at least once.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// While: checks BEFORE each iteration</span>
+<span class="kw">int</span> count = <span class="nm">5</span>;
+<span class="kw">while</span> (count &gt; <span class="nm">0</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(count--);
+}
+
+<span class="cm">// Do-While: runs AT LEAST ONCE</span>
+<span class="kw">int</span> x = <span class="nm">0</span>;
+<span class="kw">do</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Runs once even though x is 0"</span>);
+} <span class="kw">while</span> (x &gt; <span class="nm">0</span>);</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="break">
+  <div class="subsection">
+    <h3>Break, Continue & Labels</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// break: exits the ENTIRE loop</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">100</span>; i++) {
+    <span class="kw">if</span> (i == <span class="nm">5</span>) <span class="kw">break</span>; <span class="cm">// Stops at 5</span>
+}
+
+<span class="cm">// continue: skips CURRENT iteration</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">10</span>; i++) {
+    <span class="kw">if</span> (i % <span class="nm">2</span> == <span class="nm">0</span>) <span class="kw">continue</span>; <span class="cm">// Skip evens</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(i); <span class="cm">// 1,3,5,7,9</span>
+}
+
+<span class="cm">// Labels: break/continue an OUTER loop from inside a nested loop</span>
+<span class="kw">outer</span>:
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">5</span>; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="nm">0</span>; j &lt; <span class="nm">5</span>; j++) {
+        <span class="kw">if</span> (i * j &gt; <span class="nm">6</span>) <span class="kw">break</span> <span class="kw">outer</span>; <span class="cm">// Breaks BOTH loops</span>
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="usecase">
+  <div class="subsection">
+    <h3>Real-World Use Case: Game Loops</h3>
+    <p>Every video game runs on a massive <code>while</code> loop, often called the "Game Loop".</p>
+    <p>The loop runs indefinitely: <code>while (gameIsRunning)</code>. Inside the loop, it reads controller input, updates the physics engine, checks for collisions, and renders the graphics. Only when the player hits "Quit Game" does <code>gameIsRunning</code> become false, breaking the loop and shutting down the application. Without control flow structures, a game would execute once and immediately exit!</p>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">While vs Do-While?</div>
+        <div class="hl-desc">A <code>while</code> loop checks the condition first, so it may run 0 times. A <code>do-while</code> loop executes the body first and then checks the condition, guaranteeing it runs at least once.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What is a labeled break?</div>
+        <div class="hl-desc">A labeled break allows you to exit a specific outer loop from inside a nested inner loop, rather than just exiting the innermost loop.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">Difference between break and continue?</div>
+        <div class="hl-desc"><code>break</code> terminates the entire loop immediately. <code>continue</code> skips the rest of the current iteration and jumps to the next condition check/iteration.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

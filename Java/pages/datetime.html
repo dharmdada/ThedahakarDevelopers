@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Date and Time API - JavaMaster</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">Advanced</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(59,130,246,0.15);">TIME</div>
+    <div><h2>Date and Time API</h2><p>Use modern, immutable date/time types to avoid timezone bugs and fragile legacy code.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Time as domain data, not just formatting</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model</h3>
+    <p>Date and time bugs happen when code confuses human calendar concepts with machine timestamps. A birthday is a LocalDate. A log entry is an Instant. A meeting scheduled for a city is a ZonedDateTime. Choosing the right type prevents entire classes of bugs.</p>
+    <p>Time zones are political and historical rules, not simple offsets. Offsets can change because of daylight saving or government decisions. Store global events as Instants and convert to local representation at the boundary where a user views them.</p>
+    <p>Duration and Period are different because humans think in calendar units while machines measure elapsed time. One month is not a fixed number of seconds; one hour during a DST transition may not behave like ordinary elapsed time.</p>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Understand the purpose of the feature before memorizing its syntax.</li>
+      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
+      <li>Prefer readable code that makes assumptions explicit.</li>
+      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li>Learning only the code pattern without the reason behind it.</li>
+      <li>Ignoring edge cases until they appear as bugs.</li>
+      <li>Using the feature everywhere instead of where it fits the problem.</li>
+      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain datetime in plain language without reading code.</li>
+      <li>You can identify the right and wrong use cases for the concept.</li>
+      <li>You can debug common failures related to the topic.</li>
+      <li>You can teach the concept using a small real-world example.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="types">
+  <div class="subsection">
+    <h3>Core java.time Types</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">LocalDate</div><div class="hl-value">Date Only</div><div class="hl-desc">No time, no zone.</div></div>
+      <div class="hl-box"><div class="hl-label">LocalDateTime</div><div class="hl-value">Date + Time</div><div class="hl-desc">No timezone attached.</div></div>
+      <div class="hl-box"><div class="hl-label">Instant</div><div class="hl-value">UTC Point</div><div class="hl-desc">Best for storage/log timestamps.</div></div>
+      <div class="hl-box"><div class="hl-label">ZonedDateTime</div><div class="hl-value">Zone Aware</div><div class="hl-desc">Timezone-specific representation.</div></div>
+      <div class="hl-box"><div class="hl-label">Duration/Period</div><div class="hl-value">Differences</div><div class="hl-desc">Time-based vs date-based amount.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="format-parse">
+  <div class="subsection">
+    <h3>Formatting and Parsing</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
+      <pre><code>DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+LocalDateTime now = LocalDateTime.now();
+String text = now.format(f);
+
+LocalDate parsed = LocalDate.parse("2026-05-16");
+Instant instant = Instant.parse("2026-05-16T12:00:00Z");</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="timezone">
+  <div class="subsection">
+    <h3>Timezone-Safe Design</h3>
+    <ul class="feature-list">
+      <li>Store event instants in UTC (<code class="inline">Instant</code>).</li>
+      <li>Convert to user timezone only at display boundaries.</li>
+      <li>Never assume local timezone in backend business logic.</li>
+      <li>Use <code class="inline">ZoneId</code> explicitly for recurring schedules.</li>
+    </ul>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Daylight Saving Time changes can break assumptions.</strong> Test schedule logic around DST transition dates.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="legacy">
+  <div class="subsection">
+    <h3>Legacy Interop</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// java.util.Date -> Instant
+Date legacy = new Date();
+Instant modern = legacy.toInstant();
+
+// Instant -> java.util.Date
+Date backToLegacy = Date.from(modern);</code></pre>
+    </div>
+    <p>Prefer <code class="inline">java.time</code> in new code. Keep legacy conversions at integration boundaries only.</p>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster - Continue with <a href="concurrency.html" style="color:var(--accent);">Concurrency</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>
