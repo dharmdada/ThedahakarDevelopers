@@ -105,6 +105,67 @@ function renderSidebar() {
 }
 renderSidebar();
 
+const coursePages = [
+  { file: 'index.html', path: 'index.html', title: 'Home' },
+  { file: 'basics.html', path: 'basics.html', title: 'Java Fundamentals' },
+  { file: 'what-is-java.html', path: 'pages/what-is-java.html', title: 'What is Java?' },
+  { file: 'setup.html', path: 'pages/setup.html', title: 'Setup and Hello World' },
+  { file: 'datatypes.html', path: 'pages/datatypes.html', title: 'Data Types and Variables' },
+  { file: 'operators.html', path: 'pages/operators.html', title: 'Operators' },
+  { file: 'controlflow.html', path: 'pages/controlflow.html', title: 'Control Flow' },
+  { file: 'strings.html', path: 'pages/strings.html', title: 'Strings' },
+  { file: 'math-utils.html', path: 'pages/math-utils.html', title: 'Math and Utilities' },
+  { file: 'arrays.html', path: 'pages/arrays.html', title: 'Arrays' },
+  { file: 'methods.html', path: 'pages/methods.html', title: 'Methods' },
+  { file: 'oop.html', path: 'oop.html', title: 'Object-Oriented Programming' },
+  { file: 'classes.html', path: 'pages/classes.html', title: 'Classes and Objects' },
+  { file: 'inheritance.html', path: 'pages/inheritance.html', title: 'Inheritance' },
+  { file: 'interfaces.html', path: 'pages/interfaces.html', title: 'Interfaces and Abstract Classes' },
+  { file: 'enums-records.html', path: 'pages/enums-records.html', title: 'Enums and Records' },
+  { file: 'functional.html', path: 'functional.html', title: 'Functional Java' },
+  { file: 'lambdas.html', path: 'pages/lambdas.html', title: 'Lambdas and Optional' },
+  { file: 'streams.html', path: 'pages/streams.html', title: 'Streams API' },
+  { file: 'collections.html', path: 'collections.html', title: 'Collections and Generics' },
+  { file: 'generics.html', path: 'pages/generics.html', title: 'Generics Deep Dive' },
+  { file: 'collections-deep.html', path: 'pages/collections-deep.html', title: 'Collections Deep Dive' },
+  { file: 'advanced.html', path: 'advanced.html', title: 'Advanced Java' },
+  { file: 'exceptions-io.html', path: 'pages/exceptions-io.html', title: 'Exceptions and Errors' },
+  { file: 'io-network.html', path: 'pages/io-network.html', title: 'File I/O and Networking' },
+  { file: 'datetime.html', path: 'pages/datetime.html', title: 'Date and Time API' },
+  { file: 'concurrency.html', path: 'pages/concurrency.html', title: 'Concurrency' },
+  { file: 'reflection.html', path: 'pages/reflection.html', title: 'Reflection and Annotations' },
+  { file: 'jvm-internals.html', path: 'pages/jvm-internals.html', title: 'JVM Internals' },
+  { file: 'modern-features.html', path: 'pages/modern-features.html', title: 'Modern Features' },
+  { file: 'java-project-structure.html', path: 'pages/java-project-structure.html', title: 'Project Structure' },
+  { file: 'build-tools.html', path: 'pages/build-tools.html', title: 'Maven and Gradle' },
+  { file: 'testing.html', path: 'pages/testing.html', title: 'Testing' },
+  { file: 'jdbc.html', path: 'pages/jdbc.html', title: 'JDBC and SQL' },
+  { file: 'design-patterns.html', path: 'pages/design-patterns.html', title: 'Patterns and SOLID' }
+];
+
+function renderCoursePager() {
+  const mainEl = document.getElementById('main');
+  const footer = mainEl?.querySelector('footer');
+  if (!mainEl || !footer || document.querySelector('.course-pager')) return;
+
+  const index = coursePages.findIndex(page => page.file === currentPage);
+  if (index < 0) return;
+
+  const prev = coursePages[index - 1];
+  const next = coursePages[index + 1];
+  const hrefFor = page => basePath + page.path;
+
+  const prevHtml = prev
+    ? `<a class="pager-link prev" href="${hrefFor(prev)}"><span class="pager-kicker">Previous</span><span class="pager-title">${prev.title}</span></a>`
+    : '<div class="pager-link pager-spacer" aria-hidden="true"></div>';
+  const nextHtml = next
+    ? `<a class="pager-link next" href="${hrefFor(next)}"><span class="pager-kicker">Next</span><span class="pager-title">${next.title}</span></a>`
+    : '<div class="pager-link pager-spacer" aria-hidden="true"></div>';
+
+  footer.insertAdjacentHTML('beforebegin', `<nav class="course-pager" aria-label="Course navigation">${prevHtml}${nextHtml}</nav>`);
+}
+renderCoursePager();
+
 // SIDEBAR TOGGLE
 const sidebar = document.getElementById('sidebar');
 const main = document.getElementById('main');
@@ -326,10 +387,9 @@ const topbarRight = document.querySelector('.topbar-right');
 if (topbarRight) {
   const themeBtn = document.createElement('button');
   themeBtn.id = 'theme-toggle';
-  themeBtn.innerHTML = 'Theme';
-  themeBtn.style.cssText = 'background:none;border:none;font-size:18px;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background 0.2s;';
-  themeBtn.onmouseover = () => themeBtn.style.background = 'var(--bg3)';
-  themeBtn.onmouseout = () => themeBtn.style.background = 'none';
+  themeBtn.type = 'button';
+  themeBtn.setAttribute('aria-label', 'Toggle theme');
+  themeBtn.title = 'Toggle theme';
   
   // Insert before the progress badge
   topbarRight.insertBefore(themeBtn, topbarRight.firstChild);
@@ -338,9 +398,9 @@ if (topbarRight) {
   const savedTheme = localStorage.getItem('javamaster-theme');
   if (savedTheme === 'light') {
     document.documentElement.setAttribute('data-theme', 'light');
-    themeBtn.innerHTML = 'Dark';
+    themeBtn.setAttribute('aria-label', 'Switch to dark theme');
   } else {
-    themeBtn.innerHTML = 'Light';
+    themeBtn.setAttribute('aria-label', 'Switch to light theme');
   }
 
   themeBtn.addEventListener('click', () => {
@@ -348,11 +408,11 @@ if (topbarRight) {
     if (isLight) {
       document.documentElement.removeAttribute('data-theme');
       localStorage.setItem('javamaster-theme', 'dark');
-      themeBtn.innerHTML = 'Light';
+      themeBtn.setAttribute('aria-label', 'Switch to light theme');
     } else {
       document.documentElement.setAttribute('data-theme', 'light');
       localStorage.setItem('javamaster-theme', 'light');
-      themeBtn.innerHTML = 'Dark';
+      themeBtn.setAttribute('aria-label', 'Switch to dark theme');
     }
   });
 }
