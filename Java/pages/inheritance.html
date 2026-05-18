@@ -95,6 +95,8 @@
 d.<span class="fn">eat</span>();  <span class="cm">// Inherited from Animal</span>
 d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></pre>
     </div>
+    <h4 style="margin-top:20px;">The Diamond Problem</h4>
+    <p>Java forbids multiple inheritance for classes. If a class could extend both <code>Machine</code> and <code>Animal</code>, and both had a <code>move()</code> method, which one would the child inherit? This ambiguity is called the <strong>Diamond Problem</strong>. By restricting classes to <code>extends</code> only one parent, Java eliminates this bug entirely.</p>
   </div>
 </div>
 
@@ -191,6 +193,10 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
 <span class="cm">// Compile-time vs Runtime polymorphism:</span>
 <span class="cm">// Compile-time = Method Overloading (same name, different params)</span>
 <span class="cm">// Runtime = Method Overriding (same signature, different class)</span></code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Liskov Substitution Principle (LSP)</strong><br>A core SOLID principle: Objects of a superclass shall be replaceable with objects of its subclasses without breaking the application. If your subclass throws an <code>UnsupportedOperationException</code> for a method it inherited, you are violating LSP.</div>
     </div>
   </div>
 </div>

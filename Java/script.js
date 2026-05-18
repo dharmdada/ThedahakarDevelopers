@@ -210,9 +210,6 @@ const navItems = document.querySelectorAll('.nav-item[data-section]');
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      // Add visible class for premium fade-up animation
-      e.target.classList.add('visible');
-      
       // Update active nav
       if (e.target.id) {
         navItems.forEach(n => {
@@ -225,23 +222,7 @@ const observer = new IntersectionObserver(entries => {
 
 sections.forEach(s => observer.observe(s));
 
-// Staggered animation for cards on load
-document.querySelectorAll('.info-card, .hl-box, .feature-list li').forEach((el, index) => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(20px)';
-  el.style.transition = `all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) ${index * 0.05}s`;
-  
-  const elObserver = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-      elObserver.disconnect();
-    }
-  }, { rootMargin: '0px 0px -50px 0px' });
-  
-  elObserver.observe(el);
-});
-
+// Nav Groups Logic
 // NAV GROUPS
 document.querySelectorAll('.nav-group-header').forEach(h => {
   h.addEventListener('click', () => {

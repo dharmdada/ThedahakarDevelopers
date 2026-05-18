@@ -111,6 +111,19 @@
   </div>
 </div>
 
+<div class="section" id="operator-overloading">
+  <div class="subsection">
+    <h3>The "+" Operator: Math vs Concatenation</h3>
+    <p>Java does <strong>not</strong> support developer-defined operator overloading. However, the <code class="inline">+</code> operator is heavily overloaded by the Java language itself. If any operand is a String, the entire operation becomes String concatenation rather than mathematical addition. Evaluation happens left-to-right.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">String Concatenation Magic</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">5</span> + <span class="nm">5</span> + <span class="st">" = 10"</span>);  <span class="cm">// "10 = 10" (Math first, then String)</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + <span class="nm">5</span> + <span class="nm">5</span>);  <span class="cm">// "10 = 55" (String first, forces 5+5 into String concatenation)</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + (<span class="nm">5</span> + <span class="nm">5</span>));<span class="cm">// "10 = 10" (Parentheses force Math first)</span></code></pre>
+    </div>
+  </div>
+</div>
+
 <!-- ASSIGNMENT -->
 <div class="section" id="assignment">
   <div class="subsection">

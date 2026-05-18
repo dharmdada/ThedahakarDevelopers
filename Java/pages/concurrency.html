@@ -170,6 +170,36 @@ pool.<span class="fn">shutdown</span>();</code></pre>
   </div>
 </div>
 
+<div class="section" id="volatile">
+  <div class="subsection">
+    <h3>Memory Visibility and the <code class="inline">volatile</code> Keyword</h3>
+    <p>Modern CPUs have multiple cores, and each core has its own ultra-fast L1/L2 cache. For performance, a thread might read a variable from main memory, copy it to its local cache, and only work with the cached version. If Thread A changes a variable, Thread B might not see the change immediately because it's looking at its own stale cache. This is a <strong>Visibility Problem</strong>.</p>
+    <p>The <code class="inline">volatile</code> keyword solves this. It forces the JVM to skip the local CPU cache and read/write the variable directly to Main Memory. This establishes a <strong>Happens-Before relationship</strong>: any write to a volatile variable <em>happens before</em> any subsequent read, guaranteeing that all threads always see the most up-to-date value.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Volatile Usage</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">class</span> <span class="cl">Worker</span> <span class="kw">implements</span> <span class="cl">Runnable</span> {
+    <span class="cm">// Without volatile, the loop below might run forever!</span>
+    <span class="kw">private volatile boolean</span> running = <span class="kw">true</span>;
+
+    <span class="kw">public void</span> <span class="fn">stop</span>() {
+        running = <span class="kw">false</span>; <span class="cm">// Write immediately flushes to main memory</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">run</span>() {
+        <span class="kw">while</span> (running) { <span class="cm">// Read directly from main memory</span>
+            <span class="cm">// do work...</span>
+        }
+    }
+}</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>Volatile is NOT for Counting</strong><code class="inline">volatile</code> guarantees visibility, but <strong>not atomicity</strong>. You cannot use it for <code class="inline">count++</code> because incrementing is a read-modify-write operation (3 steps). If two threads increment simultaneously, they can still overwrite each other. Use <code class="inline">AtomicInteger</code> for counting.</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="atomic">
   <div class="subsection">
     <h3>Atomic Variables &amp; Concurrent Collections</h3>

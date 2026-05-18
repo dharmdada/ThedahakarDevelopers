@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -78,6 +78,27 @@
       <li>Keep lambdas short and intention-revealing.</li>
       <li>Use Optional for absent values, not for every field in data models.</li>
     </ul>
+
+    <h4 style="margin-top:20px;">Imperative vs Declarative</h4>
+    <p>The biggest mental shift is moving from <strong>Imperative</strong> (telling the computer <em>how</em> to do it step-by-step) to <strong>Declarative</strong> (telling the computer <em>what</em> you want).</p>
+    <div class="code-block" style="display:flex;gap:15px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:300px;">
+        <div class="code-header"><span class="code-lang">Imperative (Old Way)</span></div>
+        <pre><code style="font-size:13px;">List&lt;String&gt; activeNames = new ArrayList&lt;&gt;();
+for (User user : users) {
+    if (user.isActive()) {
+        activeNames.add(user.getName());
+    }
+}</code></pre>
+      </div>
+      <div style="flex:1;min-width:300px;">
+        <div class="code-header"><span class="code-lang">Declarative (Functional)</span></div>
+        <pre><code style="font-size:13px;">List&lt;String&gt; activeNames = users.stream()
+    .filter(User::isActive)
+    .map(User::getName)
+    .toList();</code></pre>
+      </div>
+    </div>
   </div>
 </div>
 

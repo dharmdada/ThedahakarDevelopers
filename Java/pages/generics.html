@@ -95,6 +95,26 @@ System.out.println(new ArrayList&lt;Integer&gt;().getClass()); // SAME class!</c
   </div>
 </div>
 
+<div class="section" id="heap-pollution">
+  <div class="subsection">
+    <h3>The Danger of Heap Pollution</h3>
+    <p>Because of Type Erasure, Java allows you to mix "Raw Types" (like <code>List</code>) with Parameterized Types (like <code>List&lt;String&gt;</code>) for backward compatibility. But doing this causes a dangerous bug known as <strong>Heap Pollution</strong>.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Heap Pollution Example</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; strings = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+<span class="cl">List</span> rawList = strings; // Allowed for legacy code
+rawList.<span class="fn">add</span>(<span class="nm">42</span>); // We just put an Integer into a List&lt;String&gt;!
+
+// The compiler doesn't stop this, but at runtime:
+<span class="cl">String</span> s = strings.<span class="fn">get</span>(<span class="nm">0</span>); // 💥 ClassCastException! Integer cannot be cast to String</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body"><strong>Never use Raw Types</strong> in modern Java. Always parameterize your collections, even if it's just <code>List&lt;Object&gt;</code>, to let the compiler enforce safety.</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="generic-classes">
   <div class="subsection">
     <h3>Generic Classes and Methods</h3>

@@ -56,6 +56,25 @@
       <li>You can explain what bytecode is and why it's useful.</li>
       <li>You know the role of the Garbage Collector at a high level.</li></ul>
   </div>
+<div class="section" id="jvm-architecture">
+  <div class="subsection">
+    <h3>The JVM Architecture</h3>
+    <p>The Java Virtual Machine (JVM) is the heart of Java's platform independence. It acts as an abstract computer inside your actual computer. Understanding its architecture is crucial for writing high-performance applications.</p>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Class Loader Subsystem</div>
+        <div class="hl-desc">Responsible for loading, linking, and initializing class files (.class) from the file system or network into the JVM memory.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Runtime Data Areas (Memory)</div>
+        <div class="hl-desc">The memory layout of the JVM. Crucially divided into the <strong>Heap</strong> (where objects live) and the <strong>Stack</strong> (where method execution frames and local primitives live).</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Execution Engine</div>
+        <div class="hl-desc">Executes the bytecode. It contains the <strong>Interpreter</strong> (reads bytecode line by line), the <strong>JIT Compiler</strong> (compiles hot code to native machine code), and the <strong>Garbage Collector</strong>.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="section" id="wora">
@@ -72,11 +91,12 @@ java HelloWorld         # execute on JVM</code></pre>
 
 <div class="section" id="jvm-jdk-jre">
   <div class="subsection">
-    <h3>JDK vs JRE vs JVM</h3>
+    <h3>JDK vs JRE vs JVM: The Java Stack</h3>
+    <p>A frequent point of confusion is the difference between these three acronyms. Think of them as Russian nesting dolls, each serving a distinct audience.</p>
     <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">JVM</div><div class="hl-value">Runtime Engine</div><div class="hl-desc">Executes bytecode, manages memory, JIT compilation, GC.</div></div>
-      <div class="hl-box"><div class="hl-label">JRE</div><div class="hl-value">Runtime Bundle</div><div class="hl-desc">JVM + core libraries to run Java applications.</div></div>
-      <div class="hl-box"><div class="hl-label">JDK</div><div class="hl-value">Developer Kit</div><div class="hl-desc">JRE + tools such as javac, javadoc, jdeps, jlink.</div></div>
+      <div class="hl-box"><div class="hl-label">JVM (Java Virtual Machine)</div><div class="hl-value">The Engine</div><div class="hl-desc">The pure runtime environment that executes bytecode. It provides memory management (GC) and JIT compilation. It does not know about Java source code, only `.class` files.</div></div>
+      <div class="hl-box"><div class="hl-label">JRE (Java Runtime Environment)</div><div class="hl-value">The Environment</div><div class="hl-desc"><strong>JVM + Core Libraries.</strong> This is what a user needs to <em>run</em> a Java application. It includes the JVM, plus classes like <code>java.lang.String</code>, <code>java.util.List</code>, and core APIs.</div></div>
+      <div class="hl-box"><div class="hl-label">JDK (Java Development Kit)</div><div class="hl-value">The Toolkit</div><div class="hl-desc"><strong>JRE + Development Tools.</strong> This is what a <em>developer</em> needs. It contains the JRE, plus tools like <code>javac</code> (the compiler), <code>javadoc</code> (documentation generator), <code>jdb</code> (debugger), and profiling tools.</div></div>
     </div>
   </div>
 </div>
@@ -96,17 +116,18 @@ java HelloWorld         # execute on JVM</code></pre>
 
 <div class="section" id="language-strengths">
   <div class="subsection">
-    <h3>Why Teams Choose Java</h3>
+    <h3>Why Teams Choose Java for Enterprise</h3>
+    <p>Startups often pick Python or Node.js for rapid prototyping. However, when systems scale to millions of users, require extreme reliability, or need to be maintained by teams of hundreds over decades, Java is frequently the language of choice.</p>
     <ul class="feature-list">
-      <li><strong>Strong typing:</strong> catches many defects before runtime.</li>
-      <li><strong>Mature tooling:</strong> static analysis, debugging, observability, profiling.</li>
-      <li><strong>Backward compatibility:</strong> stable long-term maintenance story.</li>
-      <li><strong>Performance:</strong> modern JIT and GC are highly optimized.</li>
-      <li><strong>Talent and ecosystem:</strong> broad community and library support.</li>
+      <li><strong>Strong Typing & Refactoring:</strong> The compiler catches defects instantly. Changing a method signature safely updates hundreds of usages across a massive codebase, supported by unmatched IDE tooling (IntelliJ, Eclipse).</li>
+      <li><strong>Observability & Profiling:</strong> The JVM exposes deep metrics. Tools like JFR (Java Flight Recorder) allow developers to record a running production application with <1% overhead and analyze memory, CPU, and lock contention.</li>
+      <li><strong>Backward Compatibility:</strong> Code written in Java 8 (2014) still compiles and runs on Java 21, often significantly faster due to JVM improvements without touching the source code.</li>
+      <li><strong>State-of-the-Art Garbage Collection:</strong> Modern collectors like ZGC and Shenandoah can manage multi-terabyte heaps with pause times under 1 millisecond.</li>
+      <li><strong>Concurrecy (Project Loom):</strong> Virtual Threads allow Java to handle millions of concurrent connections natively, bypassing the OS thread limits that constrain other languages.</li>
     </ul>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
-      <div class="callout-body"><strong>Java is not just a language.</strong> It is a platform strategy that combines language, runtime, tools, and ecosystem for maintainable long-life software.</div>
+      <div class="callout-body"><strong>Java is a Platform Strategy.</strong> You aren't just choosing a syntax; you are choosing the JVM, the mature ecosystem, and the guarantee that your code will run and scale for decades.</div>
     </div>
   </div>
 </div>

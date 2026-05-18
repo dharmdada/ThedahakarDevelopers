@@ -176,6 +176,33 @@
   </div>
 </div>
 
+<div class="section" id="sealed">
+  <div class="subsection">
+    <h3>Sealed Classes: The VIP Guest List</h3>
+    <p>In traditional OOP, an interface or class can be implemented or extended by <em>anyone</em>. If you create an interface called <code>PaymentMethod</code>, a rogue developer could create a <code>BitcoinPayment</code> class that implements it, bypassing your architectural rules.</p>
+    <p>Java 15 introduced <strong>Sealed Classes</strong>. It allows an interface or class to declare exactly who is allowed to inherit from it. It's an architectural guest list.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Sealed Interface</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// Only these 3 specific classes are allowed to implement this interface</span>
+<span class="kw">public sealed interface</span> <span class="cl">PaymentMethod</span> 
+    <span class="kw">permits</span> <span class="cl">CreditCard</span>, <span class="cl">PayPal</span>, <span class="cl">Cash</span> {
+    
+    <span class="kw">void</span> <span class="fn">process</span>();
+}
+
+<span class="cm">// Allowed</span>
+<span class="kw">public final class</span> <span class="cl">CreditCard</span> <span class="kw">implements</span> <span class="cl">PaymentMethod</span> { ... }
+
+<span class="cm">// Compile Error! Bitcoin is not on the 'permits' guest list.</span>
+<span class="kw">public final class</span> <span class="cl">Bitcoin</span> <span class="kw">implements</span> <span class="cl">PaymentMethod</span> { ... }</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Perfect pair with Switch:</strong> Because the compiler knows <em>exactly</em> all the possible subclasses of a sealed interface, you don't even need a <code>default</code> case in your pattern matching switch statements!</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="usecase">
   <div class="subsection">
     <h3>Real-World Use Case: Modern Microservices</h3>

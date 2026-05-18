@@ -154,6 +154,27 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
   </div>
 </div>
 
+<div class="section" id="singleton">
+  <div class="subsection">
+    <h3>The Ultimate Singleton Pattern</h3>
+    <p>A "Singleton" is an architectural pattern that guarantees a class only ever has ONE instance in the entire application (e.g., a Database Connection Pool). Writing a safe Singleton in Java is notoriously difficult because of multithreading and serialization edge cases.</p>
+    <p>Joshua Bloch (author of <em>Effective Java</em>) stated that a single-element Enum is the absolute best way to implement a Singleton in Java. The JVM natively guarantees that an Enum value is instantiated exactly once, is thread-safe, and survives serialization perfectly.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Enum Singleton</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">public enum</span> <span class="cl">DatabaseConnection</span> {
+    INSTANCE; // The one and only instance
+
+    <span class="kw">public void</span> <span class="fn">connect</span>() {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Connected to DB securely."</span>);
+    }
+}
+
+// Usage:
+<span class="cl">DatabaseConnection</span>.<span class="cl">INSTANCE</span>.<span class="fn">connect</span>();</code></pre>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="records">
   <div class="subsection">
     <h3>Records: The End of Boilerplate</h3>
@@ -222,6 +243,25 @@ p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Po
 <span class="cm">// ❌ extend other classes (they implicitly extend Record)</span>
 <span class="cm">// ❌ have mutable instance fields</span>
 <span class="cm">// ❌ be abstract</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="record-patterns">
+  <div class="subsection">
+    <h3>Destructuring: Record Patterns (Java 21)</h3>
+    <p>Because Records transparently carry data, modern Java (21+) allows you to "destructure" them directly inside a <code>switch</code> statement or <code>instanceof</code> check. This extracts the fields into local variables automatically, making data processing incredibly clean.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Record Pattern Matching</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="kw">record</span> <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {}
+<span class="kw">record</span> <span class="cl">Circle</span>(<span class="cl">Point</span> center, <span class="kw">int</span> radius) {}
+
+<span class="kw">public void</span> <span class="fn">processShape</span>(<span class="cl">Object</span> shape) {
+    <span class="kw">if</span> (shape <span class="kw">instanceof</span> <span class="cl">Circle</span>(<span class="cl">Point</span>(int x, int y), int r)) {
+        // x, y, and r are automatically extracted!
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"Circle at %d,%d with radius %d%n"</span>, x, y, r);
+    }
+}</code></pre>
     </div>
   </div>
 </div>

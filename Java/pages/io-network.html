@@ -246,6 +246,11 @@ List&lt;String&gt; results = futures.stream()
       <span class="callout-icon">TIP</span>
       <div class="callout-body">Always set <code class="inline">.timeout()</code> on the request AND <code class="inline">.connectTimeout()</code> on the client. Without timeouts, a hung remote server can block a thread indefinitely.</div>
     </div>
+    
+    <h4 style="margin-top:20px;">Reactive Streams &amp; Backpressure</h4>
+    <p>Java 11's HttpClient is actually built on the <strong>Reactive Streams</strong> specification (Java 9 Flow API). This means it natively supports <strong>Backpressure</strong>.</p>
+    <p>Imagine you are downloading a massive 5GB video file over a gigabit connection, but you are saving it to a slow, old spinning hard drive. In old Java, the network would pull data into memory much faster than the hard drive could write it, eventually causing an <code>OutOfMemoryError</code>. With the new HttpClient, the slow hard drive writer signals "backpressure" to the HttpClient, which automatically tells the remote server at the TCP layer to slow down the transmission rate, preventing memory explosion!</p>
+
   </div>
 </div>
 

@@ -165,6 +165,31 @@
   </div>
 </div>
 
+<div class="section" id="memory-layout">
+  <div class="subsection">
+    <h3>Under the Hood: Object Memory Layout</h3>
+    <p>When you type <code>new Student("Alice", 20)</code>, what actually happens in the JVM Heap? Objects are not just raw data; they have hidden metadata that the JVM uses to manage them.</p>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">1. Mark Word (8 bytes)</div>
+        <div class="hl-desc">Used for Garbage Collection (GC) age, Identity HashCode, and synchronization locks.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">2. Class Pointer (4 or 8 bytes)</div>
+        <div class="hl-desc">A pointer to the Class metadata (the blueprint) in the Metaspace. This is how the JVM knows what type the object is at runtime.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">3. Instance Data & Padding</div>
+        <div class="hl-desc">The actual fields (e.g., <code>int age</code>). The JVM will often add "padding" bytes so the object size is a multiple of 8 bytes, which makes CPU cache access faster.</div>
+      </div>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Object Overhead:</strong> Even an empty Java object (<code>new Object()</code>) takes up at least 16 bytes of memory just for the header!</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="this">
   <div class="subsection">
     <h3>The <code class="inline">this</code> Keyword: Self-Reference</h3>

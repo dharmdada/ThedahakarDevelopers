@@ -170,6 +170,16 @@ jagged[<span class="nm">2</span>] = <span class="kw">new</span> <span class="kw"
 <span class="cm">// Stream from array</span>
 <span class="cl">Arrays</span>.<span class="fn">stream</span>(arr).<span class="fn">sum</span>(); <span class="cm">// 26</span></code></pre>
     </div>
+    <h4 style="margin-top:20px;">Performance Secret: System.arraycopy()</h4>
+    <p>While <code>Arrays.copyOf()</code> is convenient because it creates the new array for you, it actually uses <code>System.arraycopy()</code> under the hood. If you already have a destination array and just need to move a block of data, <code>System.arraycopy()</code> is the absolute fastest way to do it in Java. Instead of a slow element-by-element loop, it uses a low-level, native JNI call to move raw blocks of memory.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span></div>
+      <pre><code><span class="kw">int</span>[] src = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>};
+<span class="kw">int</span>[] dest = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">10</span>];
+<span class="cm">// Copy 3 elements from src starting at index 1, to dest starting at index 5</span>
+<span class="cl">System</span>.<span class="fn">arraycopy</span>(src, <span class="nm">1</span>, dest, <span class="nm">5</span>, <span class="nm">3</span>);
+<span class="cm">// dest is now: [0, 0, 0, 0, 0, 2, 3, 4, 0, 0]</span></code></pre>
+    </div>
   </div>
 </div>
 

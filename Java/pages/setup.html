@@ -224,6 +224,23 @@ java -cp "out;libs\jackson-core-2.17.jar" com.example.App   # Windows</code></pr
   </div>
 </div>
 
+<div class="section" id="build-tools">
+  <div class="subsection">
+    <h3>Real-World: Enter Build Tools</h3>
+    <p>While understanding <code>javac</code> and <code>java</code> is crucial for interviews and debugging, <strong>no professional Java developer compiles code manually</strong>. Managing a massive classpath with hundreds of external library JARs manually is impossible.</p>
+    <p>In the real world, you will use a Build Tool. The two industry standards are <strong>Maven</strong> and <strong>Gradle</strong>.</p>
+    <ul class="feature-list">
+      <li><strong>Dependency Management:</strong> You tell the tool "I need Spring Boot and Jackson", and it automatically downloads those JARs and all <em>their</em> dependencies from a central repository.</li>
+      <li><strong>Standardized Lifecycle:</strong> Running <code>mvn clean install</code> or <code>./gradlew build</code> will automatically compile the code, run all unit tests, package the result into a deployable JAR file, and flag any errors.</li>
+      <li><strong>Consistency:</strong> Build tools ensure that a project builds exactly the same way on your laptop, your coworker's laptop, and the CI/CD pipeline server.</li>
+    </ul>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body">We have a dedicated chapter on <a href="build-tools.html" style="color:var(--accent);">Build Tools</a> later in the course, but it's important to know early on that manual compilation is just the foundation.</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="ide">
   <div class="subsection">
     <h3>IDE Setup: IntelliJ IDEA</h3>

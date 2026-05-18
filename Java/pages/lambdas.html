@@ -135,7 +135,11 @@ pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>); <sp
     </div>
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>
-      <div class="callout-body"><strong>Effectively Final Rule</strong>Lambdas can capture local variables from the enclosing scope, but those variables must be <strong>effectively final</strong> (never reassigned after initialization). This prevents concurrency bugs.</div>
+      <div class="callout-body">
+        <strong>The "Effectively Final" Rule (Heap vs Stack)</strong><br>
+        Lambdas can capture local variables from the enclosing scope, but those variables must be <strong>effectively final</strong> (never reassigned). Why? Local variables live on the <strong>Thread Stack</strong>, which is destroyed as soon as the method ends. A Lambda object lives on the <strong>Heap</strong> and might be executed much later (e.g., in a background thread or a button click). <br><br>
+        To make this work, the JVM makes a <em>hidden copy</em> of the local variable into the lambda. If you were allowed to change the original variable later, the lambda's copy would be out of sync. To prevent this silent bug, Java forces the variable to be read-only (effectively final).
+      </div>
     </div>
   </div>
 </div>

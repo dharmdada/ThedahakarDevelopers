@@ -122,6 +122,9 @@ names.<span class="fn">stream</span>().<span class="fn">peek</span>(<span class=
 <span class="cm">// limit &amp; skip</span>
 names.<span class="fn">stream</span>().<span class="fn">skip</span>(<span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">2</span>); <span class="cm">// Skip first 2, take next 2</span></code></pre>
     </div>
+    <h4 style="margin-top:20px;">The Magic of Lazy Evaluation &amp; Short-Circuiting</h4>
+    <p>Because streams are lazy, the JVM can deeply optimize the execution pipeline. Imagine you are searching a list of 1,000,000 users to find the first one from "New York" who is over 18. If you chain <code>.filter(isAdult).filter(isNY).findFirst()</code>, the JVM does <strong>not</strong> filter all 1,000,000 users first.</p>
+    <p>Instead, it evaluates elements one by one vertically down the chain. As soon as it finds <em>one</em> element that passes both filters, <code>findFirst()</code> triggers a <strong>Short-Circuit</strong>, and the stream immediately terminates. The remaining 999,999 elements are never even touched! This makes Streams incredibly performant for search operations.</p>
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -80,6 +80,39 @@
       <li><strong>Composition over inheritance:</strong> prefer object collaboration when behavior variants are many.</li>
       <li><strong>Polymorphism:</strong> replace if-else trees with interchangeable strategy implementations.</li>
     </ul>
+
+    <h4 style="margin-top:20px;">Composition vs. Inheritance (The "HAS-A" vs "IS-A" Rule)</h4>
+    <p>A common beginner mistake is using Inheritance (<code>extends</code>) simply to reuse code. If a <code>Car</code> needs an engine, it should not <em>extend</em> <code>Engine</code>. A Car <strong>IS-A</strong> Vehicle, but it <strong>HAS-A</strong> Engine. Composition (holding an instance of a class as a field) is usually safer and more flexible than inheritance.</p>
+    <div class="code-block" style="display:flex;gap:15px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:300px;">
+        <div class="code-header"><span class="code-lang">Bad (Inheritance for Reuse)</span></div>
+        <pre><code style="font-size:13px;">class Engine {
+  void start() { /* ... */ }
+}
+
+// ❌ A Car is NOT an Engine!
+class Car extends Engine {
+  void drive() {
+    start(); // Inherited method
+  }
+}</code></pre>
+      </div>
+      <div style="flex:1;min-width:300px;">
+        <div class="code-header"><span class="code-lang">Good (Composition)</span></div>
+        <pre><code style="font-size:13px;">class Engine {
+  void start() { /* ... */ }
+}
+
+// ✅ A Car HAS AN Engine
+class Car {
+  private Engine engine = new Engine();
+  
+  void drive() {
+    engine.start(); // Delegated behavior
+  }
+}</code></pre>
+      </div>
+    </div>
   </div>
 </div>
 

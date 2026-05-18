@@ -200,6 +200,11 @@ map.<span class="fn">forEach</span>((key, val) -&gt; <span class="cl">System</sp
     <span class="cl">Map</span>.<span class="fn">entry</span>(<span class="st">"B"</span>, <span class="nm">2</span>)
 );</code></pre>
     </div>
+
+    <h4 style="margin-top:20px;">Under the Hood: HashMap Load Factor</h4>
+    <p>A HashMap stores data in an array of "buckets". When you create a HashMap, it starts with an initial capacity (default 16 buckets). But what happens if you add 17 items?</p>
+    <p>The HashMap uses a <strong>Load Factor</strong> (default 0.75). This means when the map is 75% full (12 items), it triggers a massive operation called <strong>Rehashing</strong>. It creates a brand new array double the size (32 buckets) and recalculates the hash position for every single existing element. Rehashing is a huge performance hit. If you know you are going to put 100,000 items in a map, always initialize it with a large capacity: <code>new HashMap&lt;&gt;(135000);</code> to prevent rehashing.</p>
+
   </div>
 </div>
 
