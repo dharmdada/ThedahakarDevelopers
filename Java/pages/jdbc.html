@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JDBC and SQL in Java - JavaMaster</title>
+<meta name="description" content="Master Java JDBC: PreparedStatement, transactions, batch writes, connection pooling, RowMapper pattern, N+1 problem, and HikariCP configuration.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,7 +21,7 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(239,68,68,0.15);">SQL</div>
-    <div><h2>JDBC and SQL in Java</h2><p>Low-level database programming: prepared statements, transactions, batching, and connection management.</p></div>
+    <div><h2>JDBC and SQL in Java</h2><p>The low-level database API that every ORM is built on. Master it to understand what Hibernate is actually doing beneath the surface.</p></div>
   </div>
 </div>
 
@@ -31,152 +32,337 @@
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>JDBC is the low-level contract between Java and relational databases. It exposes the real responsibilities that ORMs often hide: connections, statements, result sets, transactions, parameter binding, and resource cleanup.</p>
-    <p>PreparedStatement is essential because SQL text and user values must be separated. This is a correctness issue and a security issue. Parameter binding prevents user input from changing the structure of the SQL command.</p>
-    <p>Transactions define consistency boundaries. If several writes represent one business action, they must commit or roll back together. Correct transaction handling is more important than simply making queries run.</p>
+    <p>JDBC is the lowest layer in Java's database stack. It exposes the real responsibilities that ORMs hide: <strong>connection acquisition, statement compilation, parameter binding, result set iteration, transaction demarcation, and resource cleanup</strong>. Understanding JDBC explains why ORMs make the tradeoffs they do.</p>
+    <p>A database connection is an expensive resource — establishing one involves TCP handshake, authentication, and session negotiation. <strong>Connection pools</strong> (HikariCP, Tomcat JDBC) reuse connections by holding them open and lending them to application threads on demand.</p>
+    <p>SQL injection is not just bad practice — it is an <strong>existential security risk</strong>. A single concatenated string in a query can expose or delete an entire database. <code class="inline">PreparedStatement</code> prevents this by separating SQL structure from user data permanently.</p>
+    <p>Transactions exist because some business operations span multiple SQL statements. If a money transfer deducts from Account A but then fails before crediting Account B, the deducted money vanishes. Atomicity prevents this.</p>
+  </div>
+  <div class="subsection">
+    <h3>JDBC Architecture</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Driver</div><div class="hl-value">Protocol Bridge</div><div class="hl-desc">DB-specific JAR (postgresql-42.x.jar). Translates JDBC calls to database wire protocol.</div></div>
+      <div class="hl-box"><div class="hl-label">DataSource</div><div class="hl-value">Connection Pool</div><div class="hl-desc">Manages a pool of live connections. Lends connections to threads. Configured with pool size, timeouts.</div></div>
+      <div class="hl-box"><div class="hl-label">Connection</div><div class="hl-value">Database Session</div><div class="hl-desc">A session with the DB. Expensive to create. Always close after use.</div></div>
+      <div class="hl-box"><div class="hl-label">PreparedStatement</div><div class="hl-value">Pre-Compiled SQL</div><div class="hl-desc">SQL compiled once, executed many times with different parameters. Thread-safe if not shared.</div></div>
+      <div class="hl-box"><div class="hl-label">ResultSet</div><div class="hl-value">Cursor</div><div class="hl-desc">Points to current row in result. Call next() to advance. Close after use or leak a cursor.</div></div>
+    </div>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li><strong>Always use PreparedStatement</strong> — Never concatenate user input into SQL. SQL injection is the #1 web vulnerability.</li>
+      <li><strong>Close in reverse order</strong> — Close ResultSet first, then PreparedStatement, then Connection. Try-with-resources does this automatically.</li>
+      <li><strong>Use DataSource, not DriverManager in production</strong> — DriverManager creates a new connection each call. DataSource pools them.</li>
+      <li><strong>Wrap JDBC exceptions</strong> — <code class="inline">SQLException</code> is checked. Translate to domain exceptions at the repository boundary.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>SQL Injection via concatenation</strong> — <code class="inline">"WHERE name = '" + userInput + "'"</code> is never acceptable. A user entering <code class="inline">'; DROP TABLE users; --</code> destroys your database.</li>
+      <li><strong>Not closing ResultSet</strong> — Each unclosed ResultSet is a cursor held open on the database server. Under load, this exhausts the DB's cursor limit.</li>
+      <li><strong>N+1 query problem</strong> — Fetching 100 orders then looping to fetch each order's items with a separate query = 101 queries. Use JOINs or batch fetching.</li>
+      <li><strong>autoCommit=true for multi-step operations</strong> — Each statement commits individually. If step 2 fails, step 1 is already committed and cannot be rolled back.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain jdbc in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You can write a full CRUD repository using PreparedStatement and try-with-resources.</li>
+      <li>You can implement a transaction that rolls back on any exception.</li>
+      <li>You can batch insert 10,000 rows efficiently.</li>
+      <li>You can configure HikariCP with appropriate pool size and timeouts.</li>
+      <li>You can explain the N+1 problem and how to solve it with a JOIN.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="core">
   <div class="subsection">
-    <h3>JDBC Core Interfaces</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Connection</div><div class="hl-value">Session</div><div class="hl-desc">Represents active connection to DB.</div></div>
-      <div class="hl-box"><div class="hl-label">PreparedStatement</div><div class="hl-value">Safe SQL</div><div class="hl-desc">Parameterized query to avoid SQL injection.</div></div>
-      <div class="hl-box"><div class="hl-label">ResultSet</div><div class="hl-value">Cursor</div><div class="hl-desc">Iterates over query result rows.</div></div>
-      <div class="hl-box"><div class="hl-label">DataSource</div><div class="hl-value">Pool</div><div class="hl-desc">Preferred for pooled production connections.</div></div>
-    </div>
-  </div>
-</div>
-
-<div class="section" id="safe-query">
-  <div class="subsection">
-    <h3>Safe Query Pattern</h3>
+    <h3>Full CRUD Repository Pattern</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Prepared Statement with try-with-resources</span><button class="copy-btn">Copy</button></div>
-      <pre><code>String sql = "SELECT id, name, email FROM users WHERE status = ?";
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Repository class — clean, safe JDBC</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public class UserRepository {
+    private final DataSource ds;
 
-try (Connection con = dataSource.getConnection();
-     PreparedStatement ps = con.prepareStatement(sql)) {
+    public UserRepository(DataSource ds) { this.ds = ds; }
 
-    ps.setString(1, "ACTIVE");
+    // --- CREATE ---
+    public long insert(User user) throws SQLException {
+        String sql = "INSERT INTO users (name, email, created_at) VALUES (?, ?, ?)";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-    try (ResultSet rs = ps.executeQuery()) {
-        while (rs.next()) {
-            long id = rs.getLong("id");
-            String name = rs.getString("name");
-            String email = rs.getString("email");
-            // map row to domain object
+            ps.setString(1, user.name());
+            ps.setString(2, user.email());
+            ps.setObject(3, user.createdAt());  // LocalDateTime via JDBC 4.2
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) return keys.getLong(1);
+                throw new SQLException("No generated key returned");
+            }
         }
     }
+
+    // --- READ ---
+    public Optional&lt;User&gt; findById(long id) throws SQLException {
+        String sql = "SELECT id, name, email, created_at FROM users WHERE id = ?";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
+            }
+        }
+    }
+
+    public List&lt;User&gt; findByStatus(String status) throws SQLException {
+        String sql = "SELECT id, name, email, created_at FROM users WHERE status = ? ORDER BY name";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                List&lt;User&gt; users = new ArrayList&lt;&gt;();
+                while (rs.next()) users.add(mapRow(rs));
+                return users;
+            }
+        }
+    }
+
+    // --- UPDATE ---
+    public int update(User user) throws SQLException {
+        String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, user.name());
+            ps.setString(2, user.email());
+            ps.setLong(3, user.id());
+            return ps.executeUpdate(); // returns rows affected
+        }
+    }
+
+    // --- DELETE ---
+    public int deleteById(long id) throws SQLException {
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement("DELETE FROM users WHERE id = ?")) {
+            ps.setLong(1, id);
+            return ps.executeUpdate();
+        }
+    }
+
+    // Row mapper: converts ResultSet row to domain object
+    private User mapRow(ResultSet rs) throws SQLException {
+        return new User(
+            rs.getLong("id"),
+            rs.getString("name"),
+            rs.getString("email"),
+            rs.getObject("created_at", LocalDateTime.class)
+        );
+    }
 }</code></pre>
-    </div>
-    <div class="callout warn">
-      <span class="callout-icon">WARN</span>
-      <div class="callout-body"><strong>Never build SQL by string concatenation with user input.</strong> Always bind parameters through <code class="inline">PreparedStatement</code>.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="transactions">
   <div class="subsection">
-    <h3>Transaction Handling</h3>
-    <p>Use transactions whenever multiple statements must succeed or fail as one unit.</p>
+    <h3>Transaction Management</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Connection con = dataSource.getConnection();
-try {
-    con.setAutoCommit(false);
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Atomic money transfer — commit or full rollback</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public void transfer(long fromId, long toId, BigDecimal amount) throws SQLException {
+    try (Connection con = ds.getConnection()) {
+        con.setAutoCommit(false);  // Start manual transaction
 
-    try (PreparedStatement debit = con.prepareStatement(
-             "UPDATE account SET balance = balance - ? WHERE id = ?");
-         PreparedStatement credit = con.prepareStatement(
-             "UPDATE account SET balance = balance + ? WHERE id = ?")) {
+        try {
+            // Debit
+            try (PreparedStatement debit = con.prepareStatement(
+                    "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance &gt;= ?")) {
+                debit.setBigDecimal(1, amount);
+                debit.setLong(2, fromId);
+                debit.setBigDecimal(3, amount);       // optimistic check
+                int rows = debit.executeUpdate();
+                if (rows == 0) throw new InsufficientFundsException("Insufficient balance");
+            }
 
-        debit.setBigDecimal(1, amount);
-        debit.setLong(2, fromAccountId);
-        debit.executeUpdate();
+            // Credit
+            try (PreparedStatement credit = con.prepareStatement(
+                    "UPDATE accounts SET balance = balance + ? WHERE id = ?")) {
+                credit.setBigDecimal(1, amount);
+                credit.setLong(2, toId);
+                credit.executeUpdate();
+            }
 
-        credit.setBigDecimal(1, amount);
-        credit.setLong(2, toAccountId);
-        credit.executeUpdate();
+            con.commit();  // ✅ Both succeeded — commit atomically
+
+        } catch (SQLException | InsufficientFundsException e) {
+            con.rollback(); // ❌ Any failure — undo everything
+            throw e;
+        }
+        // Connection auto-closed by try-with-resources, returns to pool
     }
-
-    con.commit();
-} catch (Exception e) {
-    con.rollback();
-    throw e;
-} finally {
-    con.close();
 }</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Savepoints</strong>: JDBC supports partial rollbacks via <code class="inline">Savepoint sp = con.setSavepoint()</code> and <code class="inline">con.rollback(sp)</code>. Use for nested logical operations where only the inner part should roll back.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="batch">
   <div class="subsection">
-    <h3>Batch Writes for Performance</h3>
-    <p>For large inserts/updates, batch operations reduce network round trips.</p>
+    <h3>Batch Writes — 100x Faster Bulk Inserts</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>String insert = "INSERT INTO event_log(type, payload) VALUES(?, ?)";
-try (Connection con = dataSource.getConnection();
-     PreparedStatement ps = con.prepareStatement(insert)) {
-    con.setAutoCommit(false);
-    for (Event e : events) {
-        ps.setString(1, e.type());
-        ps.setString(2, e.payload());
-        ps.addBatch();
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Batching 10,000 rows efficiently</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public void bulkInsert(List&lt;Event&gt; events) throws SQLException {
+    String sql = "INSERT INTO event_log (type, payload, occurred_at) VALUES (?, ?, ?)";
+    int BATCH_SIZE = 500;
+
+    try (Connection con = ds.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+
+        con.setAutoCommit(false);
+
+        for (int i = 0; i &lt; events.size(); i++) {
+            Event e = events.get(i);
+            ps.setString(1, e.type());
+            ps.setString(2, e.payload());
+            ps.setObject(3, e.occurredAt());
+            ps.addBatch();
+
+            // Execute in chunks of 500 to avoid memory overflow
+            if ((i + 1) % BATCH_SIZE == 0) {
+                ps.executeBatch();
+                ps.clearBatch();
+            }
+        }
+        ps.executeBatch(); // flush remaining
+        con.commit();
+
+        System.out.printf("Inserted %d events%n", events.size());
     }
-    ps.executeBatch();
-    con.commit();
-}</code></pre>
+}
+// Result: 10,000 inserts in ~300ms vs ~30 seconds with individual inserts</code></pre>
     </div>
   </div>
 </div>
 
-<div class="section" id="best-practices">
+<div class="section" id="n-plus-one">
   <div class="subsection">
-    <h3>Production Best Practices</h3>
-    <ul class="feature-list">
-      <li>Use connection pooling (HikariCP or app server pool).</li>
-      <li>Set query timeouts to avoid hanging threads.</li>
-      <li>Index columns used in joins and frequent filters.</li>
-      <li>Keep SQL in repository classes, not controller classes.</li>
-      <li>Map checked SQL exceptions to domain-specific runtime exceptions at boundaries.</li>
-    </ul>
+    <h3>The N+1 Query Problem</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ N+1: 1 query for orders + N queries for each order's items</span><button class="copy-btn">Copy</button></div>
+      <pre><code>List&lt;Order&gt; orders = orderRepo.findAll();       // 1 query
+for (Order order : orders) {
+    List&lt;Item&gt; items = itemRepo.findByOrderId(order.id()); // 1 query PER ORDER!
+    // With 1000 orders: 1001 total queries. Slow.
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Fixed: single JOIN query fetches everything at once</span><button class="copy-btn">Copy</button></div>
+      <pre><code>String sql = """
+    SELECT o.id, o.customer_id, o.total,
+           i.id AS item_id, i.product_name, i.quantity, i.price
+    FROM orders o
+    LEFT JOIN order_items i ON i.order_id = o.id
+    ORDER BY o.id
+    """;
+
+try (Connection con = ds.getConnection();
+     PreparedStatement ps = con.prepareStatement(sql);
+     ResultSet rs = ps.executeQuery()) {
+
+    Map&lt;Long, Order&gt; orderMap = new LinkedHashMap&lt;&gt;();
+    while (rs.next()) {
+        long orderId = rs.getLong("id");
+        Order order = orderMap.computeIfAbsent(orderId,
+            id -&gt; new Order(id, rs.getLong("customer_id"), rs.getBigDecimal("total")));
+
+        long itemId = rs.getLong("item_id");
+        if (itemId != 0) {  // LEFT JOIN may have no items
+            order.addItem(new Item(itemId, rs.getString("product_name"),
+                rs.getInt("quantity"), rs.getBigDecimal("price")));
+        }
+    }
+    return new ArrayList&lt;&gt;(orderMap.values());
+}
+// Result: 1 query instead of 1001. 1000x fewer round-trips.</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="hikari">
+  <div class="subsection">
+    <h3>Connection Pooling with HikariCP</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">HikariCP configuration — production settings</span><button class="copy-btn">Copy</button></div>
+      <pre><code>HikariConfig config = new HikariConfig();
+config.setJdbcUrl("jdbc:postgresql://db-host:5432/myapp");
+config.setUsername("app_user");
+config.setPassword(System.getenv("DB_PASSWORD"));  // never hardcode!
+
+// Pool sizing: rule of thumb = (num_cpu_cores * 2) + num_disk_spindles
+config.setMaximumPoolSize(10);
+config.setMinimumIdle(5);
+
+// Connection timeouts
+config.setConnectionTimeout(3000);   // fail fast if no connection available (ms)
+config.setIdleTimeout(600_000);      // remove idle connections after 10 min
+config.setMaxLifetime(1_800_000);    // force recycle connections after 30 min
+
+// Validation
+config.setConnectionTestQuery("SELECT 1");  // for drivers lacking isValid()
+config.setKeepaliveTime(60_000);            // heartbeat to prevent firewall drops
+
+// Performance
+config.addDataSourceProperty("cachePrepStmts",         "true");
+config.addDataSourceProperty("prepStmtCacheSize",      "250");
+config.addDataSourceProperty("prepStmtCacheSqlLimit",  "2048");
+config.addDataSourceProperty("useServerPrepStmts",     "true"); // MySQL-specific
+
+DataSource ds = new HikariDataSource(config);
+// Thread-safe singleton — create once, share everywhere</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body">The optimal pool size is almost never "as many as possible". Too many connections overwhelm the database. For a 4-core PostgreSQL server, start with <strong>10 connections max</strong> and benchmark before increasing.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">Statement vs PreparedStatement?</div>
+        <div class="hl-desc"><code class="inline">Statement</code> compiles SQL each time and concatenates values — vulnerable to injection. <code class="inline">PreparedStatement</code> compiles once, binds parameters safely, is reusable, and is 2-5x faster for repeated execution. Always use <code class="inline">PreparedStatement</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">What is SQL Injection and how do you prevent it?</div>
+        <div class="hl-desc">Injecting SQL commands via user input (e.g., <code class="inline">'; DROP TABLE users--</code>). Prevention: ALWAYS use <code class="inline">PreparedStatement</code> with parameter binding, never concatenate user strings into SQL. Input validation is secondary — <code class="inline">PreparedStatement</code> is the primary defense.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">What is the N+1 problem?</div>
+        <div class="hl-desc">Fetching a list of N entities then making N additional queries for each entity's associated data. Fix: use a JOIN to load everything in one query and build the object graph in Java, or use batched IN-clause queries.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">Why use a connection pool?</div>
+        <div class="hl-desc">Creating a DB connection costs 20-100ms (TCP + auth). Pooling reuses open connections, reducing request latency to microseconds. HikariCP is the fastest JVM pool — used by default in Spring Boot.</div>
+      </div>
+    </div>
   </div>
 </div>
 
 </div>
-<footer><p>JavaMaster - <a href="design-patterns.html" style="color:var(--accent);">Next: Design Patterns and SOLID</a></p></footer>
+<footer><p>JavaMaster — <a href="design-patterns.html" style="color:var(--accent);">Next: Design Patterns and SOLID</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

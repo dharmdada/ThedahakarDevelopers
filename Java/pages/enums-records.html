@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Enums & Records – JavaMaster</title>
+<title>Enums &amp; Records – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
 </header>
@@ -30,7 +28,7 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(234,179,8,0.15);">📋</div>
-    <div><h2>Enums & Records</h2><p>Type-safe constants and immutable data carriers — two of Java's most useful features.</p></div>
+    <div><h2>Enums &amp; Records</h2><p>Type-safe constants and immutable data carriers — two of Java's most useful features.</p></div>
   </div>
 </div>
 
@@ -47,30 +45,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Enums provide type safety for a fixed set of constants (e.g., DAYS_OF_WEEK).</li>
+      <li>Records (Java 14+) reduce boilerplate for immutable data carriers.</li>
+      <li>Enums can have fields, constructors, and methods, just like regular classes.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Using String constants (public static final String RED = "RED") instead of Enums, losing type safety.</li>
+      <li>Trying to instantiate an Enum using the 'new' keyword. (The JVM handles instantiation).</li>
+      <li>Assuming Records are just "less typing" for Java Beans. Records are strictly immutable; they don't have setters.</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain enums records in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can create an Enum with a custom constructor and properties.</li>
+      <li>You understand the 'values()' and 'valueOf()' methods of Enums.</li>
+      <li>You know how to define a Record and access its components.</li></ul>
   </div>
 </div>
 
@@ -245,6 +234,9 @@ p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Po
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
@@ -252,26 +244,20 @@ p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Po
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
         <div class="hl-value" style="font-size:16px;">Are Enums thread-safe?</div>
-        <div class="hl-desc">Yes, Enums are inherently thread-safe. The JVM guarantees that only one instance of each enum constant is ever created, making them perfect for implementing the Singleton design pattern.</div>
+        <div class="hl-desc">Yes, the JVM guarantees that Enums are instantiated only once. This makes them a perfect and simple way to implement the Singleton design pattern.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">Can a Record have instance variables?</div>
-        <div class="hl-desc">No. A Record can only have the fields defined in its header. All of these fields are implicitly <code>final</code>. You cannot add additional instance fields, but you can add <code>static</code> variables.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">What is a compact constructor in a Record?</div>
-        <div class="hl-desc">It is a constructor that does not repeat the parameters in its declaration. It is used to validate or normalize data before it is assigned to the record's final fields.</div>
+        <div class="hl-value" style="font-size:16px;">Can a Record implement an Interface?</div>
+        <div class="hl-desc">Yes. Records cannot extend other classes (they implicitly extend java.lang.Record), but they can implement interfaces.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

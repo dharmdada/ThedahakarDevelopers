@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Date and Time API - JavaMaster</title>
+<meta name="description" content="Master Java's java.time API: LocalDate, Instant, ZonedDateTime, Duration, Period, TemporalAdjusters, DateTimeFormatter and timezone-safe design.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -19,8 +20,8 @@
 
 <div class="section" id="top">
   <div class="section-header">
-    <div class="section-icon" style="background:rgba(59,130,246,0.15);">TIME</div>
-    <div><h2>Date and Time API</h2><p>Use modern, immutable date/time types to avoid timezone bugs and fragile legacy code.</p></div>
+    <div class="section-icon" style="background:rgba(59,130,246,0.15);">⏱</div>
+    <div><h2>Date and Time API</h2><p>Use modern, immutable <code class="inline">java.time</code> types to eliminate timezone bugs, fragile calendar math, and legacy <code class="inline">Date</code> misery.</p></div>
   </div>
 </div>
 
@@ -31,48 +32,103 @@
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>Date and time bugs happen when code confuses human calendar concepts with machine timestamps. A birthday is a LocalDate. A log entry is an Instant. A meeting scheduled for a city is a ZonedDateTime. Choosing the right type prevents entire classes of bugs.</p>
-    <p>Time zones are political and historical rules, not simple offsets. Offsets can change because of daylight saving or government decisions. Store global events as Instants and convert to local representation at the boundary where a user views them.</p>
-    <p>Duration and Period are different because humans think in calendar units while machines measure elapsed time. One month is not a fixed number of seconds; one hour during a DST transition may not behave like ordinary elapsed time.</p>
+    <p>Date and time bugs happen when code <strong>confuses human calendar concepts with machine timestamps</strong>. These are fundamentally different things:</p>
+    <ul class="feature-list">
+      <li>A <strong>birthday</strong> is a <code class="inline">LocalDate</code> — it doesn't belong to a timezone. "January 1st" means the same thing in Tokyo or London.</li>
+      <li>A <strong>server log entry</strong> is an <code class="inline">Instant</code> — a nanosecond-precise UTC moment. Time zone is irrelevant for ordering events.</li>
+      <li>A <strong>calendar appointment in Mumbai at 2 PM</strong> is a <code class="inline">ZonedDateTime</code> — it anchors a wall-clock time to a specific political timezone that may observe DST.</li>
+    </ul>
+    <p>Time zones are <strong>political constructs</strong>, not math. The IANA timezone database is updated when governments change DST rules. Offsets change. Storing <code class="inline">+05:30</code> is different from storing <code class="inline">Asia/Kolkata</code> — the latter carries DST history. Always use the IANA zone ID for recurring schedules.</p>
+    <p><code class="inline">Duration</code> and <code class="inline">Period</code> exist for a reason: one month is NOT 30 days. One hour on the day clocks spring forward is 60 minutes, but on fall-back day there are two 1 AM hours. The API forces you to be explicit.</p>
+  </div>
+  <div class="subsection">
+    <h3>Why Legacy Date/Calendar Was a Disaster</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Mutable</div><div class="hl-value" style="color:var(--danger)">Not Thread-Safe</div><div class="hl-desc"><code class="inline">Date</code> fields can be changed after creation, causing race conditions.</div></div>
+      <div class="hl-box"><div class="hl-label">0-Indexed Months</div><div class="hl-value" style="color:var(--danger)">January = 0</div><div class="hl-desc">Calendar.JANUARY == 0, Calendar.DECEMBER == 11. Off-by-one bugs everywhere.</div></div>
+      <div class="hl-box"><div class="hl-label">Poor API</div><div class="hl-value" style="color:var(--danger)">Year = year - 1900</div><div class="hl-desc">new Date(2024, 0, 1) means Jan 1 2024? No! It's year 3924.</div></div>
+      <div class="hl-box"><div class="hl-label">Timezone Bugs</div><div class="hl-value" style="color:var(--danger)">Implicit Default TZ</div><div class="hl-desc">Calendar uses JVM default timezone silently. Behavior changes on different servers.</div></div>
+    </div>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li>Always use <code class="inline">java.time</code> (Java 8+). Never use <code class="inline">java.util.Date</code> or <code class="inline">Calendar</code> in new code.</li>
+      <li>All <code class="inline">java.time</code> classes are <strong>immutable and thread-safe</strong>. You must capture return values — <code class="inline">date.plusDays(1)</code> returns a new object.</li>
+      <li>Store timestamps in UTC (<code class="inline">Instant</code>). Convert to local time only at display boundaries.</li>
+      <li>Use <code class="inline">ZoneId</code> by name (e.g., <code class="inline">"Asia/Kolkata"</code>), not by offset (<code class="inline">"+05:30"</code>), for DST safety.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>Using <code class="inline">Date</code>/<code class="inline">Calendar</code> in new code</strong> — They are flawed, mutable, and legacy. No exceptions.</li>
+      <li><strong>Forgetting to reassign</strong> — <code class="inline">date.plusDays(1)</code> does NOT modify <code class="inline">date</code>. You must write <code class="inline">date = date.plusDays(1)</code>.</li>
+      <li><strong><code class="inline">LocalDateTime</code> is not timezone-aware</strong> — It is a wall clock on an unknown wall. Never store it as a global timestamp.</li>
+      <li><strong>Serializing <code class="inline">LocalDateTime</code> to databases</strong> — Store as <code class="inline">TIMESTAMP WITH TIME ZONE</code> or map to <code class="inline">Instant</code>.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain datetime in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You can choose the right type: <code class="inline">LocalDate</code>, <code class="inline">LocalDateTime</code>, <code class="inline">ZonedDateTime</code>, or <code class="inline">Instant</code>.</li>
+      <li>You know the difference between <code class="inline">Duration</code> and <code class="inline">Period</code>.</li>
+      <li>You can format, parse, and convert between legacy and modern types.</li>
+      <li>You can use <code class="inline">TemporalAdjusters</code> for business date math.</li>
+      <li>You can explain why DST makes certain duration arithmetic incorrect.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="types">
   <div class="subsection">
-    <h3>Core java.time Types</h3>
+    <h3>Core java.time Type Hierarchy</h3>
     <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">LocalDate</div><div class="hl-value">Date Only</div><div class="hl-desc">No time, no zone.</div></div>
-      <div class="hl-box"><div class="hl-label">LocalDateTime</div><div class="hl-value">Date + Time</div><div class="hl-desc">No timezone attached.</div></div>
-      <div class="hl-box"><div class="hl-label">Instant</div><div class="hl-value">UTC Point</div><div class="hl-desc">Best for storage/log timestamps.</div></div>
-      <div class="hl-box"><div class="hl-label">ZonedDateTime</div><div class="hl-value">Zone Aware</div><div class="hl-desc">Timezone-specific representation.</div></div>
-      <div class="hl-box"><div class="hl-label">Duration/Period</div><div class="hl-value">Differences</div><div class="hl-desc">Time-based vs date-based amount.</div></div>
+      <div class="hl-box"><div class="hl-label">LocalDate</div><div class="hl-value">Date Only</div><div class="hl-desc">No time, no zone. Use for birthdays, holidays, expiry dates.</div></div>
+      <div class="hl-box"><div class="hl-label">LocalTime</div><div class="hl-value">Time Only</div><div class="hl-desc">No date, no zone. Use for business hours, recurring daily alarms.</div></div>
+      <div class="hl-box"><div class="hl-label">LocalDateTime</div><div class="hl-value">Date + Time</div><div class="hl-desc">No timezone. Use for schedule display in known-context apps.</div></div>
+      <div class="hl-box"><div class="hl-label">Instant</div><div class="hl-value">UTC Timestamp</div><div class="hl-desc">Machine time. Best for logs, DB storage, event ordering.</div></div>
+      <div class="hl-box"><div class="hl-label">ZonedDateTime</div><div class="hl-value">Full Precision</div><div class="hl-desc">Date + Time + Zone rules. Use for user-facing meeting times.</div></div>
+      <div class="hl-box"><div class="hl-label">OffsetDateTime</div><div class="hl-value">Fixed Offset</div><div class="hl-desc">No DST rules, just an offset. Used in REST APIs and JSON.</div></div>
+    </div>
+    <div class="code-block" style="margin-top:18px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Creating instances</span><button class="copy-btn">Copy</button></div>
+      <pre><code>LocalDate today      = LocalDate.now();               // 2026-05-17
+LocalDate birthday   = LocalDate.of(1990, Month.JUNE, 15);
+LocalTime noon       = LocalTime.of(12, 0);
+LocalDateTime ldt    = LocalDateTime.of(today, noon);
+Instant now          = Instant.now();                 // UTC nanoseconds
+ZonedDateTime zdt    = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+OffsetDateTime odt   = OffsetDateTime.now(ZoneOffset.ofHoursMinutes(5, 30));</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="arithmetic">
+  <div class="subsection">
+    <h3>Date Arithmetic: Plus, Minus, Until</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Immutable arithmetic — always capture return value!</span><button class="copy-btn">Copy</button></div>
+      <pre><code>LocalDate today = LocalDate.now();
+
+LocalDate nextWeek    = today.plusWeeks(1);
+LocalDate lastMonth   = today.minusMonths(1);
+LocalDate anniversary = today.withDayOfMonth(1).withMonth(1);  // Jan 1 this year
+
+long daysBetween = ChronoUnit.DAYS.between(today, nextWeek);  // 7
+long monthsBetween = ChronoUnit.MONTHS.between(birthday, today);
+
+// Duration: machine time (seconds/nanos)
+Duration twoHours = Duration.ofHours(2);
+Instant later = Instant.now().plus(twoHours);
+
+// Period: human calendar (days/months/years)
+Period threeMonths = Period.ofMonths(3);
+LocalDate futureDate = today.plus(threeMonths);</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Duration vs Period:</strong> <code class="inline">Duration.ofDays(30)</code> is always 2,592,000 seconds. <code class="inline">Period.ofMonths(1)</code> is calendar-aware — February + 1 month = March, not 28 days later.</div>
     </div>
   </div>
 </div>
@@ -81,51 +137,189 @@
   <div class="subsection">
     <h3>Formatting and Parsing</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-LocalDateTime now = LocalDateTime.now();
-String text = now.format(f);
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">DateTimeFormatter — always thread-safe when created as constant</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Built-in ISO formats (preferred for APIs)
+String iso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE); // "2026-05-17"
+Instant parsed = Instant.parse("2026-05-17T10:30:00Z");
 
-LocalDate parsed = LocalDate.parse("2026-05-16");
-Instant instant = Instant.parse("2026-05-16T12:00:00Z");</code></pre>
+// Custom pattern
+DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a", Locale.ENGLISH);
+String display = LocalDateTime.now().format(fmt); // "17 May 2026, 02:30 PM"
+
+// Parsing user input safely
+DateTimeFormatter userFmt = DateTimeFormatter.ofPattern("d/M/yyyy");
+LocalDate userDate = LocalDate.parse("5/3/2026", userFmt); // March 5
+
+// Locale-aware formatting
+DateTimeFormatter localeFmt = DateTimeFormatter
+    .ofLocalizedDate(FormatStyle.LONG)
+    .withLocale(Locale.forLanguageTag("hi-IN")); // Hindi format</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body">Declare <code class="inline">DateTimeFormatter</code> as a <code class="inline">static final</code> constant. It is <strong>immutable and thread-safe</strong>, unlike the legacy <code class="inline">SimpleDateFormat</code> which causes subtle concurrent bugs.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="temporal-adjusters">
+  <div class="subsection">
+    <h3>Business Date Math: TemporalAdjusters</h3>
+    <p>Beyond simple addition, <code class="inline">TemporalAdjusters</code> handle real-world business date logic:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
+      <pre><code>LocalDate today = LocalDate.now();
+
+// Built-in adjusters
+LocalDate firstOfMonth  = today.with(TemporalAdjusters.firstDayOfMonth());
+LocalDate lastOfMonth   = today.with(TemporalAdjusters.lastDayOfMonth());
+LocalDate firstOfNext   = today.with(TemporalAdjusters.firstDayOfNextMonth());
+LocalDate nextFriday    = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+LocalDate prevMonday    = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+// Custom adjuster: next working day (skip weekends)
+TemporalAdjuster nextWorkingDay = TemporalAdjusters.ofDateAdjuster(date -> {
+    DayOfWeek dow = date.getDayOfWeek();
+    int daysToAdd = switch (dow) {
+        case FRIDAY   -> 3;
+        case SATURDAY -> 2;
+        default       -> 1;
+    };
+    return date.plusDays(daysToAdd);
+});
+LocalDate nextWorkDay = today.with(nextWorkingDay);
+
+// Payment due date: last business day of month
+LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
+while (endOfMonth.getDayOfWeek() == DayOfWeek.SATURDAY
+    || endOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
+    endOfMonth = endOfMonth.minusDays(1);
+}</code></pre>
     </div>
   </div>
 </div>
 
 <div class="section" id="timezone">
   <div class="subsection">
-    <h3>Timezone-Safe Design</h3>
-    <ul class="feature-list">
-      <li>Store event instants in UTC (<code class="inline">Instant</code>).</li>
-      <li>Convert to user timezone only at display boundaries.</li>
-      <li>Never assume local timezone in backend business logic.</li>
-      <li>Use <code class="inline">ZoneId</code> explicitly for recurring schedules.</li>
-    </ul>
+    <h3>Timezone-Safe Design Patterns</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">UTC storage, local display</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ✅ CORRECT PATTERN: Store in UTC, display in user's zone
+Instant eventTime = Instant.now();             // Store this in DB
+ZoneId userZone = ZoneId.of("America/New_York");
+ZonedDateTime display = eventTime.atZone(userZone);
+// "2026-05-17T04:00-04:00[America/New_York]"
+
+// ✅ Convert between zones correctly
+ZonedDateTime kolkata = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
+ZonedDateTime london  = kolkata.withZoneSameInstant(ZoneId.of("Europe/London"));
+
+// ❌ WRONG: LocalDateTime loses timezone context
+LocalDateTime wrong = LocalDateTime.now(); // Whose time zone? Unknown!
+
+// ✅ Querying available zone IDs
+Set&lt;String&gt; allZones = ZoneId.getAvailableZoneIds(); // ~600 zones
+
+// ✅ ZonedDateTime comparison is instant-based
+ZonedDateTime meeting1 = ZonedDateTime.parse("2026-06-01T09:00+05:30[Asia/Kolkata]");
+ZonedDateTime meeting2 = ZonedDateTime.parse("2026-06-01T04:00Z");
+boolean sameMoment = meeting1.toInstant().equals(meeting2.toInstant()); // true!</code></pre>
+    </div>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
-      <div class="callout-body"><strong>Daylight Saving Time changes can break assumptions.</strong> Test schedule logic around DST transition dates.</div>
+      <div class="callout-body"><strong>Daylight Saving Time trap:</strong> <code class="inline">ZonedDateTime.of(2026, 3, 8, 2, 30, 0, 0, ZoneId.of("America/New_York"))</code> will silently adjust the time because 2:30 AM doesn't exist on DST spring-forward day. Test schedule logic around March and November in US zones.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="legacy">
   <div class="subsection">
-    <h3>Legacy Interop</h3>
+    <h3>Legacy Interoperability</h3>
+    <p>When integrating with older frameworks (JDBC, Hibernate, older libs) you'll need bridge conversions:</p>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// java.util.Date -> Instant
-Date legacy = new Date();
-Instant modern = legacy.toInstant();
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Bridge between java.util and java.time</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// java.util.Date ↔ Instant
+Date legacy  = new Date();
+Instant inst = legacy.toInstant();
+Date back    = Date.from(inst);
 
-// Instant -> java.util.Date
-Date backToLegacy = Date.from(modern);</code></pre>
+// java.util.Calendar ↔ ZonedDateTime
+Calendar cal = Calendar.getInstance();
+ZonedDateTime zdt = cal.toInstant().atZone(cal.getTimeZone().toZoneId());
+
+// java.sql.Date ↔ LocalDate (for JDBC)
+java.sql.Date sqlDate  = java.sql.Date.valueOf(LocalDate.now());
+LocalDate localDate    = sqlDate.toLocalDate();
+
+// java.sql.Timestamp ↔ LocalDateTime / Instant
+Timestamp ts           = Timestamp.from(Instant.now());
+LocalDateTime fromTs   = ts.toLocalDateTime();
+
+// For modern JDBC drivers (PostgreSQL 42.x+, MySQL 8.x+)
+// directly pass LocalDate, LocalDateTime, Instant in PreparedStatement
+ps.setObject(1, LocalDate.now());     // works with JDBC 4.2+
+ps.setObject(2, Instant.now());       // maps to TIMESTAMP WITH TIME ZONE</code></pre>
     </div>
-    <p>Prefer <code class="inline">java.time</code> in new code. Keep legacy conversions at integration boundaries only.</p>
+    <div class="callout info">
+      <span class="callout-icon">INFO</span>
+      <div class="callout-body">Modern JDBC drivers support <code class="inline">setObject()</code> with <code class="inline">java.time</code> types directly. Prefer this over manual conversion to <code class="inline">Timestamp</code>.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="comparison">
+  <div class="subsection">
+    <h3>Duration vs Period: Quick Reference</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Duration</div>
+        <div class="hl-value">Machine Time</div>
+        <div class="hl-desc">Hours, minutes, seconds, nanos. Fixed amount. Works with Instant and LocalTime. <code class="inline">Duration.ofHours(2)</code></div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Period</div>
+        <div class="hl-value">Calendar Time</div>
+        <div class="hl-desc">Years, months, days. Variable in seconds. Works with LocalDate. <code class="inline">Period.ofMonths(3)</code></div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">ChronoUnit</div>
+        <div class="hl-value">Unit Counting</div>
+        <div class="hl-desc">Count units between two temporals. <code class="inline">ChronoUnit.DAYS.between(a, b)</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">Why was java.time introduced?</div>
+        <div class="hl-desc">Legacy <code class="inline">Date</code>/<code class="inline">Calendar</code> were mutable (not thread-safe), had terrible API design (0-indexed months, year = year-1900), mixed human and machine time concepts, and had poor timezone handling. <code class="inline">java.time</code> is immutable, clearly separates concepts, and has a fluent, consistent API.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">LocalDateTime vs ZonedDateTime vs Instant?</div>
+        <div class="hl-desc"><code class="inline">LocalDateTime</code> = wall clock with no location (no zone). <code class="inline">ZonedDateTime</code> = wall clock with explicit timezone + DST rules. <code class="inline">Instant</code> = UTC nanoseconds since epoch, no zone concept. For global event storage, always use <code class="inline">Instant</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">Duration vs Period?</div>
+        <div class="hl-desc"><code class="inline">Duration</code> measures time in fixed units (seconds, nanos) — "2 hours = 7200 seconds always". <code class="inline">Period</code> measures in calendar units (years, months, days) — "1 month" varies by calendar month length and is not a fixed number of seconds.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">Why is SimpleDateFormat not thread-safe?</div>
+        <div class="hl-desc">It stores parsing state in instance fields, so concurrent access corrupts results. <code class="inline">DateTimeFormatter</code> is immutable and always thread-safe — declare it <code class="inline">static final</code> and share freely.</div>
+      </div>
+    </div>
   </div>
 </div>
 
 </div>
-<footer><p>JavaMaster - Continue with <a href="concurrency.html" style="color:var(--accent);">Concurrency</a></p></footer>
+<footer><p>JavaMaster — Continue with <a href="concurrency.html" style="color:var(--accent);">Concurrency</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Inheritance & Polymorphism – JavaMaster</title>
+<title>Inheritance &amp; Polymorphism – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
 </header>
@@ -30,7 +28,7 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(34,197,94,0.15);">🧬</div>
-    <div><h2>Inheritance & Polymorphism</h2><p>Reuse code through class hierarchies and write flexible, extensible programs.</p></div>
+    <div><h2>Inheritance &amp; Polymorphism</h2><p>Reuse code through class hierarchies and write flexible, extensible programs.</p></div>
   </div>
 </div>
 
@@ -47,30 +45,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Inheritance models an "IS-A" relationship. A Dog IS-A Animal.</li>
+      <li>Prefer Composition over Inheritance when the relationship is "HAS-A".</li>
+      <li>The 'super' keyword accesses the immediate parent class's methods and constructors.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Using inheritance just to reuse code (code reuse is better achieved via composition).</li>
+      <li>Forgetting that private members of a parent class are NOT accessible in the child class directly.</li>
+      <li>Misunderstanding method hiding (for static methods) vs method overriding (for instance methods).</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain inheritance in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can explain polymorphism and how method overriding enables it.</li>
+      <li>You know the role of the Object class as the root of all Java classes.</li>
+      <li>You can explain what 'protected' access means.</li></ul>
   </div>
 </div>
 
@@ -208,7 +197,7 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
 
 <div class="section" id="casting">
   <div class="subsection">
-    <h3>Upcasting & Downcasting: Changing Perspectives</h3>
+    <h3>Upcasting &amp; Downcasting: Changing Perspectives</h3>
     <p>Casting objects doesn't physically change the object in memory. It only changes the <em>type of the remote control</em> you are using to interact with the object.</p>
     <ul class="feature-list" style="margin-bottom: 20px;">
       <li><strong>Upcasting (Safe):</strong> Treating a <code class="inline">Dog</code> as an <code class="inline">Animal</code>. You lose access to dog-specific methods (like <code class="inline">fetch()</code>) because the Animal remote control doesn't have a fetch button. This is done automatically by Java.</li>
@@ -285,33 +274,30 @@ animal.<span class="fn">eat</span>();     <span class="cm">// ✅ Works</span>
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">Does Java support Multiple Inheritance?</div>
-        <div class="hl-desc">No, Java does not support multiple class inheritance (the "Diamond Problem"). A class can only <code>extend</code> one parent. However, a class can <code>implement</code> multiple Interfaces.</div>
+        <div class="hl-value" style="font-size:16px;">Does Java support multiple inheritance?</div>
+        <div class="hl-desc">Java does not support multiple inheritance for classes to avoid the "Diamond Problem". However, a class can implement multiple interfaces.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">What is Method Overriding vs Overloading?</div>
-        <div class="hl-desc">Overriding provides a new implementation for a parent's method (same signature). Overloading creates a new method in the same class with the same name but different parameters.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">What does 'super()' do?</div>
-        <div class="hl-desc">It calls the parent class's constructor. It MUST be the very first line inside the child's constructor. If you don't write it, the compiler invisibly inserts <code>super()</code> for you.</div>
+        <div class="hl-value" style="font-size:16px;">What is Polymorphism?</div>
+        <div class="hl-desc">The ability of a single interface or reference to take on multiple forms. In Java, this usually means a parent reference variable can point to any child object.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Math & Utilities – JavaMaster</title>
+<title>Math &amp; Utilities – JavaMaster</title>
+<meta name="description" content="Master Java Math class, BigDecimal precision, Random, SecureRandom, ThreadLocalRandom, UUID, Objects utility, and numeric edge cases.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,123 +21,279 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(59,130,246,0.15);">🧮</div>
-    <div><h2>Math & Utilities</h2><p>Essential utility classes: Math, BigDecimal, Random, and UUID.</p></div>
+    <div><h2>Math &amp; Utilities</h2><p>Correct numeric arithmetic, precision money calculations, secure randomization, and essential Java utility classes.</p></div>
   </div>
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
-    <div><h2>Theory Deep Dive</h2><p>Utility APIs as reusable precision tools</p></div>
+    <div><h2>Theory Deep Dive</h2><p>Choosing the right numeric type for the right domain</p></div>
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>Math and utility APIs exist so common operations are correct, tested, and expressive. Reimplementing random number generation, rounding, UUID creation, or numeric comparison is usually a mistake unless you have a specialized requirement.</p>
-    <p>Different numeric domains require different tools. Floating point is designed for approximate measurement, not exact money. BigDecimal is slower but gives explicit precision and rounding control. Random is fine for simple simulations; SecureRandom is required for security-sensitive tokens.</p>
-    <p>Utility classes also teach API design: static methods are suitable for stateless general operations, while object instances are better when behavior depends on configuration or state.</p>
+    <p>Java has multiple numeric types for good reason — they serve different purposes:</p>
+    <ul class="feature-list">
+      <li><code class="inline">int</code> / <code class="inline">long</code> — Exact integers. Use for counts, IDs, indices, flags. Integer overflow wraps silently; use <code class="inline">Math.addExact()</code> to detect it.</li>
+      <li><code class="inline">double</code> / <code class="inline">float</code> — IEEE 754 binary floating point. Fast, approximate. Perfect for scientific/geometric calculations. Catastrophic for money.</li>
+      <li><code class="inline">BigDecimal</code> — Arbitrary precision decimal. Slow but exact. Mandatory for financial calculations.</li>
+      <li><code class="inline">BigInteger</code> — Arbitrary size integers. Cryptography, factorial, large combinatorics.</li>
+    </ul>
+    <p>The golden rule: <strong>never use <code class="inline">double</code> for money</strong>. The representation error is not a bug — it is the designed behavior of IEEE 754. The number 0.1 cannot be stored exactly in binary (just like 1/3 cannot be written exactly in decimal). Over thousands of calculations, these errors compound.</p>
+    <p>For randomness, the right class depends on the use case: <code class="inline">ThreadLocalRandom</code> for general concurrent use, <code class="inline">SecureRandom</code> for anything security-sensitive, and <code class="inline">SplittableRandom</code> for parallel computation.</p>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li>Use <code class="inline">BigDecimal</code> with String constructor, never double constructor.</li>
+      <li>Use <code class="inline">ThreadLocalRandom.current()</code> in multithreaded code — never share a <code class="inline">Random</code> instance between threads.</li>
+      <li>Use <code class="inline">SecureRandom</code> for tokens, passwords, OTPs, session IDs.</li>
+      <li>Use <code class="inline">Math.addExact()</code> / <code class="inline">multiplyExact()</code> where integer overflow would be a bug.</li>
+      <li><code class="inline">Objects.requireNonNull()</code> should be your first line in any constructor that takes reference params.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong><code class="inline">new BigDecimal(0.1)</code> is NOT 0.1</strong> — It is the exact binary representation of 0.1 as double, which is 0.1000000000000000055511151231257827021181583404541015625. Use <code class="inline">new BigDecimal("0.1")</code> or <code class="inline">BigDecimal.valueOf(0.1)</code>.</li>
+      <li><strong>Sharing <code class="inline">java.util.Random</code> across threads</strong> — Random is thread-safe but uses synchronized access, causing contention. <code class="inline">ThreadLocalRandom</code> has zero contention.</li>
+      <li><strong><code class="inline">Math.random()</code> in production code</strong> — It returns a <code class="inline">double</code> in [0, 1) and is a convenience wrapper around a shared synchronized <code class="inline">Random</code>. Use <code class="inline">ThreadLocalRandom.current().nextInt(bound)</code> instead.</li>
+      <li><strong>Comparing <code class="inline">BigDecimal</code> with <code class="inline">equals()</code></strong> — <code class="inline">new BigDecimal("2.0").equals(new BigDecimal("2.00"))</code> is <code class="inline">false</code> because scale differs! Use <code class="inline">compareTo() == 0</code> for numeric equality.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain math utils in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You know when to use each numeric type (int, long, double, BigDecimal).</li>
+      <li>You can perform BigDecimal arithmetic with correct rounding mode.</li>
+      <li>You can generate cryptographically secure random bytes.</li>
+      <li>You know the difference between <code class="inline">Random</code>, <code class="inline">ThreadLocalRandom</code>, and <code class="inline">SecureRandom</code>.</li>
+      <li>You can use <code class="inline">Objects.requireNonNull()</code> and the full <code class="inline">Objects</code> API.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="math">
   <div class="subsection">
-    <h3>The <code class="inline">Math</code> Class</h3>
-    <p>The <code class="inline">java.lang.Math</code> class is a utility class containing purely <code class="inline">static</code> methods. You never instantiate it.</p>
+    <h3>The Math Class — Complete Reference</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Basic Arithmetic</span>
-<span class="cl">Math</span>.<span class="fn">abs</span>(-<span class="nm">50</span>);       <span class="cm">// 50</span>
-<span class="cl">Math</span>.<span class="fn">max</span>(<span class="nm">10</span>, <span class="nm">20</span>);    <span class="cm">// 20</span>
-<span class="cl">Math</span>.<span class="fn">min</span>(<span class="nm">10</span>, <span class="nm">20</span>);    <span class="cm">// 10</span>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">All key Math methods with output</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// ---- Basic arithmetic ----
+Math.abs(-42);            // 42        (absolute value)
+Math.abs(Integer.MIN_VALUE); // MIN_VALUE! Overflow trap — use Math.absExact() in Java 15+
+Math.max(10, 20);         // 20
+Math.min(10, 20);         // 10
+Math.signum(-5.0);        // -1.0  (sign: -1, 0, or 1)
 
-<span class="cm">// Exponents & Roots</span>
-<span class="cl">Math</span>.<span class="fn">pow</span>(<span class="nm">2</span>, <span class="nm">3</span>);      <span class="cm">// 8.0 (2 to the power of 3)</span>
-<span class="cl">Math</span>.<span class="fn">sqrt</span>(<span class="nm">64</span>);       <span class="cm">// 8.0</span>
+// ---- Overflow-safe integer math (Java 8+) ----
+Math.addExact(Integer.MAX_VALUE, 1);    // throws ArithmeticException — overflow detected!
+Math.multiplyExact(100_000, 100_000);   // 10_000_000_000L — use long version
+Math.incrementExact(Integer.MAX_VALUE); // throws — safe increment
 
-<span class="cm">// Rounding</span>
-<span class="cl">Math</span>.<span class="fn">round</span>(<span class="nm">3.6</span>);     <span class="cm">// 4</span>
-<span class="cl">Math</span>.<span class="fn">ceil</span>(<span class="nm">3.1</span>);      <span class="cm">// 4.0 (Always rounds UP)</span>
-<span class="cl">Math</span>.<span class="fn">floor</span>(<span class="nm">3.9</span>);     <span class="cm">// 3.0 (Always rounds DOWN)</span></code></pre>
+// ---- Powers and roots ----
+Math.pow(2, 10);          // 1024.0
+Math.sqrt(144);           // 12.0
+Math.cbrt(27);            // 3.0     (cube root)
+Math.log(Math.E);         // 1.0     (natural log)
+Math.log10(1000);         // 3.0
+
+// ---- Rounding (all return double unless noted) ----
+Math.round(3.5);          // 4L   (long — rounds half up)
+Math.round(-3.5);         // -3L  (rounds toward positive infinity)
+Math.floor(3.9);          // 3.0  (always rounds DOWN — toward -∞)
+Math.ceil(3.1);           // 4.0  (always rounds UP — toward +∞)
+Math.rint(3.5);           // 4.0  (rounds to nearest even — banker's rounding)
+Math.rint(2.5);           // 2.0  (2 is even — rounds DOWN!)
+
+// ---- Trigonometry (input/output in radians) ----
+Math.sin(Math.PI / 2);    // 1.0
+Math.cos(0);              // 1.0
+Math.atan2(1, 1);         // 0.785... (π/4 radians = 45 degrees)
+Math.toRadians(90);       // 1.570... (π/2)
+Math.toDegrees(Math.PI);  // 180.0
+
+// ---- Useful constants ----
+Math.PI;   // 3.141592653589793
+Math.E;    // 2.718281828459045
+
+// ---- Hypotenuse (avoids overflow in a²+b²) ----
+Math.hypot(3, 4);         // 5.0  (√(3²+4²), numerically stable)</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Overflow trap:</strong> <code class="inline">Math.abs(Integer.MIN_VALUE)</code> returns <code class="inline">Integer.MIN_VALUE</code> (still negative!) because <code class="inline">|MIN_VALUE|</code> exceeds <code class="inline">MAX_VALUE</code>. Use <code class="inline">Math.absExact()</code> (Java 15+) to throw instead.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="bigdecimal">
   <div class="subsection">
-    <h3>BigDecimal: The Financial Savior</h3>
-    <p>Never use <code class="inline">double</code> or <code class="inline">float</code> for money. Floating-point numbers are stored in binary fractions, which leads to precision loss (e.g., <code class="inline">0.1 + 0.2</code> might equal <code class="inline">0.30000000000000004</code>). For exact decimal calculations, you MUST use <code class="inline">BigDecimal</code>.</p>
+    <h3>BigDecimal: Financial Precision</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">BigDecimal Usage</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">import</span> java.math.BigDecimal;
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">The float trap vs BigDecimal correctness</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// ❌ WRONG: float arithmetic for money
+double a = 0.1, b = 0.2;
+System.out.println(a + b);         // 0.30000000000000004 — WRONG!
+System.out.println(a + b == 0.3);  // false — comparing is broken!
 
-<span class="cm">// ALWAYS construct BigDecimal using Strings to prevent float precision loss at the start!</span>
-<span class="cl">BigDecimal</span> price = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"19.99"</span>);
-<span class="cl">BigDecimal</span> tax = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.05"</span>);
+// ✅ CORRECT: BigDecimal with String constructor
+BigDecimal price    = new BigDecimal("19.99");
+BigDecimal taxRate  = new BigDecimal("0.18"); // 18% GST
+BigDecimal taxAmt   = price.multiply(taxRate);
+BigDecimal total    = price.add(taxAmt);
 
-<span class="cm">// Math operations are methods (BigDecimal is immutable)</span>
-<span class="cl">BigDecimal</span> total = price.<span class="fn">add</span>(price.<span class="fn">multiply</span>(tax));
+// ❌ BAD: double constructor — already has float error!
+BigDecimal bad = new BigDecimal(0.1); // = 0.1000000000000000055511...
 
-<span class="cl">System</span>.out.<span class="fn">println</span>(total); <span class="cm">// Exact precision maintained!</span></code></pre>
+// ✅ GOOD: String constructor or valueOf
+BigDecimal good = new BigDecimal("0.1");       // exactly 0.1
+BigDecimal also = BigDecimal.valueOf(0.1);      // also exact (uses canonical string form)</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">BigDecimal arithmetic, rounding, comparison</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>BigDecimal price    = new BigDecimal("10.005");
+BigDecimal quantity = new BigDecimal("3");
+
+// Basic operations (all return new BigDecimal — IMMUTABLE)
+BigDecimal total   = price.multiply(quantity);                   // 30.015
+BigDecimal discount= total.subtract(new BigDecimal("1.50"));    // 28.515
+BigDecimal half    = total.divide(new BigDecimal("2"), 2, RoundingMode.HALF_UP); // 15.01
+
+// Rounding modes (critical for financial code)
+BigDecimal v = new BigDecimal("2.335");
+v.setScale(2, RoundingMode.HALF_UP);    // 2.34 (commercial rounding)
+v.setScale(2, RoundingMode.HALF_EVEN);  // 2.34 (banker's rounding — less biased)
+v.setScale(2, RoundingMode.DOWN);       // 2.33 (truncate toward zero)
+v.setScale(2, RoundingMode.CEILING);    // 2.34 (toward +∞)
+v.setScale(2, RoundingMode.FLOOR);      // 2.33 (toward -∞)
+
+// Comparison — NEVER use equals() for value equality!
+BigDecimal a = new BigDecimal("2.0");
+BigDecimal b = new BigDecimal("2.00");
+a.equals(b);        // false! (scale 1 vs scale 2)
+a.compareTo(b);     // 0 ✅ correct numeric equality
+a.compareTo(b) == 0 // true ✅ USE THIS
+
+// Useful constants
+BigDecimal.ZERO;   // 0
+BigDecimal.ONE;    // 1
+BigDecimal.TEN;    // 10</code></pre>
     </div>
   </div>
 </div>
 
 <div class="section" id="random">
   <div class="subsection">
-    <h3>Randomization & UUIDs</h3>
-    <p>Generating random numbers and unique identifiers is crucial for everything from game development to database primary keys.</p>
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">import</span> java.util.Random;
-<span class="kw">import</span> java.util.UUID;
+    <h3>Randomization: Choosing the Right Class</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Random</div><div class="hl-value">General Use</div><div class="hl-desc">Thread-safe but synchronized. Avoid sharing across threads in tight loops — use ThreadLocalRandom instead.</div></div>
+      <div class="hl-box"><div class="hl-label">ThreadLocalRandom</div><div class="hl-value">Concurrent</div><div class="hl-desc">Zero contention. Each thread has its own state. Preferred for all non-security use in multi-threaded code.</div></div>
+      <div class="hl-box"><div class="hl-label">SecureRandom</div><div class="hl-value">Cryptographic</div><div class="hl-desc">OS-entropy source. Slower but unpredictable. Use for passwords, OTPs, session tokens, crypto keys.</div></div>
+      <div class="hl-box"><div class="hl-label">SplittableRandom</div><div class="hl-value">Parallel</div><div class="hl-desc">Not thread-safe but can be split into independent sub-generators for parallel streams.</div></div>
+    </div>
+    <div class="code-block" style="margin-top:18px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Complete random usage patterns</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// ---- ThreadLocalRandom (preferred for non-security concurrent use) ----
+int    roll     = ThreadLocalRandom.current().nextInt(1, 7);      // 1..6 inclusive
+long   id       = ThreadLocalRandom.current().nextLong(1_000_000L);
+double fraction = ThreadLocalRandom.current().nextDouble(0.0, 1.0);
+boolean coin    = ThreadLocalRandom.current().nextBoolean();
 
-<span class="cm">// 1. Random Numbers</span>
-<span class="cl">Random</span> rand = <span class="kw">new</span> <span class="cl">Random</span>();
-<span class="kw">int</span> diceRoll = rand.<span class="fn">nextInt</span>(<span class="nm">6</span>) + <span class="nm">1</span>; <span class="cm">// Generates 1 to 6</span>
+// Stream of random ints
+IntStream randoms = ThreadLocalRandom.current().ints(5, 1, 100); // 5 values in [1,100)
 
-<span class="cm">// 2. Secure Random (for cryptography/passwords)</span>
-<span class="kw">import</span> java.security.SecureRandom;
-<span class="cl">SecureRandom</span> secure = <span class="kw">new</span> <span class="cl">SecureRandom</span>();
-<span class="kw">int</span> secureKey = secure.<span class="fn">nextInt</span>();
+// ---- SecureRandom (for security-sensitive values) ----
+SecureRandom sr    = SecureRandom.getInstanceStrong(); // OS entropy source
+byte[] tokenBytes  = new byte[32];
+sr.nextBytes(tokenBytes);                            // 256-bit cryptographic token
+String hexToken    = HexFormat.of().formatHex(tokenBytes); // Java 17+
 
-<span class="cm">// 3. UUID (Universally Unique Identifier)</span>
-<span class="cm">// Generates a 128-bit completely unique string (e.g., 550e8400-e29b-41d4-a716-446655440000)</span>
-<span class="cl">String</span> uniqueId = <span class="cl">UUID</span>.<span class="fn">randomUUID</span>().<span class="fn">toString</span>();</code></pre>
+// Generating a 6-digit OTP (One Time Password)
+int otp = sr.nextInt(1_000_000); // 0..999999
+String otpStr = String.format("%06d", otp); // zero-padded to 6 digits
+
+// ---- Shuffle a list ----
+List&lt;String&gt; deck = new ArrayList&lt;&gt;(List.of("A", "K", "Q", "J", "10"));
+Collections.shuffle(deck, ThreadLocalRandom.current());
+
+// ---- Random element from list ----
+String drawn = deck.get(ThreadLocalRandom.current().nextInt(deck.size()));</code></pre>
     </div>
   </div>
 </div>
 
-<div class="section" id="usecase">
+<div class="section" id="uuid">
   <div class="subsection">
-    <h3>Real-World Use Case: Banking Systems</h3>
-    <p>A bank processing millions of transactions per day cannot afford "floating point drift". If a bank uses <code class="inline">double</code> for balances, the microscopic <code class="inline">0.00000000000000004</code> rounding errors will slowly compound over billions of transactions, creating or destroying thousands of real dollars out of thin air.</p>
-    <p>Every banking system in Java uses <code class="inline">BigDecimal</code>. Furthermore, when generating transaction IDs, they use <code class="inline">UUID.randomUUID()</code> to ensure no two transactions globally ever share the same ID, allowing massive distributed databases to sync safely without key collisions.</p>
+    <h3>UUID — Universally Unique Identifiers</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">UUID generation and parsing</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Version 4: random UUID (most common)
+UUID id = UUID.randomUUID();
+System.out.println(id); // e.g., 550e8400-e29b-41d4-a716-446655440000
+
+// As string
+String s = id.toString();  // standard format with dashes
+String compact = s.replace("-", ""); // 32 hex chars, no dashes
+
+// Parse from string
+UUID parsed = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+
+// Compare
+UUID a = UUID.randomUUID();
+UUID b = UUID.randomUUID();
+a.equals(b);         // false (different random values)
+a.compareTo(b);      // -1, 0, or 1
+
+// UUID probability of collision:
+// 2^122 possible values. At 1 billion UUIDs/second, expected first collision: 86 years.</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body">For database primary keys, UUID is globally unique (great for distributed systems) but inefficient for indexed columns in most RDBMS due to random ordering. Consider <strong>UUID v7</strong> (time-ordered) or <strong>ULID</strong> for sorted, globally unique IDs. Java 21+ supports UUID v7 via third-party libs.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="objects">
+  <div class="subsection">
+    <h3>The Objects Utility Class</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Objects — null safety and equality helpers</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Null guard in constructors — throws NullPointerException with good message
+public class User {
+    private final String name;
+    private final String email;
+
+    public User(String name, String email) {
+        this.name  = Objects.requireNonNull(name,  "name must not be null");
+        this.email = Objects.requireNonNull(email, "email must not be null");
+    }
+}
+
+// requireNonNullElse — default value when null
+String displayName = Objects.requireNonNullElse(user.nickname(), user.fullName());
+
+// Null-safe comparison
+Objects.equals(null, null);   // true  (safe — no NPE!)
+Objects.equals("a", null);    // false
+Objects.equals(null, "b");    // false
+Objects.equals("a", "a");     // true
+
+// Null-safe hashCode
+Objects.hashCode(null);       // 0 (safe)
+Objects.hash("Alice", 30, "alice@example.com"); // combine multiple fields
+
+// Null check
+Objects.isNull(null);         // true
+Objects.nonNull("hello");     // true  (useful as method reference: filter(Objects::nonNull))
+
+// Null-safe toString
+Objects.toString(null, "N/A");  // "N/A"
+
+// checkIndex, checkFromToIndex (Java 9+) — bounds checking
+Objects.checkIndex(5, 10);   // 5 (valid index into size-10 collection)
+Objects.checkIndex(10, 10);  // throws IndexOutOfBoundsException</code></pre>
+    </div>
   </div>
 </div>
 
@@ -146,18 +303,23 @@
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">Why not use double for currency?</div>
-        <div class="hl-desc">Because doubles are floating-point numbers stored in base-2 memory. Certain decimal values (like 0.1) cannot be represented perfectly in base-2, leading to infinite repeating fractions and precision loss.</div>
+        <div class="hl-value" style="font-size:15px;">Why can't you use double for currency?</div>
+        <div class="hl-desc">IEEE 754 binary floating point cannot represent most decimal fractions exactly. <code class="inline">0.1 + 0.2 == 0.30000000000000004</code>. Over millions of financial transactions, these tiny errors accumulate into real money discrepancies. Use <code class="inline">BigDecimal</code> with String constructor.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">What is a UUID and why use it?</div>
-        <div class="hl-desc">A UUID is a 128-bit globally unique string. It is used for primary keys in distributed microservices because multiple servers can generate them simultaneously without communicating, guaranteeing no collisions.</div>
+        <div class="hl-value" style="font-size:15px;">ThreadLocalRandom vs Random vs SecureRandom?</div>
+        <div class="hl-desc"><code class="inline">Random</code>: thread-safe via synchronization, causes contention. <code class="inline">ThreadLocalRandom</code>: zero contention, one generator per thread, fast — use for all general concurrent random needs. <code class="inline">SecureRandom</code>: uses OS entropy, cryptographically unpredictable, slow — use only for security tokens.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">Difference between Random and SecureRandom?</div>
-        <div class="hl-desc">Random uses a predictable mathematical formula based on the system clock (not cryptographically secure). SecureRandom uses unpredictable OS-level entropy (like mouse movements) and is required for passwords/tokens.</div>
+        <div class="hl-value" style="font-size:15px;">What is the BigDecimal scale?</div>
+        <div class="hl-desc">Scale is the number of digits to the right of the decimal point. <code class="inline">new BigDecimal("2.0")</code> has scale 1; <code class="inline">new BigDecimal("2.00")</code> has scale 2. They are numerically equal (compareTo == 0) but not <code class="inline">equals()</code> because scale differs.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">What does Math.rint() do differently from Math.round()?</div>
+        <div class="hl-desc"><code class="inline">Math.round(x)</code> uses "half up" (0.5 always rounds up): <code class="inline">round(2.5)</code> = 3. <code class="inline">Math.rint(x)</code> uses "half even" (banker's rounding): <code class="inline">rint(2.5)</code> = 2 (even), <code class="inline">rint(3.5)</code> = 4 (even). Banker's rounding is less statistically biased over large datasets.</div>
       </div>
     </div>
   </div>

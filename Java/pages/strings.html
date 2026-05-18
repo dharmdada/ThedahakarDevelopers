@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Strings – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
 </header>
@@ -57,30 +55,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Strings are strictly immutable. Once created, they cannot be changed.</li>
+      <li>Understand the String Pool. Literal strings are cached and reused to save memory.</li>
+      <li>Use StringBuilder for string manipulation in loops to avoid memory bloat.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Using == instead of .equals() for string comparison. This is the #1 beginner mistake.</li>
+      <li>Thinking String methods like .trim() or .replace() modify the original string. They return a NEW string.</li>
+      <li>Concatenating strings inside a loop using the '+' operator, which creates many hidden objects.</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain strings in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can explain why Strings are immutable and the security/performance benefits.</li>
+      <li>You know the difference between String, StringBuilder, and StringBuffer.</li>
+      <li>You can write a regex to split or validate a complex string.</li></ul>
   </div>
 </div>
 
@@ -298,33 +287,30 @@ a.<span class="fn">equalsIgnoreCase</span>(<span class="st">"HELLO"</span>) <spa
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">Why are Strings immutable in Java?</div>
-        <div class="hl-desc">For security (strings hold passwords/URLs), caching (String Pool saves memory), and thread-safety (immutable objects are inherently thread-safe).</div>
+        <div class="hl-value" style="font-size:16px;">What is the String Pool?</div>
+        <div class="hl-desc">A special storage area in the Java Heap. When a string literal is created, the JVM checks the pool. If it exists, it returns the reference, saving memory.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
         <div class="hl-value" style="font-size:16px;">StringBuilder vs StringBuffer?</div>
-        <div class="hl-desc">Both are used for mutable strings. <code>StringBuilder</code> is faster but not thread-safe. <code>StringBuffer</code> is synchronized and thread-safe but slower.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">What is the String Pool?</div>
-        <div class="hl-desc">A special storage area in the Heap where Java stores string literals. If you create a string that already exists in the pool, Java returns the existing reference instead of creating a new object.</div>
+        <div class="hl-desc">Both are mutable sequences of characters. StringBuffer is thread-safe (synchronized), whereas StringBuilder is not, making StringBuilder faster for single-threaded use.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

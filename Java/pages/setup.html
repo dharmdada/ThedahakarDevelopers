@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Setup and Hello World - JavaMaster</title>
+<title>Java Setup and Hello World - JavaMaster</title>
+<meta name="description" content="Set up Java correctly: JDK vs JRE, JAVA_HOME, javac compile cycle, IDE configuration, multi-JDK management with SDKMAN and jenv, and common errors.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,58 +21,114 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(14,165,233,0.15);">SET</div>
-    <div><h2>Setup and Hello World</h2><p>Install Java correctly, configure tools, and avoid common setup mistakes before coding.</p></div>
+    <div><h2>Setup and Hello World</h2><p>Install Java correctly, understand the compile-run cycle, and build a toolchain that works across IDEs, terminals, and CI pipelines.</p></div>
   </div>
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
-    <div><h2>Theory Deep Dive</h2><p>Environment setup as a reliability problem</p></div>
+    <div><h2>Theory Deep Dive</h2><p>Understanding the JVM ecosystem from source to execution</p></div>
   </div>
   <div class="subsection">
-    <h3>Mental Model</h3>
-    <p>Setting up Java is not just installing a program. It establishes the toolchain that will compile, test, package, and run everything you build. When the terminal, IDE, and build tool point to different JDKs, errors become confusing because each layer sees a different world.</p>
-    <p>A correct setup has three parts: the JDK installation, the environment variables that expose the JDK to tools, and project configuration that pins the expected language level. Build tools can also use Java toolchains so the project remains reproducible across machines.</p>
-    <p>Beginners often think setup is a one-time chore. In real projects, setup is part of engineering hygiene. The README, wrapper scripts, CI configuration, and IDE metadata all work together to make development repeatable.</p>
+    <h3>Mental Model: Compile Once, Run Anywhere</h3>
+    <p>Java's core value proposition is <strong>platform independence</strong>. Your source code (<code class="inline">.java</code>) is compiled to <strong>bytecode</strong> (<code class="inline">.class</code>), not to native machine code. The bytecode is executed by the <strong>Java Virtual Machine (JVM)</strong> on any operating system that has a JVM installed.</p>
+    <p>This is the pipeline:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Pipeline</span><button class="copy-btn">Copy</button></div>
+      <pre><code>HelloWorld.java
+  → javac (Java Compiler)
+  → HelloWorld.class (JVM bytecode)
+  → java (JVM — interprets + JIT-compiles bytecode to native)
+  → Output on your screen</code></pre>
+    </div>
+    <p>The JVM also provides: garbage collection, security sandboxing, JIT (Just-In-Time) compilation for hot code paths, and dynamic class loading. The JVM is itself a complex, optimized runtime — not a simple interpreter.</p>
+  </div>
+  <div class="subsection">
+    <h3>JDK vs JRE vs JVM</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">JVM</div><div class="hl-value">Runtime Engine</div><div class="hl-desc">Executes bytecode. Includes garbage collector, JIT compiler, security manager. Not standalone — part of JRE/JDK.</div></div>
+      <div class="hl-box"><div class="hl-label">JRE</div><div class="hl-value">Java Runtime</div><div class="hl-desc">JVM + standard libraries. Enough to RUN Java programs. Deprecated since Java 11 — no longer distributed separately.</div></div>
+      <div class="hl-box"><div class="hl-label">JDK</div><div class="hl-value">Developer Kit</div><div class="hl-desc">JRE + javac + javadoc + jlink + profiling tools. Everything you need to BUILD and RUN Java. This is what you install.</div></div>
+      <div class="hl-box"><div class="hl-label">OpenJDK</div><div class="hl-value">Open Source</div><div class="hl-desc">The reference JDK implementation. Oracle JDK, Adoptium (Eclipse Temurin), Amazon Corretto, Azul Zulu are all built from OpenJDK.</div></div>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">INFO</span>
+      <div class="callout-body">Since Java 11, there is no separate JRE download. The JDK is all you install. On servers, you can create minimal custom runtimes using <code class="inline">jlink</code>.</div>
+    </div>
+  </div>
+  <div class="subsection">
+    <h3>Which Java Version to Use?</h3>
+    <ul class="feature-list">
+      <li><strong>Java 21 (LTS)</strong> — Current LTS. Includes Virtual Threads (Project Loom), Pattern Matching, Records, Sealed Classes. Use this for new projects.</li>
+      <li><strong>Java 17 (LTS)</strong> — Previous LTS. Widely supported by all frameworks. Still a solid choice.</li>
+      <li><strong>Java 11 (LTS)</strong> — The baseline for many enterprise environments. HttpClient, var, local variable inference.</li>
+      <li><strong>Avoid Java 8</strong> for new code — it is in extended commercial support only. Major language features (Records, Sealed, Pattern Matching) require 17+.</li>
+    </ul>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li>Set <code class="inline">JAVA_HOME</code> explicitly. Tools like Maven, Gradle, and Tomcat rely on it.</li>
+      <li>Use build tool wrappers (<code class="inline">mvnw</code>, <code class="inline">gradlew</code>) — they download the correct Maven/Gradle version automatically and make builds reproducible.</li>
+      <li>Pin your Java version in the build file — <code class="inline">sourceCompatibility = 21</code> in Gradle, <code class="inline">&lt;java.version&gt;21&lt;/java.version&gt;</code> in Maven.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>"I need to download a JRE"</strong> — No. Since Java 11, just install the JDK. It includes everything.</li>
+      <li><strong>Multiple JDKs installed with no management</strong> — The one in <code class="inline">PATH</code> first wins. Use SDKMAN (Linux/Mac) or manually manage <code class="inline">JAVA_HOME</code> on Windows.</li>
+      <li><strong>IDE compiled, terminal didn't</strong> — The IDE may be using a different JDK than your terminal. Always verify with <code class="inline">java -version</code> in the same terminal you run builds.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain setup in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You can verify JDK installation and version from the command line.</li>
+      <li>You can compile and run a Java file manually without an IDE.</li>
+      <li>You understand what JAVA_HOME is and why it matters.</li>
+      <li>You can configure IntelliJ IDEA or VS Code to use a specific JDK.</li>
+      <li>You can create a Maven or Gradle project from scratch.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="install">
   <div class="subsection">
-    <h3>Install a JDK (Not Just Runtime)</h3>
-    <p>Install an LTS version (for example Java 17 or 21). Ensure terminal commands resolve to the same version your IDE uses.</p>
+    <h3>Installing a JDK</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn">Copy</button></div>
-      <pre><code>java -version
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Windows — Winget (recommended)</span><button class="copy-btn">Copy</button></div>
+      <pre><code># Install Java 21 (Eclipse Temurin — free, open source, production-grade)
+winget install EclipseAdoptium.Temurin.21.JDK
+
+# Or Oracle JDK 21
+winget install Oracle.JDK.21
+
+# Verify
+java -version
 javac -version</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Linux/macOS — SDKMAN (manage multiple versions)</span><button class="copy-btn">Copy</button></div>
+      <pre><code># Install SDKMAN
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# List available Java versions
+sdk list java
+
+# Install Java 21 (Temurin)
+sdk install java 21.0.3-tem
+
+# Switch between versions
+sdk use java 17.0.11-tem
+
+# Set default
+sdk default java 21.0.3-tem
+
+# Current version
+sdk current java</code></pre>
     </div>
   </div>
 </div>
@@ -79,46 +136,108 @@ javac -version</code></pre>
 <div class="section" id="env">
   <div class="subsection">
     <h3>Environment Variables</h3>
-    <ul class="feature-list">
-      <li>Set <code class="inline">JAVA_HOME</code> to your JDK root.</li>
-      <li>Add <code class="inline">%JAVA_HOME%/bin</code> (or equivalent) to PATH.</li>
-      <li>Restart terminal after changes and verify again.</li>
-    </ul>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Windows — Set JAVA_HOME permanently</span><button class="copy-btn">Copy</button></div>
+      <pre><code># Open System Properties → Advanced → Environment Variables
+# New System Variable:
+#   JAVA_HOME = C:\Program Files\Eclipse Adoptium\jdk-21.0.3.9-hotspot
+
+# Edit PATH variable — Add at the top:
+#   %JAVA_HOME%\bin
+
+# Verify in a NEW terminal window:
+echo %JAVA_HOME%
+java -version
+javac -version</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Linux/macOS — ~/.bashrc or ~/.zshrc</span><button class="copy-btn">Copy</button></div>
+      <pre><code>export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# Reload
+source ~/.bashrc  # or source ~/.zshrc
+
+# Verify
+echo $JAVA_HOME
+java -version</code></pre>
+    </div>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
-      <div class="callout-body"><strong>Most setup bugs come from path conflicts.</strong> If multiple Java versions are installed, check command precedence and IDE runtime settings.</div>
+      <div class="callout-body"><strong>Most setup bugs come from PATH conflicts.</strong> If you have multiple JDK versions installed, the one that appears first in PATH wins. Always verify with <code class="inline">which java</code> (Linux/Mac) or <code class="inline">where java</code> (Windows).</div>
     </div>
   </div>
 </div>
 
-<div class="section" id="first-program">
+<div class="section" id="compile-cycle">
   <div class="subsection">
-    <h3>Your First Program</h3>
+    <h3>The Manual Compile-Run Cycle</h3>
+    <p>Understanding the raw compile cycle is essential — every IDE and build tool does exactly this under the hood:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">HelloWorld.java</span><button class="copy-btn">Copy</button></div>
       <pre><code>public class HelloWorld {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
+        System.out.printf("Java version: %s%n", System.getProperty("java.version"));
+        System.out.printf("Arguments: %d%n", args.length);
+        for (String arg : args) {
+            System.out.println("  → " + arg);
+        }
     }
 }</code></pre>
     </div>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Shell</span><button class="copy-btn">Copy</button></div>
-      <pre><code>javac HelloWorld.java
-java HelloWorld</code></pre>
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Compile and run</span><button class="copy-btn">Copy</button></div>
+      <pre><code># Step 1: Compile to bytecode
+javac HelloWorld.java
+# Produces: HelloWorld.class
+
+# Step 2: Run (NO .class extension — it's a class name, not a file!)
+java HelloWorld
+# Output: Hello, World!
+
+# Run with arguments
+java HelloWorld arg1 arg2 arg3
+
+# Compile with specific target version
+javac --release 17 HelloWorld.java
+
+# Inspect the bytecode (educational!)
+javap -c HelloWorld.class
+
+# Single-file launch (Java 11+) — no javac needed for single-file scripts
+java HelloWorld.java</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Shell</span><span class="code-title">Working with packages and classpath</span><button class="copy-btn">Copy</button></div>
+      <pre><code># For packaged classes (e.g., com.example.App)
+# Source: src/com/example/App.java
+javac -d out src/com/example/App.java
+
+# Run with classpath pointing to output dir
+java -cp out com.example.App
+
+# With dependencies (JARs)
+java -cp "out:libs/jackson-core-2.17.jar" com.example.App   # Linux/Mac
+java -cp "out;libs\jackson-core-2.17.jar" com.example.App   # Windows</code></pre>
     </div>
   </div>
 </div>
 
 <div class="section" id="ide">
   <div class="subsection">
-    <h3>IDE Setup Checklist</h3>
+    <h3>IDE Setup: IntelliJ IDEA</h3>
     <ul class="feature-list">
-      <li>Set project SDK explicitly (avoid "default" ambiguity).</li>
-      <li>Enable auto-import and formatting rules.</li>
-      <li>Use build tool wrapper where possible (<code class="inline">gradlew</code> / <code class="inline">mvnw</code>).</li>
-      <li>Configure JUnit test runner before writing many tests.</li>
+      <li><strong>Project SDK:</strong> File → Project Structure → Project → SDK — always set explicitly, never "No SDK" or "default".</li>
+      <li><strong>Language level:</strong> File → Project Structure → Project → Language Level — should match your SDK.</li>
+      <li><strong>Auto-import:</strong> Settings → Editor → General → Auto Import — enable "Add unambiguous imports on the fly".</li>
+      <li><strong>Save on focus lost:</strong> Settings → Appearance → System Settings → Autosave — enable for faster feedback.</li>
+      <li><strong>Run configuration:</strong> Right-click <code class="inline">main()</code> → Run. Or create a Run Configuration for complex projects.</li>
     </ul>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body">In IntelliJ, <strong>Shift+Shift</strong> (Search Everywhere) and <strong>Ctrl+Alt+L</strong> (Reformat Code) are the two most productive shortcuts to learn first.</div>
+    </div>
   </div>
 </div>
 
@@ -126,15 +245,44 @@ java HelloWorld</code></pre>
   <div class="subsection">
     <h3>Common Errors and Fixes</h3>
     <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Error</div><div class="hl-value">javac not found</div><div class="hl-desc">PATH is missing JDK bin folder.</div></div>
-      <div class="hl-box"><div class="hl-label">Error</div><div class="hl-value">Class not found</div><div class="hl-desc">Class name or compile command mismatch.</div></div>
-      <div class="hl-box"><div class="hl-label">Error</div><div class="hl-value">Version mismatch</div><div class="hl-desc">IDE and terminal use different JDK versions.</div></div>
+      <div class="hl-box"><div class="hl-label">'javac' not recognized</div><div class="hl-value" style="color:var(--danger)">PATH missing</div><div class="hl-desc">JAVA_HOME\bin is not in PATH. Add it and restart the terminal. Run <code class="inline">where javac</code> to diagnose.</div></div>
+      <div class="hl-box"><div class="hl-label">Error: Could not find or load main class</div><div class="hl-value" style="color:var(--danger)">Class name wrong</div><div class="hl-desc">Run <code class="inline">java ClassName</code> not <code class="inline">java ClassName.class</code>. Class name must match filename exactly including case.</div></div>
+      <div class="hl-box"><div class="hl-label">has been compiled by a more recent version</div><div class="hl-value" style="color:var(--danger)">Version mismatch</div><div class="hl-desc">JDK that compiled the code is newer than the JRE running it. Ensure both are the same version.</div></div>
+      <div class="hl-box"><div class="hl-label">UnsupportedClassVersionError</div><div class="hl-value" style="color:var(--danger)">Bytecode too new</div><div class="hl-desc">Class was compiled for Java 21 (class version 65) but JVM is Java 17 (class version 61). Upgrade the JVM or compile with --release flag.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">What is the Classpath?</div>
+        <div class="hl-desc">The classpath tells the JVM and compiler where to look for compiled class files and JARs. Set with <code class="inline">-cp</code> flag or <code class="inline">CLASSPATH</code> env variable. In modern projects, build tools (Maven/Gradle) manage the classpath automatically.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">What is JIT compilation?</div>
+        <div class="hl-desc">Just-In-Time compilation converts hot bytecode paths into native machine code at runtime. The JVM starts interpreting, profiles execution, then compiles frequently executed methods to native — giving Java near-native performance after a short warm-up period.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">JDK vs JRE vs JVM?</div>
+        <div class="hl-desc">JVM: executes bytecode. JRE: JVM + standard library (deprecated since Java 11). JDK: JRE + compiler (javac) + developer tools. As a developer, you always install the JDK.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">What happens if you run 'java MyClass.class'?</div>
+        <div class="hl-desc">It throws <code class="inline">ClassNotFoundException: MyClass.class</code>. The <code class="inline">java</code> command expects a fully-qualified class name (e.g., <code class="inline">com.example.MyClass</code>), not a filename. The <code class="inline">.class</code> extension is a file extension, not part of the class name.</div>
+      </div>
     </div>
   </div>
 </div>
 
 </div>
-<footer><p>JavaMaster - <a href="datatypes.html" style="color:var(--accent);">Next: Data Types and Variables</a></p></footer>
+<footer><p>JavaMaster — <a href="datatypes.html" style="color:var(--accent);">Next: Data Types and Variables</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

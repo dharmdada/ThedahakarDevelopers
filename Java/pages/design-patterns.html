@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Design Patterns and SOLID - JavaMaster</title>
+<meta name="description" content="Master Java design patterns: Singleton, Builder, Factory, Strategy, Observer, Decorator, Adapter, Facade, Command and SOLID principles with real code examples.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,7 +21,7 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(168,85,247,0.15);">DP</div>
-    <div><h2>Design Patterns and SOLID</h2><p>How to build Java systems that stay readable and changeable as complexity grows.</p></div>
+    <div><h2>Design Patterns and SOLID</h2><p>Battle-tested solutions to recurring design problems. Learn when to apply them — and crucially, when not to.</p></div>
   </div>
 </div>
 
@@ -31,123 +32,387 @@
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>Design patterns are reusable names for common design shapes. They are useful because they let developers discuss structure quickly: strategy means interchangeable algorithms, adapter means incompatible interface wrapper, facade means simplified subsystem entry point.</p>
-    <p>Patterns should emerge from pressure in the code. If behavior varies, strategy may help. If construction is complex, builder may help. If a subsystem is noisy, facade may help. Applying patterns before the problem appears creates unnecessary ceremony.</p>
-    <p>SOLID principles are not rules to obey mechanically. They are diagnostic tools for change pain. When small changes require edits everywhere, responsibilities and dependencies are probably wrong.</p>
+    <p>Design patterns are <strong>reusable names for common design shapes</strong>. Their value is communication: when you say "we used the Strategy pattern here", every experienced Java developer immediately understands the structure — interchangeable algorithms behind a common interface, injected at construction time.</p>
+    <p>The GoF (Gang of Four) book catalogued 23 patterns in 3 groups: <strong>Creational</strong> (how objects are built), <strong>Structural</strong> (how objects are composed), and <strong>Behavioral</strong> (how objects communicate).</p>
+    <p>Patterns should <strong>emerge from pressure in the code</strong>, not be applied upfront. The most common mistake is applying patterns before the problem exists. The second most common mistake is not recognizing when a pattern would save you from a growing mess.</p>
+    <p>In modern Java, many classic patterns have cleaner implementations. Strategy is just a functional interface + lambda. Command is a <code class="inline">Runnable</code> or <code class="inline">Supplier</code>. Observer is an event bus or reactive stream. Know the pattern conceptually, apply it with modern Java idioms.</p>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li><strong>Patterns are tools, not goals.</strong> Simple code that solves the problem is always better than elaborate pattern-driven code that doesn't need to be.</li>
+      <li><strong>Favor composition over inheritance.</strong> Strategy, Decorator, and most behavioral patterns express this principle.</li>
+      <li><strong>Code to interfaces.</strong> All patterns work best when caller and implementation are decoupled by an interface or abstract type.</li>
+      <li><strong>SOLID gives you diagnostic tools</strong>, not dogma. Apply them when change pain reveals the problem.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>Singleton misuse</strong> — Singletons that hold mutable state are global variables. They destroy testability and hide dependencies. Use dependency injection instead.</li>
+      <li><strong>Factory vs Abstract Factory</strong> — Factory creates one type of product. Abstract Factory creates families of related products (e.g., UI widgets for Windows vs Mac).</li>
+      <li><strong>Pattern obsession</strong> — Wrapping a simple 3-line function in Strategy + Factory + Builder is over-engineering. Don't do it.</li>
+      <li><strong>Deep inheritance chains</strong> — "Diamond of death" and fragile base class problems. Composition breaks the chain.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain design patterns in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You can implement a thread-safe Singleton (double-checked locking or enum).</li>
+      <li>You can implement Builder for a class with 5+ optional fields.</li>
+      <li>You can explain Strategy and how Spring's dependency injection is built on it.</li>
+      <li>You can describe when each of the 6 key patterns applies.</li>
+      <li>You can name all 5 SOLID principles and give a real-world violation example for each.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="solid">
   <div class="subsection">
-    <h3>SOLID Principles (Practical Lens)</h3>
-    <ul class="feature-list">
-      <li><strong>S - Single Responsibility:</strong> one reason to change per class.</li>
-      <li><strong>O - Open/Closed:</strong> add behavior via extension, not repeated edits.</li>
-      <li><strong>L - Liskov Substitution:</strong> subclasses must preserve base contract.</li>
-      <li><strong>I - Interface Segregation:</strong> many focused interfaces beat one giant interface.</li>
-      <li><strong>D - Dependency Inversion:</strong> depend on abstractions, not concrete implementations.</li>
-    </ul>
-    <p>SOLID is not about creating many classes blindly. It is about controlling change impact and reducing regression risk.</p>
+    <h3>SOLID Principles with Real Java Examples</h3>
+
+    <h4 style="margin-top:18px; color:var(--accent);">S — Single Responsibility Principle</h4>
+    <p>A class should have <strong>one reason to change</strong>. If it handles both business logic and email sending, it changes when business rules change AND when email templates change.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ Violation — UserService does everything</span><button class="copy-btn">Copy</button></div>
+      <pre><code>class UserService {
+    void register(User u) {
+        // validate, save to DB, send welcome email, log audit — all here
+    }
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Fixed — each class has one job</span><button class="copy-btn">Copy</button></div>
+      <pre><code>class UserRegistrationService {
+    private final UserRepository repo;
+    private final EmailService    email;
+    private final AuditLogger     audit;
+
+    void register(User u) {
+        repo.save(u);
+        email.sendWelcome(u);
+        audit.log("REGISTER", u.id());
+    }
+}</code></pre>
+    </div>
+
+    <h4 style="margin-top:18px; color:var(--accent);">O — Open/Closed Principle</h4>
+    <p>Classes should be <strong>open for extension, closed for modification</strong>. Add behavior via new classes, not by editing existing ones.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Add a new discount type without touching DiscountCalculator</span><button class="copy-btn">Copy</button></div>
+      <pre><code>interface DiscountPolicy {
+    double apply(double price);
+}
+
+class NoDiscount       implements DiscountPolicy { public double apply(double p) { return p; } }
+class TenPercentOff    implements DiscountPolicy { public double apply(double p) { return p * 0.90; } }
+class HappyHourPolicy  implements DiscountPolicy { public double apply(double p) { return p * 0.75; } }
+
+class DiscountCalculator {
+    // This class never changes when new policies are added
+    double finalPrice(double base, DiscountPolicy policy) {
+        return policy.apply(base);
+    }
+}</code></pre>
+    </div>
+
+    <h4 style="margin-top:18px; color:var(--accent);">L — Liskov Substitution Principle</h4>
+    <p>Subclasses must be <strong>fully substitutable for their base type</strong> without breaking caller behavior.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ Classic LSP violation: Square extends Rectangle</span><button class="copy-btn">Copy</button></div>
+      <pre><code>class Rectangle {
+    int width, height;
+    void setWidth(int w)  { this.width = w; }
+    void setHeight(int h) { this.height = h; }
+    int area() { return width * height; }
+}
+
+class Square extends Rectangle {
+    @Override void setWidth(int w)  { this.width = this.height = w; } // breaks contract!
+    @Override void setHeight(int h) { this.width = this.height = h; }
+}
+
+// Caller expects: r.setWidth(5); r.setHeight(3); area() == 15
+// With Square:   area() == 9 — BROKEN!</code></pre>
+    </div>
+
+    <h4 style="margin-top:18px; color:var(--accent);">I — Interface Segregation Principle</h4>
+    <p>No class should be forced to implement methods it doesn't use. Split fat interfaces.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Split into focused interfaces</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ❌ Fat interface forces PrinterScanner to implement fax
+interface AllInOneMachine { void print(); void scan(); void fax(); }
+
+// ✅ Segregated interfaces
+interface Printer  { void print(); }
+interface Scanner  { void scan();  }
+interface FaxMachine { void fax(); }
+
+class OfficePrinter implements Printer, Scanner {}     // no fax forced
+class LegacyFax     implements Printer, FaxMachine {}  // no scan forced</code></pre>
+    </div>
+
+    <h4 style="margin-top:18px; color:var(--accent);">D — Dependency Inversion Principle</h4>
+    <p>Depend on abstractions (interfaces), not concrete classes. High-level modules should not depend on low-level modules.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ OrderService depends on Repository interface, not MySQL impl</span><button class="copy-btn">Copy</button></div>
+      <pre><code>interface OrderRepository {
+    void save(Order order);
+    Optional&lt;Order&gt; findById(long id);
+}
+
+class OrderService {
+    private final OrderRepository repo; // abstraction, not MySqlOrderRepository!
+
+    OrderService(OrderRepository repo) { this.repo = repo; }
+    void placeOrder(Order o) { repo.save(o); }
+}
+
+// Production: inject MySqlOrderRepository
+// Tests:      inject InMemoryOrderRepository — no DB needed!</code></pre>
+    </div>
   </div>
 </div>
 
 <div class="section" id="creational">
   <div class="subsection">
     <h3>Creational Patterns</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Factory</div><div class="hl-value">Construction Logic</div><div class="hl-desc">Centralized object creation based on type/input.</div></div>
-      <div class="hl-box"><div class="hl-label">Builder</div><div class="hl-value">Complex Object</div><div class="hl-desc">Readable construction with optional fields.</div></div>
-      <div class="hl-box"><div class="hl-label">Singleton</div><div class="hl-value">One Instance</div><div class="hl-desc">Use carefully; easy to misuse in tests and concurrency.</div></div>
+
+    <h4 style="color:var(--accent); margin-top:8px;">Singleton — Thread-Safe Implementation</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Best option: Enum Singleton (serialization + reflection safe)</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public enum AppConfig {
+    INSTANCE;
+
+    private final String dbUrl = System.getenv("DB_URL");
+    public String getDbUrl() { return dbUrl; }
+}
+// Usage: AppConfig.INSTANCE.getDbUrl()</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Alternative: Initialization-on-demand holder (lazy, thread-safe)</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public class ConnectionPool {
+    private ConnectionPool() {}
+
+    private static class Holder {
+        static final ConnectionPool INSTANCE = new ConnectionPool();
+    }
+
+    public static ConnectionPool getInstance() { return Holder.INSTANCE; }
+}</code></pre>
+    </div>
+
+    <h4 style="color:var(--accent); margin-top:18px;">Builder — Complex Object Construction</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Builder pattern — eliminates telescoping constructors</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public class EmailMessage {
+    private final String to, subject, body, replyTo;
+    private final boolean html;
+
+    private EmailMessage(Builder b) {
+        this.to = b.to; this.subject = b.subject;
+        this.body = b.body; this.replyTo = b.replyTo;
+        this.html = b.html;
+    }
+
+    public static class Builder {
+        private final String to, subject;     // required
+        private String body = "", replyTo = "";
+        private boolean html = false;
+
+        public Builder(String to, String subject) {
+            this.to = to; this.subject = subject;
+        }
+        public Builder body(String body)       { this.body = body;       return this; }
+        public Builder replyTo(String replyTo) { this.replyTo = replyTo; return this; }
+        public Builder html(boolean html)      { this.html = html;       return this; }
+        public EmailMessage build()            { return new EmailMessage(this); }
+    }
+}
+
+// Usage — self-documenting!
+EmailMessage msg = new EmailMessage.Builder("user@example.com", "Welcome!")
+    .body("&lt;h1&gt;Welcome!&lt;/h1&gt;")
+    .html(true)
+    .replyTo("noreply@company.com")
+    .build();</code></pre>
+    </div>
+
+    <h4 style="color:var(--accent); margin-top:18px;">Factory Method — Object Creation by Type</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Factory with modern switch expression</span><button class="copy-btn">Copy</button></div>
+      <pre><code>interface Notification {
+    void send(String message);
+}
+
+class EmailNotification implements Notification {
+    public void send(String msg) { /* send email */ }
+}
+class SmsNotification implements Notification {
+    public void send(String msg) { /* send SMS */ }
+}
+class PushNotification implements Notification {
+    public void send(String msg) { /* send push */ }
+}
+
+class NotificationFactory {
+    public static Notification create(String type) {
+        return switch (type.toUpperCase()) {
+            case "EMAIL" -> new EmailNotification();
+            case "SMS"   -> new SmsNotification();
+            case "PUSH"  -> new PushNotification();
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
+        };
+    }
+}
+// Usage: NotificationFactory.create("EMAIL").send("Hello!");</code></pre>
     </div>
   </div>
 </div>
 
 <div class="section" id="structural-behavioral">
   <div class="subsection">
-    <h3>Structural and Behavioral Patterns</h3>
-    <ul class="feature-list">
-      <li><strong>Adapter:</strong> wrap incompatible interfaces.</li>
-      <li><strong>Decorator:</strong> add behavior without subclass explosion.</li>
-      <li><strong>Facade:</strong> simplify a complex subsystem behind one API.</li>
-      <li><strong>Strategy:</strong> choose algorithm at runtime.</li>
-      <li><strong>Observer:</strong> publish/subscribe event flow.</li>
-      <li><strong>Command:</strong> represent operations as objects (queue, retry, undo).</li>
-    </ul>
-  </div>
-</div>
+    <h3>Structural &amp; Behavioral Patterns</h3>
 
-<div class="section" id="example">
-  <div class="subsection">
-    <h3>Strategy Pattern Example</h3>
+    <h4 style="color:var(--accent);">Strategy — Algorithm Selection at Runtime</h4>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>interface PricingStrategy {
-    double calculate(double basePrice);
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Strategy with Java functional interface (modern, clean)</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Strategy IS a functional interface in modern Java
+@FunctionalInterface
+interface SortStrategy {
+    void sort(List&lt;Integer&gt; data);
 }
 
-class RegularPricing implements PricingStrategy {
-    public double calculate(double basePrice) { return basePrice; }
+class DataProcessor {
+    private final SortStrategy strategy;
+    DataProcessor(SortStrategy strategy) { this.strategy = strategy; }
+    void process(List&lt;Integer&gt; data) { strategy.sort(data); }
 }
 
-class PremiumPricing implements PricingStrategy {
-    public double calculate(double basePrice) { return basePrice * 0.9; }
+// Usage: swap algorithms at construction time
+DataProcessor p1 = new DataProcessor(Collections::sort);        // built-in
+DataProcessor p2 = new DataProcessor(data -&gt; data.sort(Comparator.reverseOrder()));</code></pre>
+    </div>
+
+    <h4 style="color:var(--accent); margin-top:18px;">Decorator — Add Behavior Without Subclassing</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Decorator: wrapping with added behavior</span><button class="copy-btn">Copy</button></div>
+      <pre><code>interface TextProcessor {
+    String process(String text);
 }
 
-class PriceCalculator {
-    private final PricingStrategy strategy;
-    PriceCalculator(PricingStrategy strategy) { this.strategy = strategy; }
-    double finalPrice(double basePrice) { return strategy.calculate(basePrice); }
+class PlainText implements TextProcessor {
+    public String process(String text) { return text; }
+}
+
+class UpperCaseDecorator implements TextProcessor {
+    private final TextProcessor inner;
+    UpperCaseDecorator(TextProcessor inner) { this.inner = inner; }
+    public String process(String text) { return inner.process(text).toUpperCase(); }
+}
+
+class TrimDecorator implements TextProcessor {
+    private final TextProcessor inner;
+    TrimDecorator(TextProcessor inner) { this.inner = inner; }
+    public String process(String text) { return inner.process(text).trim(); }
+}
+
+// Chain decorators at runtime — no subclass explosion!
+TextProcessor pipeline = new UpperCaseDecorator(new TrimDecorator(new PlainText()));
+pipeline.process("  hello world  "); // "HELLO WORLD"</code></pre>
+    </div>
+
+    <h4 style="color:var(--accent); margin-top:18px;">Observer — Decoupled Event Notification</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Observer with functional listeners (modern Java style)</span><button class="copy-btn">Copy</button></div>
+      <pre><code>class OrderEventBus {
+    private final List&lt;Consumer&lt;Order&gt;&gt; listeners = new CopyOnWriteArrayList&lt;&gt;();
+
+    public void subscribe(Consumer&lt;Order&gt; listener)    { listeners.add(listener); }
+    public void publish(Order order)                    { listeners.forEach(l -&gt; l.accept(order)); }
+}
+
+// Usage — no tight coupling between OrderService and email/inventory/audit
+OrderEventBus bus = new OrderEventBus();
+bus.subscribe(o -&gt; emailService.sendConfirmation(o));
+bus.subscribe(o -&gt; inventory.reserve(o));
+bus.subscribe(o -&gt; audit.log("ORDER_PLACED", o));
+
+bus.publish(newOrder); // all listeners notified</code></pre>
+    </div>
+
+    <h4 style="color:var(--accent); margin-top:18px;">Adapter — Wrap Incompatible Interfaces</h4>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Adapting legacy payment gateway to modern interface</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Your clean interface
+interface PaymentGateway {
+    PaymentResult charge(String customerId, Money amount);
+}
+
+// Legacy third-party library you can't change
+class LegacyPayLib {
+    public int processPayment(String cid, double amt, String currency) { /* ... */ return 0; }
+}
+
+// Adapter bridges them
+class LegacyPaymentAdapter implements PaymentGateway {
+    private final LegacyPayLib legacy = new LegacyPayLib();
+
+    public PaymentResult charge(String customerId, Money amount) {
+        int code = legacy.processPayment(customerId, amount.value(), amount.currency());
+        return code == 0 ? PaymentResult.success() : PaymentResult.failure(code);
+    }
 }</code></pre>
     </div>
-    <p>Same calculator, different policy. This is easier to test and extend than a giant <code class="inline">if/else</code> chain.</p>
   </div>
 </div>
 
 <div class="section" id="anti-patterns">
   <div class="subsection">
-    <h3>Common Anti-Patterns to Avoid</h3>
-    <ul class="feature-list">
-      <li><strong>God classes:</strong> too many responsibilities in one class.</li>
-      <li><strong>Deep inheritance chains:</strong> fragile and hard to reason about.</li>
-      <li><strong>Premature abstraction:</strong> interfaces with one implementation and no actual variation.</li>
-      <li><strong>Pattern obsession:</strong> choosing a pattern before understanding the problem.</li>
-    </ul>
+    <h3>Anti-Patterns to Actively Avoid</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">God Class</div><div class="hl-value" style="color:var(--danger)">1000+ lines</div><div class="hl-desc">One class knows everything and does everything. Change becomes impossible to isolate.</div></div>
+      <div class="hl-box"><div class="hl-label">Anemic Domain</div><div class="hl-value" style="color:var(--danger)">No behavior</div><div class="hl-desc">Domain objects are just data bags (only getters/setters). All logic leaks into services.</div></div>
+      <div class="hl-box"><div class="hl-label">Service Locator</div><div class="hl-value" style="color:var(--danger)">Hidden deps</div><div class="hl-desc">Calling a global registry for dependencies hides coupling. Prefer constructor injection.</div></div>
+      <div class="hl-box"><div class="hl-label">Primitive Obsession</div><div class="hl-value" style="color:var(--danger)">Stringly-typed</div><div class="hl-desc">Using String for everything (email, phone, status) instead of value types. Loses validation.</div></div>
+    </div>
     <div class="callout info">
       <span class="callout-icon">INFO</span>
-      <div class="callout-body"><strong>Rule of thumb:</strong> start simple, then extract pattern when duplication and change pressure become clear.</div>
+      <div class="callout-body"><strong>Rule of thumb:</strong> start simple. Extract a pattern only when: (1) behavior varies across callers, (2) construction is getting complex, or (3) coupling makes testing painful.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">How do you implement a thread-safe Singleton?</div>
+        <div class="hl-desc">Best: use <code class="inline">enum</code> — JVM guarantees single instance, handles serialization and reflection attacks. Alternative: initialization-on-demand holder (static inner class). Double-checked locking is acceptable but verbose.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">Strategy Pattern vs Inheritance?</div>
+        <div class="hl-desc">Strategy composes behavior via an injected interface — swappable at runtime, fully testable with mocks. Inheritance bakes behavior in at compile time — changing algorithms requires new subclasses and breaks LSP when overdone.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">What is Dependency Injection?</div>
+        <div class="hl-desc">A class receives its dependencies from the outside (via constructor or setter) rather than creating them internally. This decouples creation from use, makes testing easy (inject mocks), and respects Dependency Inversion. Spring is a DI framework.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">Decorator vs Inheritance?</div>
+        <div class="hl-desc">Decorator adds behavior at runtime by wrapping an object. Inheritance is static — set at compile time. Decorator avoids subclass explosion when you have multiple independent optional behaviors (e.g., logging + caching + retry = 3 decorators vs 8 subclasses).</div>
+      </div>
     </div>
   </div>
 </div>
 
 </div>
-<footer><p>JavaMaster - Continue with Advanced topics from the sidebar.</p></footer>
+<footer><p>JavaMaster — Continue with <a href="testing.html" style="color:var(--accent);">Testing with JUnit and Mockito</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

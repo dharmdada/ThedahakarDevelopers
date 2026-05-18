@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Streams API – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">⚡ Functional</span></div>
 </header>
@@ -47,30 +45,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Streams are pipelines for processing sequences of elements. They don't store data.</li>
+      <li>Stream operations are lazy: intermediate operations don't execute until a terminal operation is called.</li>
+      <li>Streams can easily be parallelized, but it's only beneficial for large datasets or CPU-intensive tasks.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Trying to reuse a Stream. A stream cannot be operated on or reused after a terminal operation has been called.</li>
+      <li>Modifying the underlying collection while processing a stream (causes unpredictable results or exceptions).</li>
+      <li>Assuming parallelStream() is always faster. Thread overhead can make it slower for small collections.</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain streams in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can distinguish between intermediate (e.g., map, filter) and terminal operations (e.g., collect, forEach).</li>
+      <li>You know how to use Collectors to group or partition data.</li>
+      <li>You understand the difference between map() and flatMap().</li></ul>
   </div>
 </div>
 
@@ -130,7 +119,7 @@ names.<span class="fn">stream</span>().<span class="fn">sorted</span>(<span clas
 <span class="cm">// peek: debug/inspect without modifying</span>
 names.<span class="fn">stream</span>().<span class="fn">peek</span>(<span class="cl">System</span>.out::println).<span class="fn">count</span>();
 
-<span class="cm">// limit & skip</span>
+<span class="cm">// limit &amp; skip</span>
 names.<span class="fn">stream</span>().<span class="fn">skip</span>(<span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">2</span>); <span class="cm">// Skip first 2, take next 2</span></code></pre>
     </div>
   </div>
@@ -237,33 +226,30 @@ names.<span class="fn">stream</span>().<span class="fn">parallel</span>().<span 
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">What is Lazy Evaluation in Streams?</div>
-        <div class="hl-desc">Intermediate operations (like <code>filter</code> or <code>map</code>) do not process any data until a terminal operation (like <code>collect</code> or <code>count</code>) is invoked. This allows the JVM to optimize the pipeline.</div>
+        <div class="hl-value" style="font-size:16px;">Intermediate vs Terminal operations?</div>
+        <div class="hl-desc">Intermediate operations (filter, map) return a new stream and are lazy. Terminal operations (collect, count) return a non-stream result and trigger execution.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">Intermediate vs Terminal Operations?</div>
-        <div class="hl-desc">Intermediate operations return a new stream and are lazy. Terminal operations produce a result or side-effect and close the stream.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">When should you NOT use parallel streams?</div>
-        <div class="hl-desc">When the dataset is small, when the operations involve blocking I/O, or when processing elements with shared mutable state (which causes race conditions).</div>
+        <div class="hl-value" style="font-size:16px;">What is flatMap()?</div>
+        <div class="hl-desc">It transforms each element of a stream into a stream of new elements, and then flattens these inner streams into a single output stream.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../functional.html" style="color:var(--accent);">← Back to Functional</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Collections Deep Dive – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📦 Collections</span></div>
 </header>
@@ -47,30 +45,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Choose the right data structure for the job (e.g., ArrayList for fast reads, HashSet for uniqueness).</li>
+      <li>Understand time complexity (Big O notation) of basic operations like add, contains, and remove.</li>
+      <li>Use the Map interface for key-value pairs; it does not inherit from Collection.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Using LinkedList thinking it is faster than ArrayList. For modern hardware caching, ArrayList is almost always faster.</li>
+      <li>Forgetting to override equals() and hashCode() when using custom objects as keys in a HashMap or elements in a HashSet.</li>
+      <li>Modifying a collection during iteration using a normal for-each loop.</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain collections deep in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can explain the internal working mechanism of a HashMap.</li>
+      <li>You know the difference between fail-fast and fail-safe iterators.</li>
+      <li>You can correctly override equals() and hashCode() according to the contract.</li></ul>
   </div>
 </div>
 
@@ -216,7 +205,7 @@ map.<span class="fn">forEach</span>((key, val) -&gt; <span class="cl">System</sp
 
 <div class="section" id="queue">
   <div class="subsection">
-    <h3>Queue & Deque: Line Up</h3>
+    <h3>Queue &amp; Deque: Line Up</h3>
     <p>A <code class="inline">Queue</code> represents a line at a grocery store. It enforces <strong>FIFO</strong> (First-In, First-Out). The first element added to the queue is the first one processed.</p>
     <p>A <code class="inline">Deque</code> (Double Ended Queue) is a line where you can add or remove from <em>either</em> the front or the back. Because of this, it is the standard class used to implement <strong>Stacks</strong> (LIFO - Last-In, First-Out), like a stack of plates.</p>
     <div class="code-block">
@@ -251,7 +240,7 @@ deque.<span class="fn">offerLast</span>(<span class="st">"Back"</span>);</code><
 
 <div class="section" id="generics">
   <div class="subsection">
-    <h3>Generics & Wildcards: PECS</h3>
+    <h3>Generics &amp; Wildcards: PECS</h3>
     <p>Generics (<code class="inline">&lt;T&gt;</code>) allow you to write classes and methods that work with <em>any</em> object type, while still providing strict compile-time type safety.</p>
     <p>Wildcards (<code class="inline">?</code>) are used when dealing with generic collections. The golden rule of wildcards is <strong>PECS</strong> (Producer Extends, Consumer Super). If you only need to <em>read</em> from a collection, use <code class="inline">extends</code>. If you only need to <em>write</em> to it, use <code class="inline">super</code>.</p>
     <div class="code-block">
@@ -320,33 +309,30 @@ employees.<span class="fn">sort</span>(byNameThenSalary);</code></pre>
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">How does HashMap handle collisions?</div>
-        <div class="hl-desc">When two keys produce the same hash, they are stored in the same bucket. In Java 8+, if a bucket grows too large (threshold of 8), the linked list transforms into a balanced red-black tree, improving search time from O(n) to O(log n).</div>
+        <div class="hl-value" style="font-size:16px;">How does a HashMap work internally?</div>
+        <div class="hl-desc">It uses an array of Nodes. It computes the hash code of the key to find the array index. If there's a collision, it uses a linked list (or Red-Black tree in Java 8+) at that index.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">Comparable vs Comparator?</div>
-        <div class="hl-desc"><code>Comparable</code> is used for natural ordering and is implemented inside the class itself (<code>compareTo</code>). <code>Comparator</code> is used for custom/external sorting and is passed as a separate object.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">Why not use legacy Stack class?</div>
-        <div class="hl-desc">Because <code>java.util.Stack</code> extends <code>Vector</code> and is synchronized. This causes unnecessary overhead. You should use <code>ArrayDeque</code> instead for stack operations.</div>
+        <div class="hl-value" style="font-size:16px;">ArrayList vs LinkedList?</div>
+        <div class="hl-desc">ArrayList uses a dynamic array (fast random access O(1), slow insertions/deletions in middle O(n)). LinkedList uses a doubly-linked list (slow random access O(n), fast insertions/deletions O(1) if node is known).</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../collections.html" style="color:var(--accent);">← Back to Collections</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

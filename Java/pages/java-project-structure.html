@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Java Project Structure - JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Professional</span></div>
 </header>
@@ -37,30 +35,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Follow standard directory layouts (e.g., src/main/java, src/test/java). Don't invent your own.</li>
+      <li>Organize packages by feature (com.app.user, com.app.order) rather than by layer (com.app.controllers, com.app.services).</li>
+      <li>Keep configuration files (like application.properties) in src/main/resources.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Putting all classes in the default (unnamed) package. This makes them invisible to classes in named packages.</li>
+      <li>Mixing test code and production code in the same directory.</li>
+      <li>Not using a unique package name (like a reversed domain name: com.yourcompany.project).</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain java project structure in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can set up a standard Maven/Gradle project structure from scratch.</li>
+      <li>You understand the difference between the src/ and target/ (or build/) directories.</li>
+      <li>You know where to place static assets and property files.</li></ul>
   </div>
 </div>
 
@@ -158,10 +147,28 @@
   </div>
 </div>
 
-</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:16px;">Why do we use reversed domain names for packages?</div>
+        <div class="hl-desc">To prevent naming collisions. If two different companies create a 'User' class, com.apple.User and com.microsoft.User can coexist perfectly in the same application.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:16px;">What goes in src/main/resources?</div>
+        <div class="hl-desc">Non-Java files needed at runtime, such as configuration properties, XML files, templates, and static images. They are bundled into the root of the resulting JAR.</div>
+      </div>
+    </div>
+  </div>
+</div></div>
 <footer><p>JavaMaster - <a href="build-tools.html" style="color:var(--accent);">Next: Maven &amp; Gradle</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

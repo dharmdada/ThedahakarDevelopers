@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Java I/O Streams – JavaMaster</title>
+<meta name="description" content="Master Java I/O Streams: InputStream, OutputStream, Reader, Writer, BufferedReader, InputStreamReader, Scanner, serialization, and the Decorator pattern in java.io.">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(16,185,129,0.15);">I/O</div>
+    <div><h2>Java I/O Streams</h2><p>The complete stream API — byte streams, character streams, buffering, bridging, and the Decorator pattern that holds it all together.</p></div>
+  </div>
+</div>
+
+<div class="section theory-deep-dive" id="theory-deep-dive">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
+    <div><h2>Theory Deep Dive</h2><p>Streams as pipes — connecting a source to a sink</p></div>
+  </div>
+  <div class="subsection">
+    <h3>Mental Model: The Two Hierarchies</h3>
+    <p>Java I/O has <strong>two completely separate hierarchies</strong> for two different units of data:</p>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Byte Streams</div><div class="hl-value">InputStream / OutputStream</div><div class="hl-desc">Raw binary data — 8 bits at a time. Use for: images, audio, video, compressed files, network data, serialized objects. Everything is bytes at this level.</div></div>
+      <div class="hl-box"><div class="hl-label">Character Streams</div><div class="hl-value">Reader / Writer</div><div class="hl-desc">Text data — characters using a specific charset (UTF-8, etc). Use for: text files, CSV, JSON, XML, log files, config files. Handles encoding/decoding for you.</div></div>
+      <div class="hl-box"><div class="hl-label">Bridge Classes</div><div class="hl-value">InputStreamReader / OutputStreamWriter</div><div class="hl-desc">Convert between byte and character worlds. You specify the charset. Critical when reading bytes from network/file and treating them as text.</div></div>
+      <div class="hl-box"><div class="hl-label">Modern Alternative</div><div class="hl-value">java.nio.file.Files</div><div class="hl-desc">For most file operations, NIO.2 is simpler. But the classic stream API is still essential for network sockets, HTTP bodies, serialization, and compression.</div></div>
+    </div>
+    <p>All java.io classes implement the <strong>Decorator pattern</strong>. You stack wrappers around a base stream to add capabilities: buffering, charset conversion, data type reading, compression. Each wrapper calls the one beneath it.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">The Decorator chain — reading a gzipped text file</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Each layer adds one capability. Read from innermost outward:
+// FileInputStream → reads raw bytes from disk
+// GZIPInputStream → decompresses the bytes
+// InputStreamReader → decodes bytes to chars using UTF-8
+// BufferedReader → buffers chars for efficiency, adds readLine()
+
+try (var br = new BufferedReader(
+        new InputStreamReader(
+            new GZIPInputStream(
+                new FileInputStream("data.log.gz")),
+            StandardCharsets.UTF_8))) {
+
+    String line;
+    while ((line = br.readLine()) != null) {
+        System.out.println(line);
+    }
+}</code></pre>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Always wrap with BufferedReader/BufferedWriter.</strong> Unbuffered reads hit the OS for every single character. Buffering reads 8KB chunks at a time — often 100x faster for text processing.</div>
+    </div>
+  </div>
+  <div class="subsection">
+    <h3>The Full Stream Hierarchy</h3>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body">
+        <strong>Byte Streams</strong><br>
+        <code class="inline">InputStream</code> (abstract)<br>
+        ├── <code class="inline">FileInputStream</code> — bytes from a file<br>
+        ├── <code class="inline">ByteArrayInputStream</code> — bytes from a byte[] in memory<br>
+        ├── <code class="inline">FilterInputStream</code> (decorator base)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;├── <code class="inline">BufferedInputStream</code> — adds buffering<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;├── <code class="inline">DataInputStream</code> — reads primitives (int, long, double)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;└── <code class="inline">CheckedInputStream</code> — computes checksum while reading<br>
+        ├── <code class="inline">ObjectInputStream</code> — deserializes Java objects<br>
+        └── <code class="inline">GZIPInputStream</code> / <code class="inline">ZipInputStream</code> — decompression<br>
+        <br>
+        <code class="inline">OutputStream</code> (abstract)<br>
+        ├── <code class="inline">FileOutputStream</code> — bytes to a file<br>
+        ├── <code class="inline">ByteArrayOutputStream</code> — bytes to a byte[] in memory<br>
+        ├── <code class="inline">FilterOutputStream</code><br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;├── <code class="inline">BufferedOutputStream</code> — buffers writes<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;├── <code class="inline">DataOutputStream</code> — writes primitives<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;└── <code class="inline">PrintStream</code> — System.out is this!<br>
+        └── <code class="inline">ObjectOutputStream</code> — serializes Java objects<br>
+        <br>
+        <strong>Character Streams</strong><br>
+        <code class="inline">Reader</code> (abstract)<br>
+        ├── <code class="inline">InputStreamReader</code> — bridge: bytes → chars (specify charset!)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;└── <code class="inline">FileReader</code> — shortcut for FileInputStream + InputStreamReader<br>
+        ├── <code class="inline">BufferedReader</code> — buffers + readLine()<br>
+        ├── <code class="inline">StringReader</code> — reads from a String<br>
+        └── <code class="inline">CharArrayReader</code> — reads from a char[]<br>
+        <br>
+        <code class="inline">Writer</code> (abstract)<br>
+        ├── <code class="inline">OutputStreamWriter</code> — bridge: chars → bytes (specify charset!)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;└── <code class="inline">FileWriter</code> — shortcut for FileOutputStream + OutputStreamWriter<br>
+        ├── <code class="inline">BufferedWriter</code> — buffers + newLine()<br>
+        ├── <code class="inline">PrintWriter</code> — println, printf, format<br>
+        └── <code class="inline">StringWriter</code> — writes to a String (via StringBuffer internally)
+      </div>
+    </div>
+  </div>
+  <div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li><strong>Always specify charset explicitly</strong> — <code class="inline">FileReader</code> uses the platform default charset. On Windows that's often CP1252, not UTF-8. Always use <code class="inline">InputStreamReader(stream, StandardCharsets.UTF_8)</code>.</li>
+      <li><strong>Always buffer your streams</strong> — Raw FileInputStream/FileOutputStream are unbuffered. Wrap with Buffered* for any non-trivial I/O.</li>
+      <li><strong>Always close in try-with-resources</strong> — Streams hold OS file descriptors. Unclosed streams = file descriptor leak.</li>
+      <li><strong>Close outermost stream only</strong> — Closing the outermost wrapper closes all inner streams. Don't close them individually.</li>
+      <li><strong>Flush before close</strong> — Buffered streams may hold data. Closing calls flush() but if you need data written immediately (e.g. network), call flush() explicitly.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><strong>FileReader uses platform default charset</strong> — This makes your code platform-dependent. Always use <code class="inline">InputStreamReader</code> + explicit charset instead.</li>
+      <li><strong>FileWriter(file, true) appends, false overwrites</strong> — The boolean is "append mode". Default (no boolean) is overwrite. Many bugs come from not knowing this.</li>
+      <li><strong>read() returns int, not char</strong> — Returns -1 at end-of-stream. Casting to <code class="inline">char</code> before checking for -1 is a bug: <code class="inline">(char)-1 == '\uFFFF'</code>.</li>
+      <li><strong>PrintWriter never throws IOException</strong> — It suppresses them! Call <code class="inline">checkError()</code> to detect write failures, or use a Writer that throws.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="byte-streams">
+  <div class="subsection">
+    <h3>Byte Streams — FileInputStream / FileOutputStream</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Binary file copy — the complete, correct approach</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ---- Reading binary file ----
+Path src  = Path.of("image.png");
+Path dest = Path.of("image-copy.png");
+
+try (var in  = new BufferedInputStream(new FileInputStream(src.toFile()));
+     var out = new BufferedOutputStream(new FileOutputStream(dest.toFile()))) {
+
+    byte[] buffer = new byte[8192];  // 8KB chunks — optimal for most OSes
+    int bytesRead;
+    while ((bytesRead = in.read(buffer)) != -1) {
+        out.write(buffer, 0, bytesRead);  // write ONLY the bytes actually read!
+    }
+    // out.flush() called by close() automatically
+}
+
+// ---- Simpler: InputStream.transferTo() (Java 9+) ----
+try (var in  = new FileInputStream("source.bin");
+     var out = new FileOutputStream("dest.bin")) {
+    long transferred = in.transferTo(out);  // copies everything, returns byte count
+}
+
+// ---- ByteArrayOutputStream: capture bytes in memory ----
+var baos = new ByteArrayOutputStream();
+try (var gzip = new GZIPOutputStream(baos)) {
+    gzip.write("Compress this text".getBytes(StandardCharsets.UTF_8));
+}
+byte[] compressed = baos.toByteArray();  // in-memory compressed bytes
+
+// ---- ByteArrayInputStream: treat a byte[] as a stream ----
+byte[] data = loadFromNetwork();
+try (var bais = new ByteArrayInputStream(data);
+     var dis  = new DataInputStream(bais)) {
+    int  version = dis.readInt();
+    long timestamp = dis.readLong();
+    String payload = dis.readUTF();
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="char-streams">
+  <div class="subsection">
+    <h3>Character Streams — BufferedReader / BufferedWriter</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Text file reading — all correct patterns</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ---- Correct: explicit charset, buffered ----
+Path file = Path.of("report.csv");
+
+try (var br = new BufferedReader(
+        new InputStreamReader(new FileInputStream(file.toFile()),
+                              StandardCharsets.UTF_8))) {
+    // Read line by line — most common pattern
+    String line;
+    while ((line = br.readLine()) != null) {
+        processLine(line);
+    }
+}
+
+// ---- readLine() returns null at EOF, NOT "" or throws ----
+// Correct EOF check:
+while ((line = br.readLine()) != null) { ... }   // ✅
+while (!br.readLine().equals("")) { ... }         // ❌ NullPointerException at EOF!
+
+// ---- Stream lines (Java 8+) — lazy, memory-safe ----
+try (var br = new BufferedReader(new InputStreamReader(
+        new FileInputStream("big.log"), StandardCharsets.UTF_8))) {
+    long errorCount = br.lines()              // Stream<String> — lazy
+        .filter(l -> l.contains("ERROR"))
+        .peek(System.out::println)
+        .count();
+}  // BufferedReader closed automatically
+
+// ---- Read all at once (only for small files!) ----
+try (var br = new BufferedReader(new FileReader("config.properties",
+        StandardCharsets.UTF_8))) {  // FileReader with charset — Java 11+
+    String all = br.lines().collect(Collectors.joining("\n"));
+}
+
+// ---- Read single chars — for parsers ----
+try (var br = new BufferedReader(new InputStreamReader(System.in))) {
+    int ch;
+    while ((ch = br.read()) != -1) {  // read() returns int — check -1 BEFORE casting
+        System.out.print((char) ch);
+    }
+}</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Writing text — BufferedWriter / PrintWriter</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ---- BufferedWriter — safe, explicit ----
+try (var bw = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream("log.txt", true), // true = append
+                               StandardCharsets.UTF_8))) {
+    bw.write("2024-01-15 INFO  Server started");
+    bw.newLine();  // platform-correct line separator (\r\n on Windows, \n on Unix)
+    bw.write("2024-01-15 INFO  Listening on port 8080");
+    bw.newLine();
+    // bw.flush() called by close()
+}
+
+// ---- PrintWriter — convenient, but SILENTLY suppresses exceptions! ----
+try (var pw = new PrintWriter(new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream("output.txt"),
+                               StandardCharsets.UTF_8)))) {
+    pw.println("Hello World");
+    pw.printf("User: %s, Age: %d%n", "Alice", 30);
+    pw.format("Score: %.2f%n", 98.567);
+
+    if (pw.checkError()) {  // ← always check! PrintWriter eats IOExceptions
+        throw new IOException("Write failed silently");
+    }
+}
+
+// ---- StringWriter: write to a String (for testing / building content) ----
+var sw = new StringWriter();
+var pw = new PrintWriter(sw);
+pw.printf("Name: %s%nScore: %d%n", "Bob", 95);
+String result = sw.toString();  // "Name: Bob\nScore: 95\n"</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="scanner">
+  <div class="subsection">
+    <h3>Scanner — Parsing Tokens from Text</h3>
+    <p>Scanner is not a stream — it's a parser that reads tokens. It works on top of any <code class="inline">InputStream</code>, <code class="inline">Reader</code>, <code class="inline">File</code>, or <code class="inline">String</code>.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Scanner — parsing structured text input</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ---- Console input ----
+try (var sc = new Scanner(System.in)) {
+    System.out.print("Enter your name: ");
+    String name = sc.nextLine();
+
+    System.out.print("Enter your age: ");
+    int age = sc.nextInt();
+    sc.nextLine();  // consume the leftover newline after nextInt()!
+
+    System.out.printf("Hello %s, you are %d years old.%n", name, age);
+}
+
+// ---- Parse a file of numbers ----
+try (var sc = new Scanner(Path.of("numbers.txt"), StandardCharsets.UTF_8)) {
+    int sum = 0;
+    while (sc.hasNextInt()) {
+        sum += sc.nextInt();
+    }
+    System.out.println("Sum: " + sum);
+}
+
+// ---- Custom delimiter: parse CSV ----
+String csv = "Alice,30,Engineer";
+try (var sc = new Scanner(csv).useDelimiter(",")) {
+    String name  = sc.next();
+    int    age   = sc.nextInt();
+    String role  = sc.next();
+}
+
+// ---- Parse with regex ----
+String text = "Price: $42.99 and $15.00";
+try (var sc = new Scanner(text)) {
+    while (sc.findInLine("\\$([\\d.]+)") != null) {
+        System.out.println("Found price: " + sc.match().group(1));
+    }
+}
+
+// ---- CAUTION: Scanner is slow for large files! ----
+// BufferedReader.lines() is 3-5x faster for line-by-line reading.
+// Use Scanner only when you need its token-parsing features.</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>nextInt() + nextLine() trap.</strong> <code class="inline">nextInt()</code> reads the number but leaves the <code class="inline">\n</code> in the buffer. The very next <code class="inline">nextLine()</code> reads that empty leftover line, not the user's next input. Fix: call <code class="inline">sc.nextLine()</code> once after any <code class="inline">nextInt()</code> / <code class="inline">nextDouble()</code> to consume the newline.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="data-streams">
+  <div class="subsection">
+    <h3>DataInputStream / DataOutputStream — Typed Binary Protocol</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Writing and reading a binary protocol</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// ---- Write typed primitives to a binary file ----
+try (var dos = new DataOutputStream(
+        new BufferedOutputStream(new FileOutputStream("data.bin")))) {
+    dos.writeInt(42);           // 4 bytes, big-endian
+    dos.writeLong(123456789L);  // 8 bytes
+    dos.writeDouble(3.14159);   // 8 bytes
+    dos.writeBoolean(true);     // 1 byte
+    dos.writeUTF("Hello");      // 2-byte length prefix + UTF-8 bytes
+}
+
+// ---- Read back in EXACTLY the same order ----
+try (var dis = new DataInputStream(
+        new BufferedInputStream(new FileInputStream("data.bin")))) {
+    int     num     = dis.readInt();
+    long    id      = dis.readLong();
+    double  pi      = dis.readDouble();
+    boolean flag    = dis.readBoolean();
+    String  message = dis.readUTF();  // DataOutputStream.writeUTF format
+}
+// DataInputStream is big-endian by default.
+// For little-endian binary protocols (e.g., many network protocols), use ByteBuffer.</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="serialization">
+  <div class="subsection">
+    <h3>Object Serialization — ObjectInputStream / ObjectOutputStream</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Serialize and deserialize a Java object</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Class must implement Serializable
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;  // version stamp
+    private String name;
+    private int    age;
+    private transient String password;  // transient = NOT serialized!
+
+    // constructors, getters...
+}
+
+// ---- Serialize to file ----
+User user = new User("Alice", 30);
+try (var oos = new ObjectOutputStream(
+        new BufferedOutputStream(new FileOutputStream("user.ser")))) {
+    oos.writeObject(user);
+}
+
+// ---- Deserialize from file ----
+try (var ois = new ObjectInputStream(
+        new BufferedInputStream(new FileInputStream("user.ser")))) {
+    User loaded = (User) ois.readObject();  // unchecked cast
+    System.out.println(loaded.name());      // "Alice"
+    System.out.println(loaded.password());  // null — transient was not saved!
+}
+
+// ---- Serialize to byte[] (for caching, messaging) ----
+var baos = new ByteArrayOutputStream();
+try (var oos = new ObjectOutputStream(baos)) {
+    oos.writeObject(user);
+}
+byte[] bytes = baos.toByteArray();
+
+// ---- Deserialize from byte[] ----
+try (var ois = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+    User copy = (User) ois.readObject();
+}</code></pre>
+    </div>
+    <div class="callout warn">
+      <span class="callout-icon">WARN</span>
+      <div class="callout-body"><strong>Java serialization is a security risk.</strong> Deserializing untrusted data can lead to remote code execution (the "billion laughs" attack and gadget chains). In modern Java, prefer JSON (Jackson), Protocol Buffers, or Java Records for data transfer. Use serialization only for internal, trusted data.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="decision">
+  <div class="subsection">
+    <h3>Which Stream Do I Use? — Decision Guide</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Use Case</th><th>Right Choice</th><th>Don't Use</th></tr></thead>
+        <tbody>
+          <tr><td>Read text file (UTF-8)</td><td><code class="inline">BufferedReader(InputStreamReader(FileInputStream, UTF_8))</code> or <code class="inline">Files.readAllLines()</code></td><td><code class="inline">FileReader</code> (platform charset)</td></tr>
+          <tr><td>Write text file (UTF-8)</td><td><code class="inline">BufferedWriter(OutputStreamWriter(FileOutputStream, UTF_8))</code></td><td><code class="inline">FileWriter</code> (platform charset)</td></tr>
+          <tr><td>Copy binary file</td><td><code class="inline">FileInputStream.transferTo(FileOutputStream)</code></td><td>Character streams (corrupt binary)</td></tr>
+          <tr><td>Read console input</td><td><code class="inline">Scanner(System.in)</code> or <code class="inline">BufferedReader(InputStreamReader(System.in))</code></td><td><code class="inline">System.in.read()</code> directly</td></tr>
+          <tr><td>Print formatted output</td><td><code class="inline">PrintWriter</code> / <code class="inline">System.out.printf()</code></td><td>Raw OutputStream writes</td></tr>
+          <tr><td>Read/write binary protocol</td><td><code class="inline">DataInputStream</code> / <code class="inline">DataOutputStream</code></td><td>Character streams</td></tr>
+          <tr><td>Capture output in memory</td><td><code class="inline">ByteArrayOutputStream</code> / <code class="inline">StringWriter</code></td><td>Writing to temp files</td></tr>
+          <tr><td>Read network socket</td><td><code class="inline">BufferedReader(InputStreamReader(socket.getInputStream(), UTF_8))</code></td><td>Reading raw bytes as text</td></tr>
+          <tr><td>Large file operations</td><td><code class="inline">java.nio.file.Files</code> + <code class="inline">FileChannel</code></td><td>Classic streams (slower)</td></tr>
+          <tr><td>Parse tokens/numbers</td><td><code class="inline">Scanner</code></td><td>Manual string splitting</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">Byte streams vs Character streams?</div>
+        <div class="hl-desc">Byte streams (InputStream/OutputStream) work with raw 8-bit data — use for binary files, images, audio. Character streams (Reader/Writer) work with chars using a specific encoding — use for text. The bridge classes (InputStreamReader, OutputStreamWriter) convert between them with an explicit charset.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">Why wrap streams in Buffered*?</div>
+        <div class="hl-desc">Unbuffered reads/writes call the OS for every byte — a system call per character. BufferedReader reads 8KB at a time into memory, then serves your reads from that buffer. Result: 100x fewer system calls. Always wrap file/network streams in Buffered* for any text processing.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">What design pattern does java.io use?</div>
+        <div class="hl-desc">The <strong>Decorator pattern</strong>. Each stream wraps another and adds one capability (buffering, charset conversion, compression, type parsing). You compose features by stacking wrappers: <code class="inline">BufferedReader(InputStreamReader(GZIPInputStream(FileInputStream)))</code> adds buffering + charset + decompression to a file source.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">Why is FileReader dangerous?</div>
+        <div class="hl-desc"><code class="inline">FileReader</code> uses the JVM's platform default charset (<code class="inline">Charset.defaultCharset()</code>). On Windows that's often CP1252; on Linux, UTF-8. Code that works on your machine breaks on the server. Always use <code class="inline">new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8)</code> or in Java 11+: <code class="inline">new FileReader(f, StandardCharsets.UTF_8)</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer><p>JavaMaster — <a href="io-network.html" style="color:var(--accent);">Next: File I/O and Networking (NIO.2) →</a></p></footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body>
+</html>

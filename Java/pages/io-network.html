@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>File I/O and Networking - JavaMaster</title>
+<meta name="description" content="Master Java File I/O: NIO.2, Streams, Channels, Selectors, HTTP client, TCP sockets, serialization, and production-grade reliability practices.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,73 +21,166 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(16,185,129,0.15);">IO</div>
-    <div><h2>File I/O and Networking</h2><p>Build robust file and network operations with NIO, sockets, and modern HTTP client APIs.</p></div>
+    <div><h2>File I/O and Networking</h2><p>Build robust, resource-safe file operations and network calls — from NIO.2 to modern HTTP client and non-blocking I/O.</p></div>
   </div>
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
-    <div><h2>Theory Deep Dive</h2><p>External systems as unreliable boundaries</p></div>
+    <div><h2>Theory Deep Dive</h2><p>External systems as unreliable boundaries that must be defended against</p></div>
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>File systems and networks are slower and less predictable than memory. They can fail because of permissions, missing paths, locks, timeouts, partial writes, unavailable hosts, malformed responses, or resource exhaustion.</p>
-    <p>Good I/O code is defensive without being noisy. It validates inputs, sets timeouts, closes resources, logs enough context, and translates low-level failures into errors the rest of the application can understand.</p>
-    <p>Networking adds protocol concerns: request format, response parsing, retry safety, idempotency, authentication, rate limits, and backpressure. A successful connection is only one part of a correct network operation.</p>
+    <p>File systems and networks are <strong>fundamentally different from memory</strong>. They are slower by orders of magnitude, can fail partially, can be unavailable, can be contested by other processes, and have platform-specific behaviors. Good I/O code is defensive without being noisy.</p>
+    <p>Java has evolved its I/O model through three generations:</p>
+    <ul class="feature-list">
+      <li><strong><code class="inline">java.io</code> (Java 1):</strong> Stream-oriented, blocking. Simple but scales poorly under high concurrency.</li>
+      <li><strong><code class="inline">java.nio</code> (Java 4):</strong> Buffer and channel-based. Non-blocking capable via Selectors. Enables one thread to serve thousands of connections.</li>
+      <li><strong><code class="inline">java.nio.file</code> (Java 7+):</strong> Modern file API (<code class="inline">Files</code>, <code class="inline">Path</code>, <code class="inline">WatchService</code>). Replaces the broken <code class="inline">java.io.File</code>.</li>
+    </ul>
+    <p>Networking adds protocol concerns beyond connectivity: request format, response parsing, retry safety, idempotency, authentication, rate limiting, and backpressure. <strong>A successful TCP connection is only the beginning of a correct network operation.</strong></p>
+  </div>
+  <div class="subsection">
+    <h3>The Old java.io.File Problem</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">delete() returns boolean</div><div class="hl-value" style="color:var(--danger)">Silent failure</div><div class="hl-desc">Returns false when deletion fails. No exception, no reason, no way to diagnose.</div></div>
+      <div class="hl-box"><div class="hl-label">mkdir() returns boolean</div><div class="hl-value" style="color:var(--danger)">No info on failure</div><div class="hl-desc">Returns false if directory already exists OR if creation fails. Indistinguishable.</div></div>
+      <div class="hl-box"><div class="hl-label">list() returns null</div><div class="hl-value" style="color:var(--danger)">NPE trap</div><div class="hl-desc">Returns null (not empty array) when I/O error occurs. Guaranteed NullPointerException.</div></div>
+      <div class="hl-box"><div class="hl-label">No charset control</div><div class="hl-value" style="color:var(--danger)">Encoding bugs</div><div class="hl-desc">FileReader uses platform default charset. Different behavior on Windows vs Linux.</div></div>
+    </div>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li>Always use <code class="inline">java.nio.file.Files</code> and <code class="inline">Path</code> in new code. Never use <code class="inline">java.io.File</code>.</li>
+      <li>Wrap streams in <code class="inline">Buffered</code> variants to minimize native I/O syscalls (huge performance gain).</li>
+      <li>Always specify charset explicitly: <code class="inline">StandardCharsets.UTF_8</code>. Never rely on platform default.</li>
+      <li>Close resources with try-with-resources. Every open stream is a leaked file handle until closed.</li>
+      <li>Set timeouts on all network calls. A hanging thread is worse than a failed request.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>Forgetting to flush</strong> — <code class="inline">BufferedWriter</code> may hold unflushed bytes. Try-with-resources calls <code class="inline">close()</code> which calls <code class="inline">flush()</code>. Manually flushing is needed for long-lived streams.</li>
+      <li><strong>Loading huge files into memory</strong> — <code class="inline">Files.readAllLines()</code> loads everything into a <code class="inline">List&lt;String&gt;</code>. Use <code class="inline">Files.lines()</code> (a lazy <code class="inline">Stream&lt;String&gt;</code>) for large files.</li>
+      <li><strong>Assuming UTF-8 everywhere</strong> — Windows systems may produce files in Windows-1252. Always detect or specify charset explicitly.</li>
+      <li><strong>Blocking HTTP in event loops</strong> — Blocking HTTP calls inside reactive chains or virtual thread pools can cause deadlocks. Use async variants.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain io network in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You use <code class="inline">Files</code>/<code class="inline">Path</code> for all file operations, never <code class="inline">java.io.File</code>.</li>
+      <li>You can stream large files line-by-line without memory explosion.</li>
+      <li>You can make synchronous and asynchronous HTTP requests with Java's <code class="inline">HttpClient</code>.</li>
+      <li>You can explain when NIO Selectors are better than thread-per-connection.</li>
+      <li>You can handle partial reads/writes and set connect/read timeouts.</li>
     </ul>
   </div>
 </div>
 
 <div class="section" id="nio-files">
   <div class="subsection">
-    <h3>NIO File Operations</h3>
+    <h3>NIO.2 File Operations (Modern Standard)</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Path path = Paths.get("logs/app.log");
-Files.createDirectories(path.getParent());
-Files.writeString(path, "service-started\n", StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Reading files — choose the right method</span><button class="copy-btn">Copy</button></div>
+      <pre><code>Path path = Path.of("data", "config.json");   // platform-safe, no "/" hardcoded
 
-String content = Files.readString(path);
-List&lt;String&gt; lines = Files.readAllLines(path);</code></pre>
+// Small files: read all at once (< 10 MB is fine)
+String content  = Files.readString(path, StandardCharsets.UTF_8);
+byte[] bytes    = Files.readAllBytes(path);
+List&lt;String&gt; lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+
+// Large files: lazy streaming (memory-safe for any size)
+try (Stream&lt;String&gt; lineStream = Files.lines(path, StandardCharsets.UTF_8)) {
+    long errorCount = lineStream
+        .filter(line -&gt; line.contains("ERROR"))
+        .count();
+}  // stream AND underlying reader auto-closed
+
+// Buffered reading for custom parsing
+try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        processLine(line);
+    }
+}</code></pre>
     </div>
-    <p>Prefer <code class="inline">java.nio.file.Files</code> over old <code class="inline">java.io.File</code> APIs in new code.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Writing files — with OpenOptions</span><button class="copy-btn">Copy</button></div>
+      <pre><code>Path logPath = Path.of("logs", "app.log");
+Files.createDirectories(logPath.getParent()); // create parent dirs if needed
+
+// Write (creates or replaces)
+Files.writeString(logPath, "Service started\n", StandardCharsets.UTF_8);
+
+// Append to existing file
+Files.writeString(logPath, "New event\n",
+    StandardCharsets.UTF_8,
+    StandardOpenOption.CREATE,
+    StandardOpenOption.APPEND);
+
+// Write all lines
+Files.write(logPath, List.of("line1", "line2"), StandardCharsets.UTF_8);
+
+// Buffered writer for high-volume output
+try (BufferedWriter bw = Files.newBufferedWriter(logPath, StandardCharsets.UTF_8,
+        StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+    for (Event e : events) {
+        bw.write(e.toString());
+        bw.newLine();
+    }
+}  // flush+close automatic</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">File/directory operations</span><button class="copy-btn">Copy</button></div>
+      <pre><code>Path src  = Path.of("src/report.pdf");
+Path dest = Path.of("archive/2026/report.pdf");
+
+Files.createDirectories(dest.getParent());
+Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+Files.move(src, dest, StandardCopyOption.ATOMIC_MOVE);    // rename atomically
+Files.delete(dest);                                        // throws if missing
+Files.deleteIfExists(dest);                                // safe delete
+
+// Walk directory tree
+try (Stream&lt;Path&gt; walk = Files.walk(Path.of("src/main"))) {
+    walk.filter(p -&gt; p.toString().endsWith(".java"))
+        .map(Path::getFileName)
+        .forEach(System.out::println);
+}
+
+// File metadata
+BasicFileAttributes attrs = Files.readAttributes(src, BasicFileAttributes.class);
+long size      = attrs.size();
+FileTime mtime = attrs.lastModifiedTime();
+boolean isDir  = Files.isDirectory(src);</code></pre>
+    </div>
   </div>
 </div>
 
-<div class="section" id="streams-channels">
+<div class="section" id="channels">
   <div class="subsection">
-    <h3>Streams vs Channels</h3>
+    <h3>Streams vs Channels — When to Use What</h3>
     <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Streams</div><div class="hl-value">Simple</div><div class="hl-desc">Easy for text and small file use cases.</div></div>
-      <div class="hl-box"><div class="hl-label">Channels</div><div class="hl-value">High Throughput</div><div class="hl-desc">Buffer-based, suited for larger and high-performance I/O.</div></div>
-      <div class="hl-box"><div class="hl-label">Async I/O</div><div class="hl-value">Scalable</div><div class="hl-desc">Useful when many operations are in flight.</div></div>
+      <div class="hl-box"><div class="hl-label">InputStream/OutputStream</div><div class="hl-value">Simple, Blocking</div><div class="hl-desc">Best for text processing, small-medium files. Byte-at-a-time or buffered read. Always wrap in BufferedStream.</div></div>
+      <div class="hl-box"><div class="hl-label">Channel + ByteBuffer</div><div class="hl-value">High Throughput</div><div class="hl-desc">Block-level I/O. Supports non-blocking mode. Used in server frameworks (Netty) and high-speed file transfer.</div></div>
+      <div class="hl-box"><div class="hl-label">Files.lines() Stream</div><div class="hl-value">Lazy + Memory-Safe</div><div class="hl-desc">Preferred for processing large text files. Lazily loads lines, pipelines with Stream API. Must close the stream.</div></div>
+      <div class="hl-box"><div class="hl-label">AsynchronousFileChannel</div><div class="hl-value">Non-Blocking Disk</div><div class="hl-desc">I/O completed via CompletionHandler or Future. Useful in reactive/async pipelines for disk operations.</div></div>
+    </div>
+    <div class="code-block" style="margin-top:18px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">High-performance file copy with FileChannel</span><button class="copy-btn">Copy</button></div>
+      <pre><code>try (FileChannel src  = FileChannel.open(Path.of("large.bin"), StandardOpenOption.READ);
+     FileChannel dest = FileChannel.open(Path.of("copy.bin"),
+             StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+
+    // Zero-copy transfer using OS-level sendfile()
+    long transferred = src.transferTo(0, src.size(), dest);
+    System.out.println("Transferred " + transferred + " bytes");
+}
+// transferTo() uses OS-level zero-copy (no JVM heap involved) — 5-10x faster than stream copy</code></pre>
     </div>
   </div>
 </div>
@@ -95,55 +189,211 @@ List&lt;String&gt; lines = Files.readAllLines(path);</code></pre>
   <div class="subsection">
     <h3>Modern HTTP Client (Java 11+)</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>HttpClient client = HttpClient.newHttpClient();
-HttpRequest request = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.example.com/health"))
-    .GET()
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Synchronous and asynchronous requests</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Build the client once and reuse (thread-safe, manages connection pools)
+HttpClient client = HttpClient.newBuilder()
+    .version(HttpClient.Version.HTTP_2)
+    .connectTimeout(Duration.ofSeconds(5))
     .build();
 
-HttpResponse&lt;String&gt; response = client.send(request, HttpResponse.BodyHandlers.ofString());
-System.out.println(response.statusCode());
-System.out.println(response.body());</code></pre>
+// --- Synchronous GET ---
+HttpRequest getReq = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.example.com/users/42"))
+    .header("Authorization", "Bearer " + token)
+    .GET()
+    .timeout(Duration.ofSeconds(10))
+    .build();
+
+HttpResponse&lt;String&gt; resp = client.send(getReq, BodyHandlers.ofString());
+if (resp.statusCode() == 200) {
+    String json = resp.body();
+}
+
+// --- POST with JSON body ---
+String json = """
+    {"name": "Alice", "email": "alice@example.com"}
+    """;
+
+HttpRequest postReq = HttpRequest.newBuilder()
+    .uri(URI.create("https://api.example.com/users"))
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString(json))
+    .build();
+
+HttpResponse&lt;String&gt; created = client.send(postReq, BodyHandlers.ofString());
+
+// --- Asynchronous GET (non-blocking) ---
+CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; future =
+    client.sendAsync(getReq, BodyHandlers.ofString());
+
+future.thenApply(HttpResponse::body)
+      .thenAccept(body -&gt; parseAndProcess(body))
+      .exceptionally(ex -&gt; { log.error("Request failed", ex); return null; });
+
+// Fire multiple requests concurrently
+List&lt;URI&gt; uris = List.of(uri1, uri2, uri3);
+List&lt;CompletableFuture&lt;String&gt;&gt; futures = uris.stream()
+    .map(u -&gt; client.sendAsync(
+            HttpRequest.newBuilder(u).build(), BodyHandlers.ofString())
+        .thenApply(HttpResponse::body))
+    .toList();
+
+List&lt;String&gt; results = futures.stream()
+    .map(CompletableFuture::join)
+    .toList();</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">TIP</span>
+      <div class="callout-body">Always set <code class="inline">.timeout()</code> on the request AND <code class="inline">.connectTimeout()</code> on the client. Without timeouts, a hung remote server can block a thread indefinitely.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="sockets">
   <div class="subsection">
-    <h3>Socket Basics</h3>
-    <p>For custom protocols, TCP sockets provide full control over byte-level communication.</p>
+    <h3>TCP Socket Programming</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>try (Socket socket = new Socket("localhost", 8080);
-     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Client socket with proper resource cleanup</span><button class="copy-btn">Copy</button></div>
+      <pre><code>try (Socket socket = new Socket()) {
+    socket.connect(new InetSocketAddress("localhost", 8080), 3000); // 3s connect timeout
+    socket.setSoTimeout(5000); // 5s read timeout
 
-    out.write("PING\n");
-    out.flush();
+    try (PrintWriter out = new PrintWriter(
+                new BufferedWriter(new OutputStreamWriter(
+                    socket.getOutputStream(), StandardCharsets.UTF_8)), true);
+         BufferedReader in = new BufferedReader(
+                new InputStreamReader(
+                    socket.getInputStream(), StandardCharsets.UTF_8))) {
 
-    String reply = in.readLine();
-    System.out.println(reply);
+        out.println("PING");           // auto-flushed (true in PrintWriter constructor)
+        String response = in.readLine();
+        System.out.println("Got: " + response);
+    }
+} // socket auto-closed</code></pre>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Multi-client TCP server (thread-per-connection)</span><button class="copy-btn">Copy</button></div>
+      <pre><code>try (ServerSocket server = new ServerSocket(8080)) {
+    System.out.println("Server listening on 8080");
+    ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor(); // Java 21+
+
+    while (true) {
+        Socket client = server.accept(); // blocks until client connects
+        pool.submit(() -&gt; handleClient(client));
+    }
+}
+
+void handleClient(Socket socket) {
+    try (socket;
+         BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         PrintWriter    out = new PrintWriter(socket.getOutputStream(), true)) {
+        String line;
+        while ((line = in.readLine()) != null) {
+            out.println("Echo: " + line);
+        }
+    } catch (IOException e) {
+        log.warn("Client disconnected: {}", e.getMessage());
+    }
 }</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="nio-selectors">
+  <div class="subsection">
+    <h3>Non-Blocking I/O: Selectors (NIO)</h3>
+    <p>In traditional blocking I/O, each connection needs a dedicated thread. At 10,000 connections you need 10,000 threads — ~80 GB RAM just for thread stacks. NIO Selectors let <strong>one thread multiplex thousands of connections</strong>:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Non-blocking server with Selector</span><button class="copy-btn">Copy</button></div>
+      <pre><code>Selector selector = Selector.open();
+
+ServerSocketChannel serverChannel = ServerSocketChannel.open();
+serverChannel.bind(new InetSocketAddress("localhost", 8080));
+serverChannel.configureBlocking(false);                      // KEY: non-blocking mode
+serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+
+ByteBuffer buffer = ByteBuffer.allocate(1024);
+
+while (true) {
+    selector.select();  // Block until at least one channel is ready
+
+    Iterator&lt;SelectionKey&gt; keys = selector.selectedKeys().iterator();
+    while (keys.hasNext()) {
+        SelectionKey key = keys.next();
+        keys.remove();                    // MUST remove manually!
+
+        if (key.isAcceptable()) {
+            SocketChannel client = serverChannel.accept();
+            client.configureBlocking(false);
+            client.register(selector, SelectionKey.OP_READ);
+
+        } else if (key.isReadable()) {
+            SocketChannel client = (SocketChannel) key.channel();
+            buffer.clear();
+            int bytesRead = client.read(buffer);
+
+            if (bytesRead == -1) {
+                client.close();  // client disconnected
+            } else {
+                buffer.flip();
+                client.write(buffer);  // echo back
+            }
+        }
+    }
+}</code></pre>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">INFO</span>
+      <div class="callout-body">In Java 21+, <strong>Virtual Threads</strong> are often a better alternative to NIO Selectors for most use cases. Virtual threads are cheap (thousands/millions fit in memory) and use blocking I/O with none of the callback complexity of NIO.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="best-practices">
   <div class="subsection">
-    <h3>Reliability Practices</h3>
+    <h3>Production I/O Reliability Checklist</h3>
     <ul class="feature-list">
-      <li>Always set connect/read timeouts for network calls.</li>
-      <li>Use retry with backoff only for idempotent operations.</li>
-      <li>Close resources with try-with-resources.</li>
-      <li>Use buffering for large I/O throughput improvements.</li>
-      <li>Capture structured logs on failed I/O for root-cause analysis.</li>
+      <li><strong>Always use try-with-resources</strong> — Never leave streams, channels, sockets, or connections open in error paths.</li>
+      <li><strong>Always set timeouts</strong> — Connect timeout (when establishing connection) AND read timeout (when waiting for data).</li>
+      <li><strong>Retry only idempotent operations</strong> — Retry GET requests. Never auto-retry a POST that creates a resource without idempotency keys.</li>
+      <li><strong>Specify charset everywhere</strong> — <code class="inline">StandardCharsets.UTF_8</code> on every Reader/Writer. Platform default is a footgun on Windows.</li>
+      <li><strong>Use buffering</strong> — Wrap raw streams in <code class="inline">BufferedReader</code>/<code class="inline">BufferedWriter</code>. Raw byte-by-byte I/O can be 100x slower.</li>
+      <li><strong>Log structured failure context</strong> — Include file path, operation, byte offset, response code. Bare "IOException" messages are useless in production.</li>
+      <li><strong>Handle partial writes</strong> — Network sends are not guaranteed to write all bytes in one call. Loop on <code class="inline">channel.write(buffer)</code> until buffer is empty.</li>
     </ul>
   </div>
 </div>
 
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">java.io vs java.nio — key differences?</div>
+        <div class="hl-desc"><code class="inline">java.io</code> is stream-oriented and always blocking — one thread per connection. <code class="inline">java.nio</code> is buffer-and-channel oriented, supports non-blocking mode, and with Selectors allows one thread to handle thousands of connections. <code class="inline">java.nio.file</code> is the modern file API replacing <code class="inline">java.io.File</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">What is Serialization and its security risks?</div>
+        <div class="hl-desc">Converting an object graph to a byte stream. The class must implement <code class="inline">Serializable</code>. Risk: Java deserialization is a known attack vector — crafted byte streams can trigger arbitrary code execution. Prefer JSON (Jackson/Gson) or Protobuf for cross-system communication. Never deserialize untrusted data.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">How does Java's HttpClient differ from Apache HttpClient?</div>
+        <div class="hl-desc">Java 11's <code class="inline">HttpClient</code> is built-in, supports HTTP/2, has an async/reactive API via <code class="inline">CompletableFuture</code> and <code class="inline">BodySubscriber</code>, and is immutable. Apache HttpClient is a third-party library, HTTP/1.1 by default, more configurable for edge cases like cookie handling and connection pools.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">Why use Files.lines() instead of Files.readAllLines()?</div>
+        <div class="hl-desc"><code class="inline">readAllLines()</code> loads the entire file into a <code class="inline">List&lt;String&gt;</code> in memory — a 1 GB log file = 1 GB heap usage. <code class="inline">Files.lines()</code> returns a lazy <code class="inline">Stream&lt;String&gt;</code> that reads one line at a time. Critical: you MUST close the stream (try-with-resources) or the file handle leaks.</div>
+      </div>
+    </div>
+  </div>
 </div>
-<footer><p>JavaMaster - Continue with <a href="datetime.html" style="color:var(--accent);">Date and Time API</a></p></footer>
+
+</div>
+<footer><p>JavaMaster — Continue with <a href="datetime.html" style="color:var(--accent);">Date and Time API</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

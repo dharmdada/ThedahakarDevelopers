@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Methods – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
 </header>
@@ -47,36 +45,27 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>A method should do one thing and do it well (Single Responsibility Principle).</li>
+      <li>Keep parameter lists short. If a method takes more than 3-4 arguments, consider passing an object.</li>
+      <li>Understand method signatures: name and parameter types. Return type is NOT part of the signature.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Confusing method overloading (same name, different parameters) with overriding (subclass replacing parent's method).</li>
+      <li>Thinking you can pass primitives by reference. Java is strictly pass-by-value.</li>
+      <li>Ignoring the return value of immutable object methods (e.g., calling str.toLowerCase() without assigning the result).</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain methods in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can explain method overloading and write an example.</li>
+      <li>You know how varargs (... syntax) works under the hood (it's an array).</li>
+      <li>You can differentiate between static and instance methods.</li></ul>
   </div>
 </div>
 
 <div class="section" id="defining">
   <div class="subsection">
-    <h3>Defining & Calling Methods: The Verbs of Java</h3>
+    <h3>Defining &amp; Calling Methods: The Verbs of Java</h3>
     <p>If classes and objects are the "nouns" of Java, then methods are the "verbs." A method is a reusable block of code that performs a specific task. By wrapping logic in a method, you avoid repeating the same code multiple times, making your application easier to maintain and test.</p>
     <p>Every method defines a strict <strong>contract</strong>: it declares exactly what it needs as input (parameters) and exactly what it promises to give back (return type).</p>
     <div class="code-block">
@@ -252,33 +241,30 @@
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">Is Java Pass-by-Value or Pass-by-Reference?</div>
-        <div class="hl-desc">Java is strictly **Pass-by-Value**. For primitives, the actual value is copied. For objects, the memory address (reference) is copied, but it is passed by value. This means you can modify the object's contents, but you cannot change which object the caller's variable points to.</div>
+        <div class="hl-value" style="font-size:16px;">Overloading vs Overriding?</div>
+        <div class="hl-desc">Overloading is compile-time polymorphism (same name, different parameters). Overriding is runtime polymorphism (subclass provides specific implementation of a parent's method).</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">What causes a StackOverflowError?</div>
-        <div class="hl-desc">It occurs when the call stack exceeds its allowed memory size. This is almost always caused by infinite recursion (a recursive method that fails to reach its base case).</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">What are Varargs?</div>
-        <div class="hl-desc">Variable Arguments allow a method to accept zero or more arguments of a specified type. They are treated as an array inside the method (e.g., <code>public void print(String... words)</code>).</div>
+        <div class="hl-value" style="font-size:16px;">Can you overload a method based only on return type?</div>
+        <div class="hl-desc">No. The compiler uses the method signature (name + parameters) to distinguish methods. Return type is ignored during overload resolution.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

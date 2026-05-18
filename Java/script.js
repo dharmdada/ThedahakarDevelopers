@@ -1,4 +1,4 @@
-﻿// SIDEBAR GENERATION
+// SIDEBAR GENERATION
 const isSubPage = window.location.pathname.includes('/pages/');
 const basePath = isSubPage ? '../' : './';
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -73,30 +73,31 @@ function renderSidebar() {
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-header ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html'])}">
+        <div class="nav-group-header ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html', 'jdbc.html'])}">
           <span>Advanced</span><span class="chevron">▶</span>
         </div>
-        <div class="nav-group-children ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html'])}">
+        <div class="nav-group-children ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html', 'jdbc.html'])}">
           <a class="nav-item ${isActive('advanced.html')}" href="${basePath}advanced.html"><span class="dot"></span>Overview</a>
-          <a class="nav-item ${isActive('exceptions-io.html')}" href="${basePath}pages/exceptions-io.html"><span class="dot"></span>Exceptions & Errors</a>
+          <a class="nav-item ${isActive('exceptions-io.html')}" href="${basePath}pages/exceptions-io.html"><span class="dot"></span>Exceptions</a>
+          <a class="nav-item ${isActive('java-io-streams.html')}" href="${basePath}pages/java-io-streams.html"><span class="dot"></span>I/O Streams</a>
           <a class="nav-item ${isActive('io-network.html')}" href="${basePath}pages/io-network.html"><span class="dot"></span>File I/O & Networking</a>
           <a class="nav-item ${isActive('datetime.html')}" href="${basePath}pages/datetime.html"><span class="dot"></span>Date & Time API</a>
           <a class="nav-item ${isActive('concurrency.html')}" href="${basePath}pages/concurrency.html"><span class="dot"></span>Concurrency</a>
           <a class="nav-item ${isActive('reflection.html')}" href="${basePath}pages/reflection.html"><span class="dot"></span>Reflection & Annotations</a>
           <a class="nav-item ${isActive('jvm-internals.html')}" href="${basePath}pages/jvm-internals.html"><span class="dot"></span>JVM Internals</a>
           <a class="nav-item ${isActive('modern-features.html')}" href="${basePath}pages/modern-features.html"><span class="dot"></span>Modern Features</a>
+          <a class="nav-item ${isActive('jdbc.html')}" href="${basePath}pages/jdbc.html"><span class="dot"></span>JDBC & SQL</a>
         </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-header ${isGroupOpen(['testing.html', 'build-tools.html', 'jdbc.html', 'design-patterns.html', 'java-project-structure.html'])}">
+        <div class="nav-group-header ${isGroupOpen(['testing.html', 'build-tools.html', 'design-patterns.html', 'java-project-structure.html'])}">
           <span>Professional</span><span class="chevron">▶</span>
         </div>
-        <div class="nav-group-children ${isGroupOpen(['testing.html', 'build-tools.html', 'jdbc.html', 'design-patterns.html', 'java-project-structure.html'])}">
+        <div class="nav-group-children ${isGroupOpen(['testing.html', 'build-tools.html', 'design-patterns.html', 'java-project-structure.html'])}">
           <a class="nav-item ${isActive('java-project-structure.html')}" href="${basePath}pages/java-project-structure.html"><span class="dot"></span>Project Structure</a>
           <a class="nav-item ${isActive('build-tools.html')}" href="${basePath}pages/build-tools.html"><span class="dot"></span>Maven & Gradle</a>
           <a class="nav-item ${isActive('testing.html')}" href="${basePath}pages/testing.html"><span class="dot"></span>Testing</a>
-          <a class="nav-item ${isActive('jdbc.html')}" href="${basePath}pages/jdbc.html"><span class="dot"></span>JDBC & SQL</a>
           <a class="nav-item ${isActive('design-patterns.html')}" href="${basePath}pages/design-patterns.html"><span class="dot"></span>Patterns & SOLID</a>
         </div>
       </div>
@@ -129,17 +130,18 @@ const coursePages = [
   { file: 'generics.html', path: 'pages/generics.html', title: 'Generics Deep Dive' },
   { file: 'collections-deep.html', path: 'pages/collections-deep.html', title: 'Collections Deep Dive' },
   { file: 'advanced.html', path: 'advanced.html', title: 'Advanced Java' },
-  { file: 'exceptions-io.html', path: 'pages/exceptions-io.html', title: 'Exceptions and Errors' },
+  { file: 'exceptions-io.html', path: 'pages/exceptions-io.html', title: 'Exceptions and Error Handling' },
+  { file: 'java-io-streams.html', path: 'pages/java-io-streams.html', title: 'Java I/O Streams' },
   { file: 'io-network.html', path: 'pages/io-network.html', title: 'File I/O and Networking' },
   { file: 'datetime.html', path: 'pages/datetime.html', title: 'Date and Time API' },
   { file: 'concurrency.html', path: 'pages/concurrency.html', title: 'Concurrency' },
   { file: 'reflection.html', path: 'pages/reflection.html', title: 'Reflection and Annotations' },
   { file: 'jvm-internals.html', path: 'pages/jvm-internals.html', title: 'JVM Internals' },
   { file: 'modern-features.html', path: 'pages/modern-features.html', title: 'Modern Features' },
+  { file: 'jdbc.html', path: 'pages/jdbc.html', title: 'JDBC and SQL' },
   { file: 'java-project-structure.html', path: 'pages/java-project-structure.html', title: 'Project Structure' },
   { file: 'build-tools.html', path: 'pages/build-tools.html', title: 'Maven and Gradle' },
   { file: 'testing.html', path: 'pages/testing.html', title: 'Testing' },
-  { file: 'jdbc.html', path: 'pages/jdbc.html', title: 'JDBC and SQL' },
   { file: 'design-patterns.html', path: 'pages/design-patterns.html', title: 'Patterns and SOLID' }
 ];
 
@@ -523,6 +525,219 @@ quizScript.onload = function() {
   })();
 };
 document.head.appendChild(quizScript);
+
+// ═══════════════════════════════════════════════════════════
+//  JAVAMASTER SYNTAX HIGHLIGHTER
+//  Auto-highlights every .code-block on every page.
+//  Detects language from .code-lang text.
+//  Skips blocks that already have child <span> tags.
+// ═══════════════════════════════════════════════════════════
+(function highlightAll() {
+
+  function getLang(block) {
+    const langEl = block.querySelector('.code-lang');
+    if (!langEl) return 'java';
+    const t = langEl.textContent.trim().toLowerCase();
+    if (t === 'shell' || t === 'bash' || t === 'sh' || t === 'pipeline') return 'shell';
+    if (t === 'xml') return 'xml';
+    if (t === 'groovy' || t === 'kotlin') return 'groovy';
+    return 'java';
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Java / Groovy / Kotlin ─────────────────────────────
+  const JAVA_KW = new Set([
+    'abstract','assert','boolean','break','byte','case','catch','char','class',
+    'const','continue','default','do','double','else','enum','extends','final',
+    'finally','float','for','goto','if','implements','import','instanceof','int',
+    'interface','long','native','new','null','package','private','protected',
+    'public','return','short','static','strictfp','super','switch','synchronized',
+    'this','throw','throws','transient','try','var','void','volatile','while',
+    'record','sealed','permits','yield','when','true','false',
+    'fun','val','lateinit','companion','object','data','inline','reified',
+    'suspend','override','open','internal','out','in','crossinline','noinline',
+  ]);
+
+  function highlightJava(raw) {
+    const out = [];
+    let i = 0;
+    const n = raw.length;
+
+    while (i < n) {
+      let ch = raw[i];
+
+      // Single-line comment
+      if (ch === '/' && raw[i+1] === '/') {
+        const end = raw.indexOf('\n', i);
+        const tok = end < 0 ? raw.slice(i) : raw.slice(i, end);
+        out.push('<span class="cm">' + esc(tok) + '</span>');
+        i += tok.length;
+        continue;
+      }
+      // Block comment
+      if (ch === '/' && raw[i+1] === '*') {
+        const end = raw.indexOf('*/', i+2);
+        const tok = end < 0 ? raw.slice(i) : raw.slice(i, end+2);
+        out.push('<span class="cm">' + esc(tok) + '</span>');
+        i += tok.length;
+        continue;
+      }
+      // Text block """
+      if (ch === '"' && raw[i+1] === '"' && raw[i+2] === '"') {
+        const end = raw.indexOf('"""', i+3);
+        const tok = end < 0 ? raw.slice(i) : raw.slice(i, end+3);
+        out.push('<span class="st">' + esc(tok) + '</span>');
+        i += tok.length;
+        continue;
+      }
+      // String literal "
+      if (ch === '"') {
+        let j = i+1;
+        while (j < n && raw[j] !== '"') { if (raw[j] === '\\') j++; j++; }
+        const tok = raw.slice(i, j+1);
+        out.push('<span class="st">' + esc(tok) + '</span>');
+        i = j+1;
+        continue;
+      }
+      // Char literal '
+      if (ch === "'") {
+        let j = i+1;
+        while (j < n && raw[j] !== "'") { if (raw[j] === '\\') j++; j++; }
+        const tok = raw.slice(i, j+1);
+        out.push('<span class="st">' + esc(tok) + '</span>');
+        i = j+1;
+        continue;
+      }
+      // Annotation @
+      if (ch === '@') {
+        const m = raw.slice(i).match(/^@[A-Za-z_$][A-Za-z0-9_$]*/);
+        if (m) { out.push('<span class="an">' + esc(m[0]) + '</span>'); i += m[0].length; continue; }
+      }
+      // Number
+      if (/[0-9]/.test(ch)) {
+        const m = raw.slice(i).match(/^0[xXbB][0-9a-fA-F_]+[Ll]?|[0-9][0-9_]*(?:\.[0-9_]+)?(?:[eE][+-]?[0-9]+)?[LlFfDd]?/);
+        if (m) { out.push('<span class="nm">' + esc(m[0]) + '</span>'); i += m[0].length; continue; }
+      }
+      // Identifier / keyword
+      if (/[A-Za-z_$]/.test(ch)) {
+        const m = raw.slice(i).match(/^[A-Za-z_$][A-Za-z0-9_$]*/);
+        const word = m[0];
+        if (JAVA_KW.has(word)) {
+          out.push('<span class="kw">' + esc(word) + '</span>');
+        } else if (/^[A-Z]/.test(word)) {
+          const after = raw.slice(i + word.length).replace(/\s+/, '');
+          out.push('<span class="' + (after[0]==='(' ? 'fn' : 'cl') + '">' + esc(word) + '</span>');
+        } else {
+          const after = raw.slice(i + word.length).replace(/\s+/, '');
+          out.push(after[0]==='(' ? '<span class="fn">'+esc(word)+'</span>' : esc(word));
+        }
+        i += word.length;
+        continue;
+      }
+      // Operator chars
+      if (/[+\-*/%=<>!&|^~?:.]/.test(ch)) {
+        const m = raw.slice(i).match(/^[+\-*/%=<>!&|^~?:.]+/);
+        if (m) { out.push('<span class="op">' + esc(m[0]) + '</span>'); i += m[0].length; continue; }
+      }
+      // Everything else (whitespace, brackets, semicolons…)
+      out.push(esc(ch));
+      i++;
+    }
+    return out.join('');
+  }
+
+  // ── Shell / Bash ───────────────────────────────────────
+  const SHELL_CMDS = [
+    'if','then','else','fi','for','do','done','while','case','esac','function',
+    'export','source','echo','printf','cd','ls','mkdir','rm','cp','mv','cat',
+    'grep','sed','awk','curl','wget','tar','chmod','sudo','apt','brew','winget',
+    'java','javac','mvn','./mvnw','./gradlew','gradle','sdk','docker','git',
+  ];
+
+  function highlightShell(raw) {
+    return raw.split('\n').map(line => {
+      if (/^\s*#/.test(line)) return '<span class="cm">' + esc(line) + '</span>';
+      let o = '';
+      let i = 0;
+      const n = line.length;
+      while (i < n) {
+        // Inline comment
+        if (line[i] === '#') { o += '<span class="cm">' + esc(line.slice(i)) + '</span>'; break; }
+        // String "..."
+        if (line[i] === '"') {
+          let j = i+1; while (j < n && line[j] !== '"') { if (line[j]==='\\') j++; j++; }
+          o += '<span class="st">' + esc(line.slice(i, j+1)) + '</span>'; i = j+1; continue;
+        }
+        // String '...'
+        if (line[i] === "'") {
+          let j = i+1; while (j < n && line[j] !== "'") j++;
+          o += '<span class="st">' + esc(line.slice(i, j+1)) + '</span>'; i = j+1; continue;
+        }
+        // Word token
+        if (/[A-Za-z_.\/]/.test(line[i])) {
+          const m = line.slice(i).match(/^[\w.\/\-]+/);
+          if (m) {
+            const word = m[0];
+            if (SHELL_CMDS.includes(word)) o += '<span class="kw">' + esc(word) + '</span>';
+            else o += esc(word);
+            i += word.length; continue;
+          }
+        }
+        // Flag --flag or -f
+        if (line[i] === '-') {
+          const m = line.slice(i).match(/^--?[\w-]+/);
+          if (m) { o += '<span class="fn">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+        }
+        // Number
+        if (/[0-9]/.test(line[i])) {
+          const m = line.slice(i).match(/^[\d_.]+/);
+          if (m) { o += '<span class="nm">' + esc(m[0]) + '</span>'; i += m[0].length; continue; }
+        }
+        o += esc(line[i]); i++;
+      }
+      return o;
+    }).join('\n');
+  }
+
+  // ── XML ────────────────────────────────────────────────
+  function highlightXml(raw) {
+    let o = esc(raw);
+    // Comments
+    o = o.replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="cm">$1</span>');
+    // Closing tag </tag>
+    o = o.replace(/(&lt;\/)([\w.-]+)(&gt;)/g, '<span class="op">$1</span><span class="kw">$2</span><span class="op">$3</span>');
+    // Opening tag <tag
+    o = o.replace(/(&lt;)([\w.-]+)/g, '<span class="op">$1</span><span class="kw">$2</span>');
+    // Attributes
+    o = o.replace(/\s([\w:.-]+)=/g, ' <span class="fn">$1</span>=');
+    // Attribute values
+    o = o.replace(/=(&quot;[^&]*?&quot;)/g, '=<span class="st">$1</span>');
+    return o;
+  }
+
+  // ── Apply to every code block ──────────────────────────
+  document.querySelectorAll('.code-block').forEach(block => {
+    const codeEl = block.querySelector('code');
+    if (!codeEl) return;
+    // Skip if already manually highlighted (has child spans)
+    if (codeEl.querySelector('span')) return;
+
+    const raw = codeEl.textContent;
+    const lang = getLang(block);
+
+    let html;
+    if      (lang === 'shell') html = highlightShell(raw);
+    else if (lang === 'xml')   html = highlightXml(raw);
+    else                       html = highlightJava(raw);
+
+    codeEl.innerHTML = html;
+  });
+
+})();
+
 
 
 

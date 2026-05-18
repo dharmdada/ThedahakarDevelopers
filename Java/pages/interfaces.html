@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Interfaces & Abstract Classes – JavaMaster</title>
+<title>Interfaces &amp; Abstract Classes – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">🏗️ OOP</span></div>
 </header>
@@ -30,7 +28,7 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(168,85,247,0.15);">🔌</div>
-    <div><h2>Interfaces & Abstract Classes</h2><p>Contracts, blueprints, and how to design flexible, extensible APIs.</p></div>
+    <div><h2>Interfaces &amp; Abstract Classes</h2><p>Contracts, blueprints, and how to design flexible, extensible APIs.</p></div>
   </div>
 </div>
 
@@ -47,30 +45,21 @@
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
-    </ul>
+    <ul class="feature-list"><li>Interfaces define a contract. They specify WHAT a class should do, not HOW.</li>
+      <li>Program to an interface, not an implementation, for flexible architecture.</li>
+      <li>Java 8+ allows default and static methods in interfaces, breaking the "no implementation" rule for better API evolution.</li></ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
-    </ul>
+    <ul class="feature-list"><li>Confusing Abstract Classes with Interfaces. Abstract classes can have state (instance variables); interfaces generally do not.</li>
+      <li>Thinking you must implement every method of an interface if you declare your class abstract. (You don't).</li>
+      <li>Overusing interfaces when a simple class or function would suffice.</li></ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain interfaces in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
-    </ul>
+    <ul class="feature-list"><li>You can explain the difference between an Interface and an Abstract Class.</li>
+      <li>You know when and why to use 'default' methods.</li>
+      <li>You can explain multiple inheritance of type via interfaces.</li></ul>
   </div>
 </div>
 
@@ -236,33 +225,30 @@ logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);</code></pr
   </div>
 </div>
 
+
+
+
 <div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
-        <div class="hl-value" style="font-size:16px;">Interface vs Abstract Class?</div>
-        <div class="hl-desc">Interfaces define a contract (what it can do) and allow multiple inheritance. Abstract classes define an identity (what it is), share state/code, and only allow single inheritance.</div>
+        <div class="hl-value" style="font-size:16px;">What is a Marker Interface?</div>
+        <div class="hl-desc">An interface with no methods or fields (e.g., Serializable, Cloneable). It is used to tag a class to signal special behavior to the JVM or a framework.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
-        <div class="hl-value" style="font-size:16px;">What are default methods in interfaces?</div>
-        <div class="hl-desc">Introduced in Java 8, they allow you to add new methods to existing interfaces with a default implementation without breaking the classes that already implement the interface.</div>
-      </div>
-      <div class="hl-box">
-        <div class="hl-label">Question 3</div>
-        <div class="hl-value" style="font-size:16px;">What is a Functional Interface?</div>
-        <div class="hl-desc">An interface with exactly one abstract method. They are the foundation of Lambda expressions in Java (SAM rule).</div>
+        <div class="hl-value" style="font-size:16px;">Interface vs Abstract Class?</div>
+        <div class="hl-desc">A class can implement multiple interfaces but extend only one abstract class. Interfaces cannot have state (instance variables), while abstract classes can.</div>
       </div>
     </div>
   </div>
-</div>
-
-</div>
+</div></div>
 <footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+
+</body></html>

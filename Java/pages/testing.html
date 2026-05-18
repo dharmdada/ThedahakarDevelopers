@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Testing with JUnit and Mockito - JavaMaster</title>
+<meta name="description" content="Master Java testing: JUnit 5 lifecycle, parameterized tests, Mockito mocking, ArgumentCaptor, test doubles, TDD, and CI-ready test suites.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -20,106 +21,182 @@
 <div class="section" id="top">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(245,158,11,0.15);">TEST</div>
-    <div><h2>Testing with JUnit and Mockito</h2><p>Build confidence with fast unit tests, clear assertions, deterministic mocks, and reliable CI execution.</p></div>
+    <div><h2>Testing with JUnit 5 and Mockito</h2><p>Write fast, reliable tests that document behavior, survive refactoring, and give you confidence to ship.</p></div>
   </div>
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
-    <div><h2>Theory Deep Dive</h2><p>Testing as executable design feedback</p></div>
+    <div><h2>Theory Deep Dive</h2><p>Tests as executable specifications of behavior</p></div>
   </div>
   <div class="subsection">
     <h3>Mental Model</h3>
-    <p>Tests are not only defect detectors. They are executable statements of expected behavior. A well-written test explains what a class promises to do and protects that promise while the code evolves.</p>
-    <p>Unit tests should isolate logic and run fast. Integration tests should verify wiring and external boundaries. End-to-end tests should cover critical journeys. Mixing these purposes creates slow, fragile suites that developers stop trusting.</p>
-    <p>Mocks are useful at boundaries but dangerous when they mirror implementation too closely. If a test knows every internal call, refactoring becomes painful even when behavior stays correct.</p>
+    <p>Tests are not only defect detectors. They are <strong>executable specifications</strong>. A well-written test suite tells the next developer exactly what the code promises to do and enforces that promise during every refactoring.</p>
+    <p>The <strong>Testing Pyramid</strong> is a ratio rule:</p>
+    <ul class="feature-list">
+      <li><strong>Unit tests (70%+):</strong> Millisecond-fast, test one class, no I/O, no network. Cover all business logic branches.</li>
+      <li><strong>Integration tests (20%):</strong> Verify that components wire together correctly — database queries, Spring context, API contracts.</li>
+      <li><strong>End-to-end tests (10%):</strong> Full browser/HTTP flows. Expensive and slow. Cover critical user journeys only.</li>
+    </ul>
+    <p>The most common failure mode is <strong>inverting the pyramid</strong>: writing integration tests for everything because they feel more "real". The result is a 20-minute CI pipeline that discourages running tests at all.</p>
+    <p>Mocks should be used at <strong>external boundaries</strong> only (HTTP clients, DB repositories, message queues). Over-mocking creates tests that mirror implementation — they pass when they shouldn't and fail when refactoring.</p>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
-      <li>Understand the purpose of the feature before memorizing its syntax.</li>
-      <li>Connect the concept to runtime behavior, API design, and failure cases.</li>
-      <li>Prefer readable code that makes assumptions explicit.</li>
-      <li>Use the feature when it reduces complexity, not just because it exists.</li>
+      <li><strong>Arrange-Act-Assert (AAA)</strong> — Every test has exactly three phases. No interleaving setup and assertions.</li>
+      <li><strong>Test behavior, not implementation</strong> — If renaming a private method breaks tests, the tests are testing internals.</li>
+      <li><strong>One logical assertion per test</strong> — A test named <code class="inline">register_shouldCreateUserAndSendEmail</code> is testing two things. Split it.</li>
+      <li><strong>Tests must be deterministic</strong> — No dependency on system clock, random, network, or test execution order.</li>
+      <li><strong>Name tests as specifications:</strong> <code class="inline">methodName_scenario_expectedResult</code></li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Learning only the code pattern without the reason behind it.</li>
-      <li>Ignoring edge cases until they appear as bugs.</li>
-      <li>Using the feature everywhere instead of where it fits the problem.</li>
-      <li>Skipping the connection between this topic and surrounding Java concepts.</li>
+      <li><strong>100% coverage ≠ good tests</strong> — Testing <code class="inline">getName()</code> and <code class="inline">setName()</code> reaches coverage goals but finds no bugs.</li>
+      <li><strong>Mocking the class under test</strong> — You are not testing the class if you mock it. Only mock its dependencies.</li>
+      <li><strong>Tests that depend on order</strong> — JUnit 5 may run tests in any order. Each test must set up its own state completely.</li>
+      <li><strong>Testing private methods</strong> — If a private method needs its own test, it belongs in a separate class. Test through the public API.</li>
     </ul>
   </div>
   <div class="subsection">
     <h3>Mastery Checklist</h3>
     <ul class="feature-list">
-      <li>You can explain testing in plain language without reading code.</li>
-      <li>You can identify the right and wrong use cases for the concept.</li>
-      <li>You can debug common failures related to the topic.</li>
-      <li>You can teach the concept using a small real-world example.</li>
+      <li>You can write a JUnit 5 test with full lifecycle annotations.</li>
+      <li>You can use <code class="inline">@ParameterizedTest</code> with multiple data providers.</li>
+      <li>You can mock dependencies and verify interactions with Mockito.</li>
+      <li>You understand the difference between Mock, Stub, Spy, and Fake.</li>
+      <li>You can capture and assert on arguments passed to mocked methods.</li>
     </ul>
   </div>
 </div>
 
-<div class="section" id="strategy">
+<div class="section" id="junit-lifecycle">
   <div class="subsection">
-    <h3>Test Strategy: Pyramid First</h3>
-    <ul class="feature-list">
-      <li><strong>Unit tests:</strong> most of your suite, very fast, isolate business logic.</li>
-      <li><strong>Integration tests:</strong> fewer, validate database and framework wiring.</li>
-      <li><strong>End-to-end tests:</strong> minimal, verify key user paths only.</li>
-    </ul>
-    <p>A common failure mode is overusing slow integration tests and under-testing pure logic. Push business rules into unit-testable services.</p>
-  </div>
-</div>
-
-<div class="section" id="junit">
-  <div class="subsection">
-    <h3>JUnit 5 Structure</h3>
+    <h3>JUnit 5 Full Lifecycle</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Service Unit Test</span><button class="copy-btn">Copy</button></div>
-      <pre><code>import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Complete test class structure</span><button class="copy-btn">Copy</button></div>
+      <pre><code>@DisplayName("OrderService — placing orders")
+class OrderServiceTest {
 
-class PriceServiceTest {
+    private OrderRepository   repo;
+    private PaymentGateway    gateway;
+    private OrderService      service;
+
+    @BeforeAll
+    static void initSuite() {
+        // Runs ONCE before all tests in this class (static!)
+        // Good for: starting test containers, loading shared fixtures
+    }
+
+    @BeforeEach
+    void setUp() {
+        // Runs before EACH test. Recreate mocks fresh every time.
+        repo    = mock(OrderRepository.class);
+        gateway = mock(PaymentGateway.class);
+        service = new OrderService(repo, gateway);
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Cleanup after each test (close resources, reset state)
+    }
+
+    @AfterAll
+    static void cleanUpSuite() {
+        // Stop test containers, close shared connections
+    }
+
     @Test
-    void applyDiscount_shouldRoundToTwoDecimals() {
-        PriceService service = new PriceService();
-        double result = service.applyDiscount(19.99, 10);
+    @DisplayName("placeOrder — should persist and charge when payment succeeds")
+    void placeOrder_paymentSucceeds_shouldSaveAndCharge() {
+        // Arrange
+        Order order = new Order("ORD-001", 250.00);
+        when(gateway.charge(order)).thenReturn(PaymentResult.success());
 
-        assertEquals(17.99, result, 0.001);
+        // Act
+        boolean result = service.placeOrder(order);
+
+        // Assert
+        assertTrue(result);
+        verify(repo, times(1)).save(order);
+        verify(gateway, times(1)).charge(order);
+    }
+
+    @Test
+    @DisplayName("placeOrder — should NOT save when payment fails")
+    void placeOrder_paymentFails_shouldNotSave() {
+        Order order = new Order("ORD-002", 100.00);
+        when(gateway.charge(order)).thenReturn(PaymentResult.failure("DECLINED"));
+
+        boolean result = service.placeOrder(order);
+
+        assertFalse(result);
+        verify(repo, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("placeOrder — should throw when order amount is negative")
+    void placeOrder_negativeAmount_shouldThrowIllegalArgument() {
+        Order invalid = new Order("ORD-003", -1.00);
+
+        assertThrows(IllegalArgumentException.class,
+            () -> service.placeOrder(invalid));
     }
 }</code></pre>
-    </div>
-    <div class="callout tip">
-      <span class="callout-icon">TIP</span>
-      <div class="callout-body"><strong>Test names should describe behavior</strong>, not implementation: <code class="inline">calculateTax_whenStateIsCA_appliesStateRate</code>.</div>
     </div>
   </div>
 </div>
 
 <div class="section" id="parameterized">
   <div class="subsection">
-    <h3>Parameterized Tests for Edge Cases</h3>
+    <h3>Parameterized Tests — Test Data Without Code Duplication</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Multiple data providers</span><button class="copy-btn">Copy</button></div>
+      <pre><code>class AgeValidatorTest {
 
-class AgeValidatorTest {
-    @ParameterizedTest
+    // Inline CSV data
+    @ParameterizedTest(name = "age={0} → valid={1}")
     @CsvSource({
-        "17,false",
-        "18,true",
-        "65,true",
-        "130,false"
+        "17, false",
+        "18, true",
+        "65, true",
+        "130, false",
+        "-1, false"
     })
-    void isAllowedAge_shouldValidateRange(int age, boolean expected) {
-        assertEquals(expected, AgeValidator.isAllowed(age));
+    void isEligible_shouldValidateBoundaries(int age, boolean expected) {
+        assertEquals(expected, AgeValidator.isEligible(age));
+    }
+
+    // External CSV file: src/test/resources/discount-cases.csv
+    @ParameterizedTest
+    @CsvFileSource(resources = "/discount-cases.csv", numLinesToSkip = 1)
+    void applyDiscount_csvDriven(double base, double pct, double expected) {
+        assertEquals(expected, PriceService.applyDiscount(base, pct), 0.001);
+    }
+
+    // Enum-driven: test all enum values
+    @ParameterizedTest
+    @EnumSource(value = UserRole.class, names = {"ADMIN", "SUPERUSER"})
+    void hasAdminAccess_privilegedRoles_shouldReturnTrue(UserRole role) {
+        assertTrue(AccessChecker.hasAdminAccess(role));
+    }
+
+    // Method source for complex objects
+    static Stream&lt;Arguments&gt; provideOrders() {
+        return Stream.of(
+            Arguments.of(new Order("A", 0),    OrderStatus.INVALID),
+            Arguments.of(new Order("B", 100),  OrderStatus.PENDING),
+            Arguments.of(new Order("C", 10000), OrderStatus.REQUIRES_REVIEW)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideOrders")
+    void classifyOrder_byAmount(Order order, OrderStatus expected) {
+        assertEquals(expected, OrderClassifier.classify(order));
     }
 }</code></pre>
     </div>
@@ -128,32 +205,109 @@ class AgeValidatorTest {
 
 <div class="section" id="mockito">
   <div class="subsection">
-    <h3>Mocking External Dependencies with Mockito</h3>
+    <h3>Mockito: Mocking, Stubbing and Verification</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Core Mockito patterns</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// --- Creating mocks ---
+UserRepository repo = mock(UserRepository.class);
+// Or with annotation: @Mock UserRepository repo; + @ExtendWith(MockitoExtension.class)
 
-class OrderServiceTest {
-    @Test
-    void placeOrder_shouldPersistOrderWhenPaymentSucceeds() {
-        PaymentGateway gateway = mock(PaymentGateway.class);
-        OrderRepository repo = mock(OrderRepository.class);
-        when(gateway.charge(any())).thenReturn(true);
+// --- Stubbing: define what mocks return ---
+when(repo.findById(42L)).thenReturn(Optional.of(new User(42L, "Alice")));
+when(repo.findById(99L)).thenReturn(Optional.empty());
+when(repo.save(any(User.class))).thenReturn(savedUser);
 
-        OrderService service = new OrderService(gateway, repo);
-        boolean created = service.placeOrder(new Order("A-101"));
+// Throw on call
+when(repo.findById(-1L)).thenThrow(new IllegalArgumentException("Invalid ID"));
 
-        assertTrue(created);
-        verify(repo).save(any(Order.class));
-        verify(gateway).charge(any());
-    }
-}</code></pre>
+// Return different values on successive calls
+when(repo.generateId())
+    .thenReturn(1L)
+    .thenReturn(2L)
+    .thenReturn(3L);
+
+// --- Verification: did the mock get called correctly? ---
+verify(repo, times(1)).save(any());
+verify(repo, never()).delete(any());
+verify(repo, atLeast(2)).findById(anyLong());
+verify(repo, atMostOnce()).findAll();
+
+// Verify order of calls
+InOrder inOrder = inOrder(repo, emailService);
+inOrder.verify(repo).save(any());
+inOrder.verify(emailService).sendWelcome(any());
+
+// --- ArgumentCaptor: inspect what was passed ---
+ArgumentCaptor&lt;User&gt; captor = ArgumentCaptor.forClass(User.class);
+verify(repo).save(captor.capture());
+User savedUser = captor.getValue();
+assertEquals("alice@example.com", savedUser.email());</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="test-doubles">
+  <div class="subsection">
+    <h3>Test Doubles: Mock vs Stub vs Spy vs Fake</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Mock</div><div class="hl-value">Verify calls</div><div class="hl-desc">Created with Mockito. Returns null by default. You verify it was called with the right args.</div></div>
+      <div class="hl-box"><div class="hl-label">Stub</div><div class="hl-value">Return canned data</div><div class="hl-desc">Programmed to return fixed values. No behavior verification. Used for setup only.</div></div>
+      <div class="hl-box"><div class="hl-label">Spy</div><div class="hl-value">Partial real behavior</div><div class="hl-desc">Wraps a real object. Calls real methods unless stubbed. Use sparingly.</div></div>
+      <div class="hl-box"><div class="hl-label">Fake</div><div class="hl-value">Lightweight impl</div><div class="hl-desc">A working but simplified implementation (e.g., in-memory HashMap as a repository). Best for integration-level tests.</div></div>
+    </div>
+    <div class="code-block" style="margin-top:18px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Spy example: wrapping real object, overriding one method</span><button class="copy-btn">Copy</button></div>
+      <pre><code>List&lt;String&gt; realList = new ArrayList&lt;&gt;();
+List&lt;String&gt; spyList  = spy(realList);
+
+// Real behavior unless stubbed
+spyList.add("hello");
+assertEquals(1, spyList.size()); // calls real size()
+
+// Override specific behavior
+doReturn(100).when(spyList).size(); // dangerous! use sparingly
+assertEquals(100, spyList.size());  // stubbed</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
-      <div class="callout-body"><strong>Do not over-mock internal logic</strong>. Mock only boundaries (HTTP clients, DB repositories, queues). Pure business classes should be tested directly.</div>
+      <div class="callout-body"><strong>Prefer Mock over Spy.</strong> Spies call real code by default, which can trigger unexpected side effects and slow down tests. Use them only when you genuinely need partial real behavior.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="clock-control">
+  <div class="subsection">
+    <h3>Controlling Time in Tests</h3>
+    <p>Never call <code class="inline">LocalDateTime.now()</code> or <code class="inline">Instant.now()</code> directly in production code you want to test. Inject a <code class="inline">Clock</code>:</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Testable clock injection pattern</span><button class="copy-btn">Copy</button></div>
+      <pre><code>// Production code takes a Clock
+class SubscriptionService {
+    private final Clock clock;
+    SubscriptionService(Clock clock) { this.clock = clock; }
+
+    boolean isExpired(Subscription sub) {
+        return sub.expiresAt().isBefore(LocalDate.now(clock));
+    }
+}
+
+// Test: inject a fixed clock
+class SubscriptionServiceTest {
+    @Test
+    void isExpired_pastExpiryDate_shouldReturnTrue() {
+        Clock fixedClock = Clock.fixed(
+            Instant.parse("2026-06-01T00:00:00Z"),
+            ZoneOffset.UTC
+        );
+        SubscriptionService svc = new SubscriptionService(fixedClock);
+        Subscription expired = new Subscription(LocalDate.of(2026, 1, 1));
+
+        assertTrue(svc.isExpired(expired));
+    }
+}
+
+// Production wiring
+new SubscriptionService(Clock.systemUTC());</code></pre>
     </div>
   </div>
 </div>
@@ -162,17 +316,46 @@ class OrderServiceTest {
   <div class="subsection">
     <h3>CI Test Quality Checklist</h3>
     <ul class="feature-list">
-      <li>Tests run with a single command in clean environment.</li>
-      <li>No order dependency between tests.</li>
-      <li>Clock, randomness, and external network calls are controlled.</li>
-      <li>Assertions verify behavior, not exact logging text unless required.</li>
-      <li>Failing tests produce clear messages for quick diagnosis.</li>
+      <li>Tests pass with <code class="inline">mvn test</code> or <code class="inline">gradle test</code> in a clean environment with no manual setup.</li>
+      <li>No test depends on another test's side effects — full isolation.</li>
+      <li>System clock, random seeds, and external calls are all controlled/mocked.</li>
+      <li>Assertions produce useful messages: <code class="inline">assertEquals(expected, actual, "Reason for failure")</code>.</li>
+      <li>Flaky tests are tracked and fixed immediately — a flaky test is worse than no test.</li>
+      <li>Test execution time for unit suite stays under 30 seconds.</li>
     </ul>
   </div>
 </div>
 
+<div class="section" id="interview">
+  <div class="subsection">
+    <h3>Interview Preparation</h3>
+    <div class="highlight-row">
+      <div class="hl-box">
+        <div class="hl-label">Question 1</div>
+        <div class="hl-value" style="font-size:15px;">What is a Mock and when do you use it?</div>
+        <div class="hl-desc">A fake object that records calls and returns configured responses. Use mocks to isolate the class under test from its external dependencies (DB, HTTP, message queues). Do NOT mock things the class owns internally.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 2</div>
+        <div class="hl-value" style="font-size:15px;">Unit vs Integration vs E2E Testing?</div>
+        <div class="hl-desc">Unit: one class, no I/O, milliseconds. Integration: multiple components + real DB/infra. E2E: full user journey through UI/HTTP. Follow the pyramid: mostly unit, some integration, few E2E.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:15px;">How do you test time-dependent code?</div>
+        <div class="hl-desc">Inject a <code class="inline">java.time.Clock</code> dependency instead of calling <code class="inline">Instant.now()</code> directly. In tests, inject <code class="inline">Clock.fixed(...)</code> to control time precisely. In production, inject <code class="inline">Clock.systemUTC()</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:15px;">What is ArgumentCaptor?</div>
+        <div class="hl-desc">A Mockito tool that captures the actual argument passed to a mocked method so you can run detailed assertions on it. Useful when the argument is built internally and not accessible from the test directly.</div>
+      </div>
+    </div>
+  </div>
 </div>
-<footer><p>JavaMaster - <a href="jdbc.html" style="color:var(--accent);">Next: JDBC and SQL</a></p></footer>
+
+</div>
+<footer><p>JavaMaster — <a href="jdbc.html" style="color:var(--accent);">Next: JDBC and SQL</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
