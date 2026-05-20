@@ -21,6 +21,18 @@
     <div class="section-icon" style="background:rgba(16,185,129,0.15);">IO</div>
     <div><h2>File I/O and Networking</h2><p>Build robust, resource-safe file operations and network calls — from NIO.2 to modern HTTP client and non-blocking I/O.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#nio-files">NIO.2 File Operations (Modern Standard)</a>
+  <a href="#channels">Streams vs Channels</a>
+  <a href="#http-client">HTTP Client</a>
+  <a href="#sockets">TCP Socket Programming</a>
+  <a href="#nio-selectors">Non-Blocking I/O</a>
+  <a href="#best-practices">Production I/O Reliability Checklist</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -55,65 +67,37 @@
       <div class="hl-box"><div class="hl-label">No charset control</div><div class="hl-value" style="color:var(--danger)">Encoding bugs</div><div class="hl-desc">FileReader uses platform default charset. Different behavior on Windows vs Linux.</div></div>
     </div>
   </div>
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Always use <code class="inline">java.nio.file.Files</code> and <code class="inline">Path</code> in new code. Never use <code class="inline">java.io.File</code>.</li>
-      <li>Wrap streams in <code class="inline">Buffered</code> variants to minimize native I/O syscalls (huge performance gain).</li>
-      <li>Always specify charset explicitly: <code class="inline">StandardCharsets.UTF_8</code>. Never rely on platform default.</li>
-      <li>Close resources with try-with-resources. Every open stream is a leaked file handle until closed.</li>
-      <li>Set timeouts on all network calls. A hanging thread is worse than a failed request.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li><strong>Forgetting to flush</strong> — <code class="inline">BufferedWriter</code> may hold unflushed bytes. Try-with-resources calls <code class="inline">close()</code> which calls <code class="inline">flush()</code>. Manually flushing is needed for long-lived streams.</li>
-      <li><strong>Loading huge files into memory</strong> — <code class="inline">Files.readAllLines()</code> loads everything into a <code class="inline">List&lt;String&gt;</code>. Use <code class="inline">Files.lines()</code> (a lazy <code class="inline">Stream&lt;String&gt;</code>) for large files.</li>
-      <li><strong>Assuming UTF-8 everywhere</strong> — Windows systems may produce files in Windows-1252. Always detect or specify charset explicitly.</li>
-      <li><strong>Blocking HTTP in event loops</strong> — Blocking HTTP calls inside reactive chains or virtual thread pools can cause deadlocks. Use async variants.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You use <code class="inline">Files</code>/<code class="inline">Path</code> for all file operations, never <code class="inline">java.io.File</code>.</li>
-      <li>You can stream large files line-by-line without memory explosion.</li>
-      <li>You can make synchronous and asynchronous HTTP requests with Java's <code class="inline">HttpClient</code>.</li>
-      <li>You can explain when NIO Selectors are better than thread-per-connection.</li>
-      <li>You can handle partial reads/writes and set connect/read timeouts.</li>
-    </ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Network code is distributed failure handling disguised as method calls.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn streams, readers, writers, sockets, URLs, and timeouts.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh buffering, character encodings, connection pooling, backpressure, retries, TLS, and partial failure.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Every network call needs timeouts. A missing timeout can freeze a thread longer than any bug in your own code.</li>
-      <li>Bytes are not text until decoded with the right charset. Platform defaults are a portability trap.</li>
-      <li>Do not assume one read call returns all data. Streams are chunked and can deliver partial content.</li>
-      <li>Connection reuse matters. Creating fresh connections for every request wastes latency and resources.</li>
-      <li>Network success is not binary: slow responses, partial writes, stale DNS, TLS failures, rate limits, and retries shape real behavior.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Explain I/O and Networking without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Use I/O and Networking in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Predict how I/O and Networking behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using io-network.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for io-network.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of io-network.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="nio-files">
@@ -463,7 +447,42 @@ public class Main {
   </div>
 </div>
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Always use <code class="inline">java.nio.file.Files</code> and <code class="inline">Path</code> in new code. Never use <code class="inline">java.io.File</code>.</li>
+      <li>Wrap streams in <code class="inline">Buffered</code> variants to minimize native I/O syscalls (huge performance gain).</li>
+      <li>Always specify charset explicitly: <code class="inline">StandardCharsets.UTF_8</code>. Never rely on platform default.</li>
+      <li>Close resources with try-with-resources. Every open stream is a leaked file handle until closed.</li>
+      <li>Set timeouts on all network calls. A hanging thread is worse than a failed request.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><span class="warn-icon">⚠ </span><strong>Forgetting to flush</strong> — <code class="inline">BufferedWriter</code> may hold unflushed bytes. Try-with-resources calls <code class="inline">close()</code> which calls <code class="inline">flush()</code>. Manually flushing is needed for long-lived streams.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Loading huge files into memory</strong> — <code class="inline">Files.readAllLines()</code> loads everything into a <code class="inline">List&lt;String&gt;</code>. Use <code class="inline">Files.lines()</code> (a lazy <code class="inline">Stream&lt;String&gt;</code>) for large files.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Assuming UTF-8 everywhere</strong> — Windows systems may produce files in Windows-1252. Always detect or specify charset explicitly.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Blocking HTTP in event loops</strong> — Blocking HTTP calls inside reactive chains or virtual thread pools can cause deadlocks. Use async variants.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>Every network call needs timeouts. A missing timeout can freeze a thread longer than any bug in your own code.</li>
+      <li><span class="warn-icon">⚠ </span>Bytes are not text until decoded with the right charset. Platform defaults are a portability trap.</li>
+      <li>Do not assume one read call returns all data. Streams are chunked and can deliver partial content.</li>
+      <li>Connection reuse matters. Creating fresh connections for every request wastes latency and resources.</li>
+      <li><span class="warn-icon">⚠ </span>Network success is not binary: slow responses, partial writes, stale DNS, TLS failures, rate limits, and retries shape real behavior.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You use <code class="inline">Files</code>/<code class="inline">Path</code> for all file operations, never <code class="inline">java.io.File</code>.</li>
+      <li>You can stream large files line-by-line without memory explosion.</li>
+      <li>You can make synchronous and asynchronous HTTP requests with Java's <code class="inline">HttpClient</code>.</li>
+      <li>You can explain when NIO Selectors are better than thread-per-connection.</li>
+      <li>You can handle partial reads/writes and set connect/read timeouts.</li>
+    </ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -492,7 +511,11 @@ public class Main {
 </div>
 
 </div>
-<footer><p>JavaMaster — Continue with <a href="datetime.html" style="color:var(--accent);">Date and Time API</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="java-io-streams.html">← Java I/O Streams</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="datetime.html">Date and Time API →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

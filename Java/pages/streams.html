@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Streams API with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Streams API – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -30,6 +31,19 @@
     <div class="section-icon" style="background:rgba(59,130,246,0.15);">🌊</div>
     <div><h2>Streams API</h2><p>Process collections declaratively with filter, map, reduce, and collect.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#creating">Collections vs Streams</a>
+  <a href="#imperative-vs-declarative">Why Streams? Imperative vs Declarative</a>
+  <a href="#intermediate">Intermediate Operations</a>
+  <a href="#terminal">Terminal Operations</a>
+  <a href="#collectors">Collectors</a>
+  <a href="#parallel">Parallel Streams</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -50,54 +64,37 @@
     <p><strong>Mastery check:</strong> You understand Streams when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Streams are pipelines for processing sequences of elements. They don't store data.</li>
-      <li>Stream operations are lazy: intermediate operations don't execute until a terminal operation is called.</li>
-      <li>Streams can easily be parallelized, but it's only beneficial for large datasets or CPU-intensive tasks.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Trying to reuse a Stream. A stream cannot be operated on or reused after a terminal operation has been called.</li>
-      <li>Modifying the underlying collection while processing a stream (causes unpredictable results or exceptions).</li>
-      <li>Assuming parallelStream() is always faster. Thread overhead can make it slower for small collections.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can distinguish between intermediate (e.g., map, filter) and terminal operations (e.g., collect, forEach).</li>
-      <li>You know how to use Collectors to group or partition data.</li>
-      <li>You understand the difference between map() and flatMap().</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Streams describe transformations over data, but they do not erase algorithmic responsibility.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn source, intermediate operations, terminal operations, and why nothing happens until a terminal operation runs.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh laziness, short-circuiting, collectors, ordering, parallelism, and side-effect hazards.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>A stream pipeline is lazy. Intermediate operations build a plan; terminal operations execute it.</li>
-      <li>peek is mainly for debugging. Business logic inside peek is a code smell because it makes side effects look accidental.</li>
-      <li>Collectors define data ownership and merge behavior. Bad collectors break especially hard in parallel streams.</li>
-      <li>Streams can hide algorithmic complexity. A nested stream can accidentally turn a simple feature into quadratic work.</li>
-      <li>Use streams for clear transformation pipelines; use loops when stateful logic, early exits, or debugging clarity dominate.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Streams</div><div class="hl-desc">Explain Streams without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Streams</div><div class="hl-desc">Use Streams in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Streams</div><div class="hl-desc">Predict how Streams behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Streams API.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Streams API.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Streams API.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="creating">
@@ -362,7 +359,31 @@
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Streams are pipelines for processing sequences of elements. They don't store data.</li>
+      <li>Stream operations are lazy: intermediate operations don't execute until a terminal operation is called.</li>
+      <li>Streams can easily be parallelized, but it's only beneficial for large datasets or CPU-intensive tasks.</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Trying to reuse a Stream. A stream cannot be operated on or reused after a terminal operation has been called.</li>
+      <li><span class="warn-icon">⚠ </span>Modifying the underlying collection while processing a stream (causes unpredictable results or exceptions).</li>
+      <li><span class="warn-icon">⚠ </span>Assuming parallelStream() is always faster. Thread overhead can make it slower for small collections.</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>A stream pipeline is lazy. Intermediate operations build a plan; terminal operations execute it.</li>
+      <li><span class="warn-icon">⚠ </span>peek is mainly for debugging. Business logic inside peek is a code smell because it makes side effects look accidental.</li>
+      <li>Collectors define data ownership and merge behavior. Bad collectors break especially hard in parallel streams.</li>
+      <li>Streams can hide algorithmic complexity. A nested stream can accidentally turn a simple feature into quadratic work.</li>
+      <li><span class="warn-icon">⚠ </span>Use streams for clear transformation pipelines; use loops when stateful logic, early exits, or debugging clarity dominate.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can distinguish between intermediate (e.g., map, filter) and terminal operations (e.g., collect, forEach).</li>
+      <li>You know how to use Collectors to group or partition data.</li>
+      <li>You understand the difference between map() and flatMap().</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -379,7 +400,11 @@
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../functional.html" style="color:var(--accent);">← Back to Functional</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="lambdas.html">← Lambdas and Optional</a></div>
+  <div class="footer-center"><a href="../functional.html">Back to Functional</a></div>
+  <div class="footer-right"><a href="../collections.html">Collections and Generics →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

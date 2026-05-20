@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Classes &amp; Objects with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Classes &amp; Objects – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -41,6 +42,22 @@
     <div class="section-icon" style="background:rgba(249,115,22,0.15);">🏗️</div>
     <div><h2>Classes &amp; Objects</h2><p>The blueprint of everything in Java — fields, constructors, methods, access control.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#anatomy">The Blueprint Analogy</a>
+  <a href="#constructors">Constructors</a>
+  <a href="#memory-layout">Memory Layout</a>
+  <a href="#this">The this Keyword</a>
+  <a href="#static">Static Members</a>
+  <a href="#access">Access Modifiers</a>
+  <a href="#getset">Encapsulation</a>
+  <a href="#inner">Inner &amp; Nested Classes</a>
+  <a href="#final">Final Classes &amp; Methods</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -61,54 +78,37 @@
     <p><strong>Mastery check:</strong> You understand Classes and Objects when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>A class is a blueprint. Objects are instances built from that blueprint.</li>
-      <li>Encapsulate internal state by making fields private and exposing behavior via public methods.</li>
-      <li>Constructors initialize the state of a new object. They have no return type.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Using public fields instead of getters/setters, violating encapsulation.</li>
-      <li>Creating 'God Classes' that try to do everything, instead of splitting responsibilities.</li>
-      <li>Forgetting to define a no-argument constructor if frameworks (like Spring/Hibernate) require it.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can explain the difference between a class and an object.</li>
-      <li>You know how the 'this' keyword works and when it is required.</li>
-      <li>You can create an immutable class.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Classes should protect invariants and make valid usage the easiest path.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn fields, constructors, methods, objects, and how references point to objects.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh immutability, visibility, lifecycle, cohesion, equality, and representation exposure.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Constructors should leave objects fully valid. Half-initialized objects create bugs that no amount of getters can fix.</li>
-      <li>Private fields are not enough; if you return a mutable internal object, outside code can still break your invariant.</li>
-      <li>equals and hashCode must be designed together, especially for objects used as map keys or set elements.</li>
-      <li>Static state couples tests and requests through hidden global memory. Use it sparingly and reset it deliberately.</li>
-      <li>A class is cohesive when its fields and methods change for the same reason; otherwise it is multiple concepts wearing one name.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Explain Classes and Objects without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Use Classes and Objects in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Predict how Classes and Objects behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Classes &amp; Objects.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Classes &amp; Objects.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Classes &amp; Objects.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="anatomy">
@@ -475,7 +475,31 @@
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>A class is a blueprint. Objects are instances built from that blueprint.</li>
+      <li>Encapsulate internal state by making fields private and exposing behavior via public methods.</li>
+      <li>Constructors initialize the state of a new object. They have no return type.</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Using public fields instead of getters/setters, violating encapsulation.</li>
+      <li><span class="warn-icon">⚠ </span>Creating 'God Classes' that try to do everything, instead of splitting responsibilities.</li>
+      <li><span class="warn-icon">⚠ </span>Forgetting to define a no-argument constructor if frameworks (like Spring/Hibernate) require it.</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>Constructors should leave objects fully valid. Half-initialized objects create bugs that no amount of getters can fix.</li>
+      <li><span class="warn-icon">⚠ </span>Private fields are not enough; if you return a mutable internal object, outside code can still break your invariant.</li>
+      <li>equals and hashCode must be designed together, especially for objects used as map keys or set elements.</li>
+      <li>Static state couples tests and requests through hidden global memory. Use it sparingly and reset it deliberately.</li>
+      <li>A class is cohesive when its fields and methods change for the same reason; otherwise it is multiple concepts wearing one name.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can explain the difference between a class and an object.</li>
+      <li>You know how the 'this' keyword works and when it is required.</li>
+      <li>You can create an immutable class.</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -492,7 +516,11 @@
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="../oop.html">← Object-Oriented Programming</a></div>
+  <div class="footer-center"><a href="../oop.html">Back to OOP</a></div>
+  <div class="footer-right"><a href="inheritance.html">Inheritance →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

@@ -28,6 +28,13 @@
   </div>
 </div>
 
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#outcomes">Outcomes</a>
+  <a href="#next-steps">Next Steps</a>
+</nav>
+
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
@@ -46,6 +53,9 @@
     <p><strong>Mastery check:</strong> You understand Java Fundamentals when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+</div>
+
+<div class="section" id="key-takeaways">
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -58,31 +68,11 @@
   <div class="subsection">
     <h3>Common Misunderstandings</h3>
     <ul class="feature-list">
-      <li>Treating syntax errors as random instead of reading compiler messages carefully.</li>
-      <li>Using loops without understanding start value, condition, update, and termination.</li>
-      <li>Confusing assignment with comparison.</li>
-      <li>Writing large methods before learning how to decompose behavior.</li>
+      <li><span class="warn-icon">⚠ </span>Treating syntax errors as random instead of reading compiler messages carefully.</li>
+      <li><span class="warn-icon">⚠ </span>Using loops without understanding start value, condition, update, and termination.</li>
+      <li><span class="warn-icon">⚠ </span>Confusing assignment with comparison.</li>
+      <li><span class="warn-icon">⚠ </span>Writing large methods before learning how to decompose behavior.</li>
     </ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can compile and run code without relying entirely on an IDE.</li>
-      <li>You can explain every token in a simple Java program.</li>
-      <li>You can write loops and conditions without infinite loops or unreachable branches.</li>
-      <li>You can split repeated logic into methods with clear inputs and outputs.</li>
-    </ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Treat basics as the grammar of reliable programs: values, control flow, methods, and tiny state changes.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should focus on reading each line as a state transition: a value is created, tested, changed, passed, or returned.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh the basics as source-level contracts: types constrain illegal states, control flow exposes assumptions, and methods document ownership.</p>
   </div>
   <div class="subsection">
     <h3>Hard-Won Tips</h3>
@@ -95,26 +85,96 @@
     </ul>
   </div>
   <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Explain Java Fundamentals without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Use Java Fundamentals in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Predict how Java Fundamentals behaves under scale, refactoring, bad input, and production tooling.</div></div>
-    </div>
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can compile and run code without relying entirely on an IDE.</li>
+      <li>You can explain every token in a simple Java program.</li>
+      <li>You can write loops and conditions without infinite loops or unreachable branches.</li>
+      <li>You can split repeated logic into methods with clear inputs and outputs.</li>
+    </ul>
   </div>
 </div>
 
 
-<div class="card-grid">
-  <a href="pages/what-is-java.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">01</div><h4>What is Java?</h4><p>History, JVM/JDK/JRE, bytecode model, platform strengths.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Start Here</span></div></a>
-  <a href="pages/setup.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">02</div><h4>Setup and Hello World</h4><p>Install JDK, compile/run flow, IDE setup, and common setup errors.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Beginner</span></div></a>
-  <a href="pages/datatypes.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">03</div><h4>Data Types and Variables</h4><p>Primitives, wrappers, casting, numeric behavior, and variable lifetime.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/operators.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">04</div><h4>Operators</h4><p>Arithmetic, logical, bitwise, ternary, precedence, and pitfalls.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/controlflow.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">05</div><h4>Control Flow</h4><p>If/switch/loops, break-continue, and readable branch design.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/strings.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">06</div><h4>Strings</h4><p>Immutability, StringBuilder, formatting, regex basics, text handling.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/arrays.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">07</div><h4>Arrays</h4><p>Single/multi-dimensional arrays, iteration patterns, and utilities.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/methods.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">08</div><h4>Methods</h4><p>Parameters, return types, overloading, recursion, and composition.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Core</span></div></a>
-  <a href="pages/math-utils.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">09</div><h4>Math and Utility APIs</h4><p>Math, Random, UUID, and common helper APIs used in real code.</p><div style="margin-top:10px;"><span class="tag tag-core">Utility</span></div></a>
+<div class="section" id="learning-path">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(236,72,153,0.15);">PATH</div>
+    <div><h2>Your Fundamentals Journey</h2><p>Follow these chapters in order to build a solid Java foundation.</p></div>
+  </div>
+  <div class="timeline-journey">
+    <a href="pages/what-is-java.html" class="timeline-step">
+      <div class="ts-node">01</div>
+      <div class="ts-content">
+        <h4>What is Java?</h4>
+        <p>History, JVM/JDK/JRE, bytecode model, platform strengths.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Start Here</span></div>
+      </div>
+    </a>
+    <a href="pages/setup.html" class="timeline-step">
+      <div class="ts-node">02</div>
+      <div class="ts-content">
+        <h4>Setup and Hello World</h4>
+        <p>Install JDK, compile/run flow, IDE setup, and common setup errors.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Beginner</span></div>
+      </div>
+    </a>
+    <a href="pages/datatypes.html" class="timeline-step">
+      <div class="ts-node">03</div>
+      <div class="ts-content">
+        <h4>Data Types and Variables</h4>
+        <p>Primitives, wrappers, casting, numeric behavior, and variable lifetime.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/operators.html" class="timeline-step">
+      <div class="ts-node">04</div>
+      <div class="ts-content">
+        <h4>Operators</h4>
+        <p>Arithmetic, logical, bitwise, ternary, precedence, and pitfalls.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/controlflow.html" class="timeline-step">
+      <div class="ts-node">05</div>
+      <div class="ts-content">
+        <h4>Control Flow</h4>
+        <p>If/switch/loops, break-continue, and readable branch design.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/strings.html" class="timeline-step">
+      <div class="ts-node">06</div>
+      <div class="ts-content">
+        <h4>Strings</h4>
+        <p>Immutability, StringBuilder, formatting, regex basics, text handling.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/arrays.html" class="timeline-step">
+      <div class="ts-node">07</div>
+      <div class="ts-content">
+        <h4>Arrays</h4>
+        <p>Single/multi-dimensional arrays, iteration patterns, and utilities.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/methods.html" class="timeline-step">
+      <div class="ts-node">08</div>
+      <div class="ts-content">
+        <h4>Methods</h4>
+        <p>Parameters, return types, overloading, recursion, and composition.</p>
+        <div class="ts-tags"><span class="tag tag-beginner">Core</span></div>
+      </div>
+    </a>
+    <a href="pages/math-utils.html" class="timeline-step">
+      <div class="ts-node">09</div>
+      <div class="ts-content">
+        <h4>Math and Utility APIs</h4>
+        <p>Math, Random, UUID, and common helper APIs used in real code.</p>
+        <div class="ts-tags"><span class="tag tag-core">Utility</span></div>
+      </div>
+    </a>
+  </div>
 </div>
 
 <div class="section" id="outcomes" style="margin-top:36px;">
@@ -132,17 +192,45 @@
 <div class="section" id="next-steps">
   <div class="subsection">
     <h3>Suggested Practice Plan</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Day 1</div><div class="hl-value">Syntax</div><div class="hl-desc">What is Java, setup, datatypes, operators.</div></div>
-      <div class="hl-box"><div class="hl-label">Day 2</div><div class="hl-value">Flow</div><div class="hl-desc">Control flow + method-driven problem solving.</div></div>
-      <div class="hl-box"><div class="hl-label">Day 3</div><div class="hl-value">Data</div><div class="hl-desc">Strings and arrays with mini coding exercises.</div></div>
-      <div class="hl-box"><div class="hl-label">Day 4</div><div class="hl-value">Utilities</div><div class="hl-desc">Math/util APIs and a small console project.</div></div>
+    <div class="timeline-journey" style="margin-top: 20px;">
+      <div class="timeline-step">
+        <div class="ts-node" style="font-size: 14px;">D1</div>
+        <div class="ts-content">
+          <h4>Syntax</h4>
+          <p>What is Java, setup, datatypes, operators.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="ts-node" style="font-size: 14px;">D2</div>
+        <div class="ts-content">
+          <h4>Flow</h4>
+          <p>Control flow + method-driven problem solving.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="ts-node" style="font-size: 14px;">D3</div>
+        <div class="ts-content">
+          <h4>Data</h4>
+          <p>Strings and arrays with mini coding exercises.</p>
+        </div>
+      </div>
+      <div class="timeline-step">
+        <div class="ts-node" style="font-size: 14px;">D4</div>
+        <div class="ts-content">
+          <h4>Utilities</h4>
+          <p>Math/util APIs and a small console project.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 </div>
-<footer><p>JavaMaster - Next chapter: <a href="oop.html" style="color:var(--accent);">Object-Oriented Programming</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="index.html">← Home</a></div>
+  <div class="footer-center"><a href="index.html">Back to Home</a></div>
+  <div class="footer-right"><a href="oop.html">Object-Oriented Programming →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="script.js"></script>

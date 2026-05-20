@@ -21,6 +21,17 @@
     <div class="section-icon" style="background:rgba(59,130,246,0.15);">🧮</div>
     <div><h2>Math &amp; Utilities</h2><p>Correct numeric arithmetic, precision money calculations, secure randomization, and essential Java utility classes.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#math">The Math Class</a>
+  <a href="#bigdecimal">BigDecimal</a>
+  <a href="#random">Randomization</a>
+  <a href="#uuid">UUID</a>
+  <a href="#objects">The Objects Utility Class</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -47,65 +58,37 @@
     <p><strong>Mastery check:</strong> You understand Math and Utilities when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li>Use <code class="inline">BigDecimal</code> with String constructor, never double constructor.</li>
-      <li>Use <code class="inline">ThreadLocalRandom.current()</code> in multithreaded code — never share a <code class="inline">Random</code> instance between threads.</li>
-      <li>Use <code class="inline">SecureRandom</code> for tokens, passwords, OTPs, session IDs.</li>
-      <li>Use <code class="inline">Math.addExact()</code> / <code class="inline">multiplyExact()</code> where integer overflow would be a bug.</li>
-      <li><code class="inline">Objects.requireNonNull()</code> should be your first line in any constructor that takes reference params.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li><strong><code class="inline">new BigDecimal(0.1)</code> is NOT 0.1</strong> — It is the exact binary representation of 0.1 as double, which is 0.1000000000000000055511151231257827021181583404541015625. Use <code class="inline">new BigDecimal("0.1")</code> or <code class="inline">BigDecimal.valueOf(0.1)</code>.</li>
-      <li><strong>Sharing <code class="inline">java.util.Random</code> across threads</strong> — Random is thread-safe but uses synchronized access, causing contention. <code class="inline">ThreadLocalRandom</code> has zero contention.</li>
-      <li><strong><code class="inline">Math.random()</code> in production code</strong> — It returns a <code class="inline">double</code> in [0, 1) and is a convenience wrapper around a shared synchronized <code class="inline">Random</code>. Use <code class="inline">ThreadLocalRandom.current().nextInt(bound)</code> instead.</li>
-      <li><strong>Comparing <code class="inline">BigDecimal</code> with <code class="inline">equals()</code></strong> — <code class="inline">new BigDecimal("2.0").equals(new BigDecimal("2.00"))</code> is <code class="inline">false</code> because scale differs! Use <code class="inline">compareTo() == 0</code> for numeric equality.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You know when to use each numeric type (int, long, double, BigDecimal).</li>
-      <li>You can perform BigDecimal arithmetic with correct rounding mode.</li>
-      <li>You can generate cryptographically secure random bytes.</li>
-      <li>You know the difference between <code class="inline">Random</code>, <code class="inline">ThreadLocalRandom</code>, and <code class="inline">SecureRandom</code>.</li>
-      <li>You can use <code class="inline">Objects.requireNonNull()</code> and the full <code class="inline">Objects</code> API.</li>
-    </ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Utility APIs are small but dangerous when precision, randomness, time, and formatting matter.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn which utility solves which simple task before writing custom helpers.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh precision, rounding, pseudo-randomness, object helpers, and when utility code becomes domain logic.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Math.random is not for security. Use SecureRandom for tokens, passwords, and anything adversarial.</li>
-      <li>Rounding rules are business rules. Always choose a RoundingMode instead of relying on accidental defaults.</li>
-      <li>Utility classes can become dumping grounds. If behavior belongs to a domain concept, model it there instead of hiding it in Utils.</li>
-      <li>Objects.requireNonNull is more than a null check; it documents which boundary refuses invalid input early.</li>
-      <li>Measure before replacing readable standard-library utilities with custom optimized code.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Explain Math and Utilities without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Use Math and Utilities in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Predict how Math and Utilities behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Math &amp; Utilities.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Math &amp; Utilities.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Math &amp; Utilities.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="math">
@@ -384,7 +367,42 @@
   </div>
 </div>
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Use <code class="inline">BigDecimal</code> with String constructor, never double constructor.</li>
+      <li>Use <code class="inline">ThreadLocalRandom.current()</code> in multithreaded code — never share a <code class="inline">Random</code> instance between threads.</li>
+      <li>Use <code class="inline">SecureRandom</code> for tokens, passwords, OTPs, session IDs.</li>
+      <li>Use <code class="inline">Math.addExact()</code> / <code class="inline">multiplyExact()</code> where integer overflow would be a bug.</li>
+      <li><code class="inline">Objects.requireNonNull()</code> should be your first line in any constructor that takes reference params.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><span class="warn-icon">⚠ </span><strong><code class="inline">new BigDecimal(0.1)</code> is NOT 0.1</strong> — It is the exact binary representation of 0.1 as double, which is 0.1000000000000000055511151231257827021181583404541015625. Use <code class="inline">new BigDecimal("0.1")</code> or <code class="inline">BigDecimal.valueOf(0.1)</code>.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Sharing <code class="inline">java.util.Random</code> across threads</strong> — Random is thread-safe but uses synchronized access, causing contention. <code class="inline">ThreadLocalRandom</code> has zero contention.</li>
+      <li><span class="warn-icon">⚠ </span><strong><code class="inline">Math.random()</code> in production code</strong> — It returns a <code class="inline">double</code> in [0, 1) and is a convenience wrapper around a shared synchronized <code class="inline">Random</code>. Use <code class="inline">ThreadLocalRandom.current().nextInt(bound)</code> instead.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Comparing <code class="inline">BigDecimal</code> with <code class="inline">equals()</code></strong> — <code class="inline">new BigDecimal("2.0").equals(new BigDecimal("2.00"))</code> is <code class="inline">false</code> because scale differs! Use <code class="inline">compareTo() == 0</code> for numeric equality.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>Math.random is not for security. Use SecureRandom for tokens, passwords, and anything adversarial.</li>
+      <li>Rounding rules are business rules. Always choose a RoundingMode instead of relying on accidental defaults.</li>
+      <li>Utility classes can become dumping grounds. If behavior belongs to a domain concept, model it there instead of hiding it in Utils.</li>
+      <li>Objects.requireNonNull is more than a null check; it documents which boundary refuses invalid input early.</li>
+      <li>Measure before replacing readable standard-library utilities with custom optimized code.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You know when to use each numeric type (int, long, double, BigDecimal).</li>
+      <li>You can perform BigDecimal arithmetic with correct rounding mode.</li>
+      <li>You can generate cryptographically secure random bytes.</li>
+      <li>You know the difference between <code class="inline">Random</code>, <code class="inline">ThreadLocalRandom</code>, and <code class="inline">SecureRandom</code>.</li>
+      <li>You can use <code class="inline">Objects.requireNonNull()</code> and the full <code class="inline">Objects</code> API.</li>
+    </ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -413,7 +431,11 @@
 </div>
 
 </code></code></div><code><code>
-<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="strings.html">← Strings</a></div>
+  <div class="footer-center"><a href="../basics.html">Back to Basics</a></div>
+  <div class="footer-right"><a href="arrays.html">Arrays →</a></div>
+</footer>
 </code></code></div><code><code>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

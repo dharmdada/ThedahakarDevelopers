@@ -21,6 +21,16 @@
     <div class="section-icon" style="background:rgba(239,68,68,0.15);">⚠️</div>
     <div><h2>Exceptions and Error Handling</h2><p>Java's structured failure mechanism — how to detect, report, propagate, and recover from failures without crashing your program.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#trycatch">Try-Catch-Finally</a>
+  <a href="#twr">Try-With-Resources</a>
+  <a href="#custom">Custom Exception Hierarchies</a>
+  <a href="#patterns">Common Patterns</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -60,65 +70,37 @@
       </div>
     </div>
   </div>
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li><strong>Catch what you can handle</strong> — If you catch an exception and don't know what to do, re-throw it. An empty catch block is the worst possible thing.</li>
-      <li><strong>Never swallow exceptions silently</strong> — <code class="inline">catch (Exception e) {}</code> is a bug disguised as code. At minimum, log it.</li>
-      <li><strong>Don't catch Exception or Throwable at low levels</strong> — Catch the most specific type possible. Catching <code class="inline">Exception</code> hides bugs.</li>
-      <li><strong>Include context in exception messages</strong> — <code class="inline">"User not found: id=" + id</code> is infinitely more useful than <code class="inline">"User not found"</code>.</li>
-      <li><strong>Prefer unchecked for library APIs</strong> — Checked exceptions in widely-used APIs become a maintenance burden. Spring, Guava, and most modern Java frameworks use unchecked.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li><strong>Exceptions are for exceptional cases</strong> — Do NOT use exceptions for normal control flow (e.g., throw to signal "item not in list"). Use <code class="inline">Optional</code> or a return value instead.</li>
-      <li><strong>final vs finally vs finalize</strong> — <code class="inline">final</code>: variable/method/class modifier. <code class="inline">finally</code>: cleanup block. <code class="inline">finalize()</code>: deprecated GC hook — never use it.</li>
-      <li><strong>Catching Exception masks NullPointerException</strong> — If you catch <code class="inline">Exception</code> everywhere, a NPE caused by your bug gets silently swallowed.</li>
-      <li><strong>finally always runs — except when it doesn't</strong> — <code class="inline">System.exit()</code> or JVM crash before reaching finally will skip it.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can explain checked vs unchecked with the "can the caller recover?" test.</li>
-      <li>You can write multi-catch, finally, and try-with-resources blocks.</li>
-      <li>You can create a custom exception hierarchy for a domain.</li>
-      <li>You know when to wrap, re-throw, or translate exceptions at layer boundaries.</li>
-      <li>You can explain exception chaining (<code class="inline">new RuntimeException("msg", cause)</code>).</li>
-    </ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Exceptions model abnormal control flow; I/O models unreliable external reality.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn try/catch/finally, checked exceptions, and why files/network can fail even when code is correct.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh exception translation, suppressed exceptions, resource ownership, retry boundaries, and observability.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Do not catch Exception just to print it and continue. That often converts a visible failure into corrupted business state.</li>
-      <li>Use try-with-resources for anything that owns external resources. Closing is not optional in long-running programs.</li>
-      <li>Wrap low-level exceptions at boundaries with domain context, but keep the original cause for debugging.</li>
-      <li>Retries belong only around operations that are safe to repeat or explicitly idempotent.</li>
-      <li>Error messages should include the failing operation and key identifiers, not just the exception class name.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Explain Exceptions and I/O without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Use Exceptions and I/O in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Predict how Exceptions and I/O behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Exceptions and Error Handling.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Exceptions and Error Handling.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Exceptions and Error Handling.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="trycatch">
@@ -319,7 +301,42 @@
   </div>
 </div>
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li><strong>Catch what you can handle</strong> — If you catch an exception and don't know what to do, re-throw it. An empty catch block is the worst possible thing.</li>
+      <li><strong>Never swallow exceptions silently</strong> — <code class="inline">catch (Exception e) {}</code> is a bug disguised as code. At minimum, log it.</li>
+      <li><strong>Don't catch Exception or Throwable at low levels</strong> — Catch the most specific type possible. Catching <code class="inline">Exception</code> hides bugs.</li>
+      <li><strong>Include context in exception messages</strong> — <code class="inline">"User not found: id=" + id</code> is infinitely more useful than <code class="inline">"User not found"</code>.</li>
+      <li><strong>Prefer unchecked for library APIs</strong> — Checked exceptions in widely-used APIs become a maintenance burden. Spring, Guava, and most modern Java frameworks use unchecked.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><span class="warn-icon">⚠ </span><strong>Exceptions are for exceptional cases</strong> — Do NOT use exceptions for normal control flow (e.g., throw to signal "item not in list"). Use <code class="inline">Optional</code> or a return value instead.</li>
+      <li><span class="warn-icon">⚠ </span><strong>final vs finally vs finalize</strong> — <code class="inline">final</code>: variable/method/class modifier. <code class="inline">finally</code>: cleanup block. <code class="inline">finalize()</code>: deprecated GC hook — never use it.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Catching Exception masks NullPointerException</strong> — If you catch <code class="inline">Exception</code> everywhere, a NPE caused by your bug gets silently swallowed.</li>
+      <li><span class="warn-icon">⚠ </span><strong>finally always runs — except when it doesn't</strong> — <code class="inline">System.exit()</code> or JVM crash before reaching finally will skip it.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>Do not catch Exception just to print it and continue. That often converts a visible failure into corrupted business state.</li>
+      <li>Use try-with-resources for anything that owns external resources. Closing is not optional in long-running programs.</li>
+      <li><span class="warn-icon">⚠ </span>Wrap low-level exceptions at boundaries with domain context, but keep the original cause for debugging.</li>
+      <li>Retries belong only around operations that are safe to repeat or explicitly idempotent.</li>
+      <li><span class="warn-icon">⚠ </span>Error messages should include the failing operation and key identifiers, not just the exception class name.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can explain checked vs unchecked with the "can the caller recover?" test.</li>
+      <li>You can write multi-catch, finally, and try-with-resources blocks.</li>
+      <li>You can create a custom exception hierarchy for a domain.</li>
+      <li>You know when to wrap, re-throw, or translate exceptions at layer boundaries.</li>
+      <li>You can explain exception chaining (<code class="inline">new RuntimeException("msg", cause)</code>).</li>
+    </ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -348,7 +365,11 @@
 </div>
 
 </div>
-<footer><p>JavaMaster — <a href="io-network.html" style="color:var(--accent);">Next: File I/O and Networking →</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="../advanced.html">← Advanced Java</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="java-io-streams.html">Java I/O Streams →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Data Types &amp; Variables with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Data Types &amp; Variables – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -41,6 +42,21 @@
     <div class="section-icon" style="background:rgba(59,130,246,0.15);">📊</div>
     <div><h2>Data Types &amp; Variables</h2><p>Everything about how Java stores and represents data.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#primitives">Primitives</a>
+  <a href="#reference">Reference Types</a>
+  <a href="#financial-types">Financial Types</a>
+  <a href="#casting">Type Casting</a>
+  <a href="#constants">Constants</a>
+  <a href="#var">var Keyword</a>
+  <a href="#wrappers">Wrapper Classes</a>
+  <a href="#scope">Variable Scope</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
   <div class="callout info">
     <span class="callout-icon">ℹ️</span>
     <div class="callout-body"><strong>Statically Typed Language</strong>Every variable in Java must be declared with a type before use. The type determines what values the variable can hold and what operations can be performed on it.</div>
@@ -65,54 +81,37 @@
     <p><strong>Mastery check:</strong> You understand Data Types when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Primitives live on the stack (fast), Objects live on the heap (overhead).</li>
-      <li>Floating point arithmetic is not precise. Use BigDecimal for financial calculations.</li>
-      <li>Understand implicit casting (widening) vs explicit casting (narrowing).</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Assuming == compares values for wrapper classes. It compares references. Use .equals().</li>
-      <li>Using float or double for money. They suffer from rounding errors.</li>
-      <li>Forgetting that char is essentially a 16-bit integer (UTF-16 code unit) in Java.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You know the exact memory size of int, long, double, and boolean.</li>
-      <li>You can predict overflow behavior when adding two large ints.</li>
-      <li>You know when to use Integer vs int.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Types are constraints that protect meaning, range, precision, identity, and operations.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn what each primitive can store and when an object reference can be null.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh numeric promotion, boxing costs, char versus Unicode code points, equality behavior, and precision traps.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>int overflow does not throw an exception. It silently wraps, which is why money, counters, and IDs need deliberate type choices.</li>
-      <li>double is for measurement, not exact decimal money. Use BigDecimal carefully with string constructors and explicit rounding.</li>
-      <li>char is a UTF-16 code unit, not always a full human character. Emojis and many scripts require code point awareness.</li>
-      <li>Boxing primitives into Integer, Long, or Double can create allocation and equality surprises; == compares references for wrappers.</li>
-      <li>A type should communicate business meaning. A String that represents currency, status, or date often deserves a stronger model.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Data Types</div><div class="hl-desc">Explain Data Types without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Data Types</div><div class="hl-desc">Use Data Types in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Data Types</div><div class="hl-desc">Predict how Data Types behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Data Types &amp; Variables.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Data Types &amp; Variables.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Data Types &amp; Variables.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <!-- PRIMITIVES -->
@@ -443,7 +442,31 @@
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Primitives live on the stack (fast), Objects live on the heap (overhead).</li>
+      <li>Floating point arithmetic is not precise. Use BigDecimal for financial calculations.</li>
+      <li>Understand implicit casting (widening) vs explicit casting (narrowing).</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Assuming == compares values for wrapper classes. It compares references. Use .equals().</li>
+      <li><span class="warn-icon">⚠ </span>Using float or double for money. They suffer from rounding errors.</li>
+      <li><span class="warn-icon">⚠ </span>Forgetting that char is essentially a 16-bit integer (UTF-16 code unit) in Java.</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>int overflow does not throw an exception. It silently wraps, which is why money, counters, and IDs need deliberate type choices.</li>
+      <li><span class="warn-icon">⚠ </span>double is for measurement, not exact decimal money. Use BigDecimal carefully with string constructors and explicit rounding.</li>
+      <li>char is a UTF-16 code unit, not always a full human character. Emojis and many scripts require code point awareness.</li>
+      <li><span class="warn-icon">⚠ </span>Boxing primitives into Integer, Long, or Double can create allocation and equality surprises; == compares references for wrappers.</li>
+      <li>A type should communicate business meaning. A String that represents currency, status, or date often deserves a stronger model.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You know the exact memory size of int, long, double, and boolean.</li>
+      <li>You can predict overflow behavior when adding two large ints.</li>
+      <li>You know when to use Integer vs int.</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -465,7 +488,11 @@
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · Version-agnostic, always free · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="setup.html">← Setup and Hello World</a></div>
+  <div class="footer-center"><a href="../basics.html">Back to Basics</a></div>
+  <div class="footer-right"><a href="operators.html">Operators →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

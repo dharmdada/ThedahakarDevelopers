@@ -184,28 +184,7 @@ const coursePages = [
   { file: 'design-patterns.html', path: 'pages/design-patterns.html', title: 'Patterns and SOLID' }
 ];
 
-function renderCoursePager() {
-  const mainEl = document.getElementById('main');
-  const footer = mainEl?.querySelector('footer');
-  if (!mainEl || !footer || document.querySelector('.course-pager')) return;
-
-  const index = coursePages.findIndex(page => page.file === currentPage);
-  if (index < 0) return;
-
-  const prev = coursePages[index - 1];
-  const next = coursePages[index + 1];
-  const hrefFor = page => basePath + page.path;
-
-  const prevHtml = prev
-    ? `<a class="pager-link prev" href="${hrefFor(prev)}"><span class="pager-kicker">Previous</span><span class="pager-title">${prev.title}</span></a>`
-    : '<div class="pager-link pager-spacer" aria-hidden="true"></div>';
-  const nextHtml = next
-    ? `<a class="pager-link next" href="${hrefFor(next)}"><span class="pager-kicker">Next</span><span class="pager-title">${next.title}</span></a>`
-    : '<div class="pager-link pager-spacer" aria-hidden="true"></div>';
-
-  footer.insertAdjacentHTML('beforebegin', `<nav class="course-pager" aria-label="Course navigation">${prevHtml}${nextHtml}</nav>`);
-}
-renderCoursePager();
+// Redundant course-pager removed as static footer navigation handles course progress.
 
 // COMPLETION BUTTON INJECTION
 function renderCompletionButton() {
@@ -223,12 +202,7 @@ function renderCompletionButton() {
     </div>
   `;
 
-  const pager = document.querySelector('.course-pager');
-  if (pager) {
-    pager.insertAdjacentHTML('beforebegin', completionHtml);
-  } else {
-    contentArea.insertAdjacentHTML('beforeend', completionHtml);
-  }
+  contentArea.insertAdjacentHTML('beforeend', completionHtml);
 
   const btn = document.getElementById('complete-btn');
   if (btn) {
@@ -597,6 +571,7 @@ quizScript.onload = function() {
 
     const contentArea = document.querySelector('.content-area');
     if (!contentArea) return;
+    if (document.getElementById('quiz') || document.getElementById('quiz-container')) return;
 
     let currentQ = 0;
     let score = 0;
@@ -948,3 +923,45 @@ function generateTOC() {
   headings.forEach(heading => observer.observe(heading));
 }
 generateTOC();
+
+// Setup active state highlighting for sticky #page-toc bar
+function setupPageTOC() {
+  const pageToc = document.getElementById('page-toc');
+  if (!pageToc) return;
+
+  const links = pageToc.querySelectorAll('a');
+  const sections = Array.from(links).map(link => {
+    const id = link.getAttribute('href');
+    return id ? document.querySelector(id) : null;
+  }).filter(Boolean);
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-30% 0px -60% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        links.forEach(link => {
+          const isActive = link.getAttribute('href') === `#${id}`;
+          link.classList.toggle('active', isActive);
+          if (isActive) {
+            // Smoothly scroll the sticky TOC container horizontally to keep the active pill in view
+            const containerLeft = pageToc.getBoundingClientRect().left;
+            const linkLeft = link.getBoundingClientRect().left;
+            const linkWidth = link.offsetWidth;
+            const containerWidth = pageToc.offsetWidth;
+            const targetScrollLeft = pageToc.scrollLeft + (linkLeft - containerLeft) - (containerWidth / 2) + (linkWidth / 2);
+            pageToc.scrollTo({ left: targetScrollLeft, behavior: 'smooth' });
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
+}
+setupPageTOC();

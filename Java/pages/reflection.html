@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Reflection &amp; Annotations with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Reflection &amp; Annotations – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -30,6 +31,17 @@
     <div class="section-icon" style="background:rgba(234,179,8,0.15);">🔍</div>
     <div><h2>Reflection &amp; Annotations</h2><p>Inspect and modify code at runtime, and attach metadata to your classes.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#reflection">Reflection</a>
+  <a href="#dynamic">Dynamic Interaction</a>
+  <a href="#annotations">Annotations</a>
+  <a href="#custom-annotations">Creating Custom Annotations</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -50,54 +62,37 @@
     <p><strong>Mastery check:</strong> You understand Reflection when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Reflection allows inspecting and modifying code at runtime (e.g., reading private fields).</li>
-      <li>Use it sparingly. It breaks encapsulation and is slower than direct code execution.</li>
-      <li>Frameworks (Spring, Hibernate, JUnit) rely heavily on reflection to work their magic (dependency injection, mapping, testing).</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Using reflection to bypass security restrictions in normal application logic.</li>
-      <li>Thinking reflection is fast. It involves dynamic resolution, preventing JIT optimizations.</li>
-      <li>Forgetting that reflection makes code brittle to refactoring (e.g., renaming a field breaks reflection code looking for it by name).</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can get the Class object of a type.</li>
-      <li>You can read a private field's value using reflection.</li>
-      <li>You understand how annotations and reflection work together to power frameworks.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Reflection lets programs inspect and invoke code dynamically at the cost of safety and clarity.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should understand that reflection can access classes, fields, methods, and annotations at runtime.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh access checks, performance, modules, proxies, annotation processing alternatives, and framework internals.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Reflection is why many frameworks feel magical. Understanding it makes dependency injection, ORM mapping, and serialization much less mysterious.</li>
-      <li>Reflective code bypasses many compile-time guarantees, so failures move to runtime and need stronger tests.</li>
-      <li>setAccessible can break encapsulation and may be restricted by modules or security policies.</li>
-      <li>Reflection is often acceptable at startup but risky in hot loops unless cached and measured.</li>
-      <li>If you control both sides, code generation or explicit interfaces may be cleaner than reflective discovery.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Reflection</div><div class="hl-desc">Explain Reflection without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Reflection</div><div class="hl-desc">Use Reflection in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Reflection</div><div class="hl-desc">Predict how Reflection behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Reflection &amp; Annotations.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Reflection &amp; Annotations.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Reflection &amp; Annotations.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="reflection">
@@ -256,7 +251,31 @@ public class Main {
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Reflection allows inspecting and modifying code at runtime (e.g., reading private fields).</li>
+      <li>Use it sparingly. It breaks encapsulation and is slower than direct code execution.</li>
+      <li>Frameworks (Spring, Hibernate, JUnit) rely heavily on reflection to work their magic (dependency injection, mapping, testing).</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Using reflection to bypass security restrictions in normal application logic.</li>
+      <li><span class="warn-icon">⚠ </span>Thinking reflection is fast. It involves dynamic resolution, preventing JIT optimizations.</li>
+      <li><span class="warn-icon">⚠ </span>Forgetting that reflection makes code brittle to refactoring (e.g., renaming a field breaks reflection code looking for it by name).</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>Reflection is why many frameworks feel magical. Understanding it makes dependency injection, ORM mapping, and serialization much less mysterious.</li>
+      <li><span class="warn-icon">⚠ </span>Reflective code bypasses many compile-time guarantees, so failures move to runtime and need stronger tests.</li>
+      <li>setAccessible can break encapsulation and may be restricted by modules or security policies.</li>
+      <li><span class="warn-icon">⚠ </span>Reflection is often acceptable at startup but risky in hot loops unless cached and measured.</li>
+      <li>If you control both sides, code generation or explicit interfaces may be cleaner than reflective discovery.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can get the Class object of a type.</li>
+      <li>You can read a private field's value using reflection.</li>
+      <li>You understand how annotations and reflection work together to power frameworks.</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -273,7 +292,11 @@ public class Main {
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="concurrency.html">← Concurrency</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="jvm-internals.html">JVM Internals →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

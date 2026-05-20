@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Modern Java Features with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Modern Java Features – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -30,6 +31,18 @@
     <div class="section-icon" style="background:rgba(168,85,247,0.15);">🚀</div>
     <div><h2>Modern Java Features</h2><p>The best quality-of-life improvements added to Java in recent years.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#var">var Keyword</a>
+  <a href="#textblocks">Text Blocks</a>
+  <a href="#pattern">Pattern Matching</a>
+  <a href="#switch">Switch</a>
+  <a href="#sealed">Sealed Classes</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -50,54 +63,37 @@
     <p><strong>Mastery check:</strong> You understand Modern Java Features when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Java has evolved rapidly since Java 8. Keep up with LTS releases (11, 17, 21).</li>
-      <li>Features like Records, switch expressions, and pattern matching drastically reduce boilerplate.</li>
-      <li>Project Loom (Virtual Threads) changes the paradigm of concurrent programming in Java.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Thinking 'var' makes Java dynamically typed. It does not; types are inferred at compile-time.</li>
-      <li>Using a Record for a class that needs mutable state (Records are strictly immutable).</li>
-      <li>Thinking Text Blocks change how strings are stored in memory (they are just syntactic sugar for multiline string literals).</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can refactor an old POJO into a Record.</li>
-      <li>You can use modern Switch Expressions yielding a value.</li>
-      <li>You understand the basic concept of Virtual Threads (Java 21).</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Modern Java reduces ceremony when used to make intent and domain constraints clearer.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn records, switch expressions, text blocks, pattern matching, sealed classes, and virtual threads gradually.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh compatibility, preview features, migration strategy, bytecode targets, and when new syntax changes design.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Records are not just shorter POJOs; they declare that the object is transparent data with value-based behavior.</li>
-      <li>Sealed classes make closed hierarchies explicit and pair well with exhaustive switch logic.</li>
-      <li>Text blocks improve readability but still preserve characters; indentation and trailing spaces can matter.</li>
-      <li>Pattern matching is strongest when it removes unsafe casts and keeps type checks near the use of the narrowed value.</li>
-      <li>Adopt new language features when they reduce accidental complexity, not because the codebase needs novelty.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Explain Modern Java Features without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Use Modern Java Features in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Predict how Modern Java Features behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Modern Java Features.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Modern Java Features.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Modern Java Features.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="var">
@@ -275,7 +271,31 @@ public class Main {
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Java has evolved rapidly since Java 8. Keep up with LTS releases (11, 17, 21).</li>
+      <li>Features like Records, switch expressions, and pattern matching drastically reduce boilerplate.</li>
+      <li>Project Loom (Virtual Threads) changes the paradigm of concurrent programming in Java.</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Thinking 'var' makes Java dynamically typed. It does not; types are inferred at compile-time.</li>
+      <li><span class="warn-icon">⚠ </span>Using a Record for a class that needs mutable state (Records are strictly immutable).</li>
+      <li><span class="warn-icon">⚠ </span>Thinking Text Blocks change how strings are stored in memory (they are just syntactic sugar for multiline string literals).</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>Records are not just shorter POJOs; they declare that the object is transparent data with value-based behavior.</li>
+      <li>Sealed classes make closed hierarchies explicit and pair well with exhaustive switch logic.</li>
+      <li>Text blocks improve readability but still preserve characters; indentation and trailing spaces can matter.</li>
+      <li>Pattern matching is strongest when it removes unsafe casts and keeps type checks near the use of the narrowed value.</li>
+      <li>Adopt new language features when they reduce accidental complexity, not because the codebase needs novelty.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can refactor an old POJO into a Record.</li>
+      <li>You can use modern Switch Expressions yielding a value.</li>
+      <li>You understand the basic concept of Virtual Threads (Java 21).</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -292,7 +312,11 @@ public class Main {
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="jvm-internals.html">← JVM Internals</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="jdbc.html">JDBC and SQL →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

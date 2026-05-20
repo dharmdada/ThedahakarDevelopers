@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Concurrency &amp; Multithreading with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Concurrency &amp; Multithreading – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -30,6 +31,20 @@
     <div class="section-icon" style="background:rgba(249,115,22,0.15);">🧵</div>
     <div><h2>Concurrency &amp; Multithreading</h2><p>Running multiple tasks simultaneously, safely sharing state, and modern async programming.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#threads">Threads vs Processes</a>
+  <a href="#executors">Executors (The Modern Way)</a>
+  <a href="#sync">Synchronization</a>
+  <a href="#volatile">Memory Visibility and the volatile Keyword</a>
+  <a href="#atomic">Atomic Variables &amp; Concurrent Collections</a>
+  <a href="#completable">CompletableFuture</a>
+  <a href="#virtual">Virtual Threads</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -50,54 +65,37 @@
     <p><strong>Mastery check:</strong> You understand Concurrency when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Concurrency is about managing shared state. Synchronization is the primary tool to prevent race conditions.</li>
-      <li>Modern Java prefers higher-level abstractions like ExecutorService and CompletableFuture over raw Threads.</li>
-      <li>Deadlocks happen when two or more threads wait for each other to release locks forever.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Thinking 'volatile' makes operations atomic. It only guarantees visibility of changes across threads.</li>
-      <li>Calling Thread.run() instead of Thread.start(). (run() executes synchronously in the current thread).</li>
-      <li>Using outdated classes like Vector or Hashtable instead of ConcurrentHashMap or Collections.synchronizedList.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can explain the thread lifecycle states (New, Runnable, Blocked, Waiting, Terminated).</li>
-      <li>You know the difference between wait()/notify() and Thread.sleep().</li>
-      <li>You can implement a Thread-safe Singleton.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Concurrency is about coordination, visibility, ownership, and failure propagation.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn that threads run independently and shared mutable data needs protection.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh happens-before, volatile, locks, executors, atomics, virtual threads, deadlocks, and structured concurrency ideas.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Thread safety is not a property of a line of code; it is a property of all access paths to shared state.</li>
-      <li>volatile gives visibility and ordering guarantees, not compound atomicity. count++ is still not safely atomic with volatile alone.</li>
-      <li>Locks protect invariants, not just variables. Lock the whole state transition that must remain consistent.</li>
-      <li>Virtual threads reduce the cost of blocking, but they do not eliminate race conditions, database limits, or bad synchronization.</li>
-      <li>The simplest concurrency bug fix is often ownership: make data immutable, confine it to one thread, or pass messages instead of sharing.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Concurrency</div><div class="hl-desc">Explain Concurrency without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Concurrency</div><div class="hl-desc">Use Concurrency in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Concurrency</div><div class="hl-desc">Predict how Concurrency behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Concurrency &amp; Multithreading.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Concurrency &amp; Multithreading.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Concurrency &amp; Multithreading.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="threads">
@@ -400,7 +398,31 @@ public class Main {
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Concurrency is about managing shared state. Synchronization is the primary tool to prevent race conditions.</li>
+      <li>Modern Java prefers higher-level abstractions like ExecutorService and CompletableFuture over raw Threads.</li>
+      <li>Deadlocks happen when two or more threads wait for each other to release locks forever.</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Thinking 'volatile' makes operations atomic. It only guarantees visibility of changes across threads.</li>
+      <li><span class="warn-icon">⚠ </span>Calling Thread.run() instead of Thread.start(). (run() executes synchronously in the current thread).</li>
+      <li><span class="warn-icon">⚠ </span>Using outdated classes like Vector or Hashtable instead of ConcurrentHashMap or Collections.synchronizedList.</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>Thread safety is not a property of a line of code; it is a property of all access paths to shared state.</li>
+      <li>volatile gives visibility and ordering guarantees, not compound atomicity. count++ is still not safely atomic with volatile alone.</li>
+      <li>Locks protect invariants, not just variables. Lock the whole state transition that must remain consistent.</li>
+      <li>Virtual threads reduce the cost of blocking, but they do not eliminate race conditions, database limits, or bad synchronization.</li>
+      <li><span class="warn-icon">⚠ </span>The simplest concurrency bug fix is often ownership: make data immutable, confine it to one thread, or pass messages instead of sharing.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can explain the thread lifecycle states (New, Runnable, Blocked, Waiting, Terminated).</li>
+      <li>You know the difference between wait()/notify() and Thread.sleep().</li>
+      <li>You can implement a Thread-safe Singleton.</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -417,7 +439,11 @@ public class Main {
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../advanced.html" style="color:var(--accent);">← Back to Advanced</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="datetime.html">← Date and Time API</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="reflection.html">Reflection and Annotations →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

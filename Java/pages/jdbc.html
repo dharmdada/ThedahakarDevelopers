@@ -21,6 +21,20 @@
     <div class="section-icon" style="background:rgba(239,68,68,0.15);">SQL</div>
     <div><h2>JDBC and SQL in Java</h2><p>The low-level database API that every ORM is built on. Master it to understand what Hibernate is actually doing beneath the surface.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#datasource">Step 1</a>
+  <a href="#core">Full CRUD Repository Pattern</a>
+  <a href="#pagination">Pagination and Large Result Sets</a>
+  <a href="#transactions">Transactions</a>
+  <a href="#isolation">Database Isolation Levels</a>
+  <a href="#batch">Batch Writes</a>
+  <a href="#n-plus-one">The N+1 Query Problem</a>
+  <a href="#hikari">Connection Pooling with HikariCP</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -56,65 +70,37 @@
       <div class="callout-body"><strong>Core Java vs Third-Party Libraries</strong>Core Java only provides the <em>rules</em> (Interfaces like <code>Connection</code>, <code>PreparedStatement</code>, and <code>DataSource</code> inside the <code>java.sql</code> package). Core Java <strong>does not</strong> know how to talk to PostgreSQL, MySQL, or Oracle. To actually connect to a database, you must download a third-party library called a <strong>JDBC Driver</strong> (e.g., the PostgreSQL JDBC Driver) and add it to your project. The Driver contains the actual classes (like <code>PGSimpleDataSource</code>) that implement the Core Java interfaces.</div>
     </div>
   </div>
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list">
-      <li><strong>Always use PreparedStatement</strong> — Never concatenate user input into SQL. SQL injection is the #1 web vulnerability.</li>
-      <li><strong>Close in reverse order</strong> — Close ResultSet first, then PreparedStatement, then Connection. Try-with-resources does this automatically.</li>
-      <li><strong>Use DataSource, not DriverManager in production</strong> — DriverManager creates a new connection each call. DataSource pools them.</li>
-      <li><strong>Wrap JDBC exceptions</strong> — <code class="inline">SQLException</code> is checked. Translate to domain exceptions at the repository boundary.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list">
-      <li><strong>SQL Injection via concatenation</strong> — <code class="inline">"WHERE name = '" + userInput + "'"</code> is never acceptable. A user entering <code class="inline">'; DROP TABLE users; --</code> destroys your database.</li>
-      <li><strong>Not closing ResultSet</strong> — Each unclosed ResultSet is a cursor held open on the database server. Under load, this exhausts the DB's cursor limit.</li>
-      <li><strong>N+1 query problem</strong> — Fetching 100 orders then looping to fetch each order's items with a separate query = 101 queries. Use JOINs or batch fetching.</li>
-      <li><strong>Connection Leaks</strong> — A connection checked out from the pool but never closed (due to an unhandled exception or missing <code>finally</code> block) will never return to the pool. Over time, the pool empties, and the entire app freezes.</li>
-      <li><strong>autoCommit=true for multi-step operations</strong> — Each statement commits individually. If step 2 fails, step 1 is already committed and cannot be rolled back.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list">
-      <li>You can write a full CRUD repository using PreparedStatement and try-with-resources.</li>
-      <li>You can implement a transaction that rolls back on any exception.</li>
-      <li>You can batch insert 10,000 rows efficiently.</li>
-      <li>You can configure HikariCP with appropriate pool size and timeouts.</li>
-      <li>You can explain the N+1 problem and how to solve it with a JOIN.</li>
-    </ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>JDBC is the raw contract between Java and relational databases.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn Connection, PreparedStatement, ResultSet, transactions, and closing resources.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh isolation levels, pooling, batching, generated keys, SQL injection, mapping boundaries, and transaction ownership.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>PreparedStatement is not only convenience; it is the default defense against SQL injection and parsing mistakes.</li>
-      <li>A transaction boundary should match a business operation, not a random DAO method.</li>
-      <li>Connection pools are shared capacity. Leaking one connection can eventually freeze an entire service.</li>
-      <li>Auto-commit hides transaction behavior. Know when each statement commits and what happens on failure.</li>
-      <li>ORMs do not remove JDBC realities; they build on connections, statements, result sets, transactions, and SQL constraints.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">JDBC</div><div class="hl-desc">Explain JDBC without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">JDBC</div><div class="hl-desc">Use JDBC in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">JDBC</div><div class="hl-desc">Predict how JDBC behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using jdbc.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for jdbc.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of jdbc.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="datasource">
@@ -584,7 +570,42 @@ import javax.sql.DataSource;
   </div>
 </div>
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li><strong>Always use PreparedStatement</strong> — Never concatenate user input into SQL. SQL injection is the #1 web vulnerability.</li>
+      <li><strong>Close in reverse order</strong> — Close ResultSet first, then PreparedStatement, then Connection. Try-with-resources does this automatically.</li>
+      <li><strong>Use DataSource, not DriverManager in production</strong> — DriverManager creates a new connection each call. DataSource pools them.</li>
+      <li><strong>Wrap JDBC exceptions</strong> — <code class="inline">SQLException</code> is checked. Translate to domain exceptions at the repository boundary.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><span class="warn-icon">⚠ </span><strong>SQL Injection via concatenation</strong> — <code class="inline">"WHERE name = '" + userInput + "'"</code> is never acceptable. A user entering <code class="inline">'; DROP TABLE users; --</code> destroys your database.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Not closing ResultSet</strong> — Each unclosed ResultSet is a cursor held open on the database server. Under load, this exhausts the DB's cursor limit.</li>
+      <li><span class="warn-icon">⚠ </span><strong>N+1 query problem</strong> — Fetching 100 orders then looping to fetch each order's items with a separate query = 101 queries. Use JOINs or batch fetching.</li>
+      <li><span class="warn-icon">⚠ </span><strong>Connection Leaks</strong> — A connection checked out from the pool but never closed (due to an unhandled exception or missing <code>finally</code> block) will never return to the pool. Over time, the pool empties, and the entire app freezes.</li>
+      <li><span class="warn-icon">⚠ </span><strong>autoCommit=true for multi-step operations</strong> — Each statement commits individually. If step 2 fails, step 1 is already committed and cannot be rolled back.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>PreparedStatement is not only convenience; it is the default defense against SQL injection and parsing mistakes.</li>
+      <li>A transaction boundary should match a business operation, not a random DAO method.</li>
+      <li><span class="warn-icon">⚠ </span>Connection pools are shared capacity. Leaking one connection can eventually freeze an entire service.</li>
+      <li><span class="warn-icon">⚠ </span>Auto-commit hides transaction behavior. Know when each statement commits and what happens on failure.</li>
+      <li>ORMs do not remove JDBC realities; they build on connections, statements, result sets, transactions, and SQL constraints.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can write a full CRUD repository using PreparedStatement and try-with-resources.</li>
+      <li>You can implement a transaction that rolls back on any exception.</li>
+      <li>You can batch insert 10,000 rows efficiently.</li>
+      <li>You can configure HikariCP with appropriate pool size and timeouts.</li>
+      <li>You can explain the N+1 problem and how to solve it with a JOIN.</li>
+    </ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -613,7 +634,11 @@ import javax.sql.DataSource;
 </div>
 
 </div>
-<footer><p>JavaMaster — <a href="design-patterns.html" style="color:var(--accent);">Next: Design Patterns and SOLID</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="modern-features.html">← Modern Features</a></div>
+  <div class="footer-center"><a href="../advanced.html">Back to Advanced</a></div>
+  <div class="footer-right"><a href="java-project-structure.html">Project Structure →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

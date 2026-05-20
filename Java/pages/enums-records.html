@@ -1,4 +1,5 @@
 <!DOCTYPE html><html lang="en"><head>
+<meta name="description" content="Master Java Enums &amp; Records with this comprehensive, interactive tutorial from JavaMaster. Learn fundamentals, advanced patterns, and real-world examples.">
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Enums &amp; Records – JavaMaster</title>
 <link rel="stylesheet" href="../style.css">
@@ -30,6 +31,20 @@
     <div class="section-icon" style="background:rgba(234,179,8,0.15);">📋</div>
     <div><h2>Enums &amp; Records</h2><p>Type-safe constants and immutable data carriers — two of Java's most useful features.</p></div>
   </div>
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#enums">Enums</a>
+  <a href="#advanced-enums">Advanced Enums</a>
+  <a href="#enum-interface">Enums Implementing Interfaces</a>
+  <a href="#singleton">The Ultimate Singleton Pattern</a>
+  <a href="#records">Records</a>
+  <a href="#record-features">Record Features</a>
+  <a href="#record-patterns">Destructuring</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+</nav>
+
 </div>
 
 <div class="section theory-deep-dive" id="theory-deep-dive">
@@ -50,54 +65,37 @@
     <p><strong>Mastery check:</strong> You understand Enums and Records when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Enums provide type safety for a fixed set of constants (e.g., DAYS_OF_WEEK).</li>
-      <li>Records (Java 14+) reduce boilerplate for immutable data carriers.</li>
-      <li>Enums can have fields, constructors, and methods, just like regular classes.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Using String constants (public static final String RED = "RED") instead of Enums, losing type safety.</li>
-      <li>Trying to instantiate an Enum using the 'new' keyword. (The JVM handles instantiation).</li>
-      <li>Assuming Records are just "less typing" for Java Beans. Records are strictly immutable; they don't have setters.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can create an Enum with a custom constructor and properties.</li>
-      <li>You understand the 'values()' and 'valueOf()' methods of Enums.</li>
-      <li>You know how to define a Record and access its components.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Enums model closed choices; records model transparent immutable data.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should use enums instead of magic strings and records instead of boilerplate data carriers.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh enum behavior, record invariants, serialization concerns, pattern matching, and domain modeling limits.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Enums can have fields, methods, and per-constant behavior; they are often cleaner than switch statements scattered across code.</li>
-      <li>Records are shallowly immutable. If a record contains a mutable List, the list can still change unless you copy it.</li>
-      <li>A compact record constructor is the right place to validate and normalize data before the object exists.</li>
-      <li>Do not use records for entities whose identity and lifecycle matter more than their current field values.</li>
-      <li>String statuses rot over time. Enums and sealed types make illegal domain states visible at compile time.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Explain Enums and Records without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Use Enums and Records in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Predict how Enums and Records behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Understand the core syntax, declare variables, and write basic programs using Enums &amp; Records.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use standard library APIs, handle edge cases, write clean code, and apply common patterns for Enums &amp; Records.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain memory footprint, runtime characteristics, low-level optimization, and advanced quirks of Enums &amp; Records.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+  </div></div>
 
 
 <div class="section" id="enums">
@@ -335,7 +333,31 @@ public class Main {
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list"><li>Enums provide type safety for a fixed set of constants (e.g., DAYS_OF_WEEK).</li>
+      <li>Records (Java 14+) reduce boilerplate for immutable data carriers.</li>
+      <li>Enums can have fields, constructors, and methods, just like regular classes.</li></ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list"><li><span class="warn-icon">⚠ </span>Using String constants (public static final String RED = "RED") instead of Enums, losing type safety.</li>
+      <li><span class="warn-icon">⚠ </span>Trying to instantiate an Enum using the 'new' keyword. (The JVM handles instantiation).</li>
+      <li><span class="warn-icon">⚠ </span>Assuming Records are just "less typing" for Java Beans. Records are strictly immutable; they don't have setters.</li></ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li>Enums can have fields, methods, and per-constant behavior; they are often cleaner than switch statements scattered across code.</li>
+      <li><span class="warn-icon">⚠ </span>Records are shallowly immutable. If a record contains a mutable List, the list can still change unless you copy it.</li>
+      <li>A compact record constructor is the right place to validate and normalize data before the object exists.</li>
+      <li>Do not use records for entities whose identity and lifecycle matter more than their current field values.</li>
+      <li>String statuses rot over time. Enums and sealed types make illegal domain states visible at compile time.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list"><li>You can create an Enum with a custom constructor and properties.</li>
+      <li>You understand the 'values()' and 'valueOf()' methods of Enums.</li>
+      <li>You know how to define a Record and access its components.</li></ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
     <div class="highlight-row">
@@ -352,7 +374,11 @@ public class Main {
     </div>
   </div>
 </div></div>
-<footer><p>JavaMaster · <a href="../oop.html" style="color:var(--accent);">← Back to OOP</a></p></footer>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="interfaces.html">← Interfaces and Abstract Classes</a></div>
+  <div class="footer-center"><a href="../oop.html">Back to OOP</a></div>
+  <div class="footer-right"><a href="../functional.html">Functional Java →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>

@@ -1,6 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Arrays – JavaMaster</title>
+<meta name="description" content="Master Java arrays with this comprehensive deep-dive tutorial. Learn 1D and 2D arrays, jagged arrays, the Arrays utility class, memory structure, and performance considerations.">
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -32,6 +33,18 @@
   </div>
 </div>
 
+<nav id="page-toc">
+  <a href="#theory-deep-dive">Theory</a>
+  <a href="#onedim">1D Arrays</a>
+  <a href="#twodim">2D &amp; Jagged Arrays</a>
+  <a href="#utility">Utility Class</a>
+  <a href="#patterns">Common Patterns</a>
+  <a href="#usecase">Real-World Use Case</a>
+  <a href="#key-takeaways">Key Takeaways</a>
+  <a href="#interview">Interview Prep</a>
+  <a href="#quiz">Quiz</a>
+</nav>
+
 <div class="section theory-deep-dive" id="theory-deep-dive">
   <div class="section-header">
     <div class="section-icon" style="background:rgba(99,102,241,0.14);">TH</div>
@@ -50,51 +63,35 @@
     <p><strong>Mastery check:</strong> You understand Arrays when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
   </div>
 
+  
+  
+  
+  
   <div class="subsection">
-    <h3>Principles That Matter</h3>
-    <ul class="feature-list"><li>Arrays are objects in Java. They have a fixed length once created.</li>
-      <li>Array indices are 0-based. The last element is always at length - 1.</li>
-      <li>Use Arrays utility class (e.g., Arrays.sort(), Arrays.copyOf()) for common operations.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Common Misunderstandings</h3>
-    <ul class="feature-list"><li>Trying to resize an array directly. You must create a new array and copy elements.</li>
-      <li>Confusing array length (a property) with String length() (a method).</li>
-      <li>Forgetting that object arrays initialize with nulls, not empty objects.</li></ul>
-  </div>
-  <div class="subsection">
-    <h3>Mastery Checklist</h3>
-    <ul class="feature-list"><li>You can iterate over an array using both standard and enhanced for-loops.</li>
-      <li>You know how to use the Arrays utility class.</li>
-      <li>You can explain how a 2D array is actually an "array of arrays" in Java.</li></ul>
-  </div>
-</div>
-<div class="section advanced-notes" id="advanced-notes">
-  <div class="section-header">
-    <div class="section-icon advanced-icon">ADV</div>
-    <div><h2>Advanced Notes Most Courses Skip</h2><p>Arrays are fixed-size, index-based memory structures with sharp performance and mutability tradeoffs.</p></div>
-  </div>
-  <div class="subsection expert-lens">
-    <h3>Beginner and Expert Lens</h3>
-    <p><strong>Beginner lens:</strong> Beginners should learn indexing, length, bounds, and why arrays cannot grow after creation.</p>
-    <p><strong>Expert refresh:</strong> Experts should refresh covariance, memory layout, defensive copying, primitive arrays, and cache-friendly traversal.</p>
-  </div>
-  <div class="subsection">
-    <h3>Hard-Won Tips</h3>
-    <ul class="feature-list advanced-tip-list">
-      <li>Array covariance means String[] can be seen as Object[], but storing the wrong type fails at runtime. Generics avoided this mistake differently.</li>
-      <li>Arrays expose mutable storage directly. Passing an array often means sharing write access unless you copy it.</li>
-      <li>For performance-sensitive primitive data, arrays can be dramatically cheaper than collections because they avoid boxing and object overhead.</li>
-      <li>Arrays.asList on an array creates a fixed-size list backed by the array, which surprises developers who expect a normal ArrayList.</li>
-      <li>Multi-dimensional arrays in Java are arrays of arrays, not true rectangular blocks; rows can have different lengths.</li>
-    </ul>
-  </div>
-  <div class="subsection">
-    <h3>Revision Ladder</h3>
-    <div class="highlight-row">
-      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Arrays</div><div class="hl-desc">Explain Arrays without jargon and write one small program that proves the idea.</div></div>
-      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Arrays</div><div class="hl-desc">Use Arrays in code that has validation, failure handling, tests, and readable names.</div></div>
-      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Arrays</div><div class="hl-desc">Predict how Arrays behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    <h3>Skill progression</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Checkpoint</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Beginner</strong></td>
+            <td>Declare, initialise, and iterate a 1D array. Access elements by index.</td>
+          </tr>
+          <tr>
+            <td><strong>Working dev</strong></td>
+            <td>Use Arrays.sort(), Arrays.copyOf(), Arrays.equals(). Write a method that takes and returns an array.</td>
+          </tr>
+          <tr>
+            <td><strong>Expert</strong></td>
+            <td>Explain array covariance and its runtime risk. Describe when to prefer System.arraycopy() over Arrays.copyOf(). Identify the Arrays.asList() fixed-size trap.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -107,7 +104,7 @@
     <p>Because the memory is contiguous (side-by-side), the JVM can instantly calculate the exact memory address of any element using simple math. This makes reading and writing to an array incredibly fast (O(1) time complexity).</p>
     <p>However, this speed comes with a strict limitation: <strong>Arrays are fixed-size.</strong> Once you create an array of size 5, you cannot add a 6th element. If you need more space, you must create a brand new, larger array and copy all the old elements over.</p>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Creating Arrays</span><button class="copy-btn">⎘ Copy</button></div>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Creating Arrays</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
       <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
     <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
         <span class="cm">// Declaration + initialization</span>
@@ -146,7 +143,7 @@
     <p>In Java, a 2D array is not actually a mathematical grid. Instead, it is simply an <strong>array of arrays</strong>. The "outer" array holds references (remote controls) pointing to several "inner" arrays.</p>
     <p>This architecture allows for <strong>Jagged Arrays</strong>. Because each row is technically its own independent array object, row 0 could have 2 elements, while row 1 has 5 elements.</p>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">2D &amp; Jagged Arrays</span><button class="copy-btn">⎘ Copy</button></div>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">2D &amp; Jagged Arrays</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
       <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
     <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
         <span class="cm">// 2D Array (3 rows, 4 columns)</span>
@@ -182,7 +179,7 @@
     <p>Because arrays are so primitive, they don't have built-in methods like <code class="inline">.sort()</code> or <code class="inline">.contains()</code>. To manipulate them easily, Java provides a powerful static utility class called <code class="inline">Arrays</code>.</p>
     <p>If you ever find yourself writing a manual <code class="inline">for</code> loop to copy an array, compare two arrays, or print an array, stop! The <code class="inline">Arrays</code> utility class already has a highly optimized method for it.</p>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Arrays Utility Methods</span><button class="copy-btn">⎘ Copy</button></div>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Arrays Utility Methods</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
       <pre><code><span class="kw">import</span> java.util.Arrays;
 <span class="kw">import</span> java.util.List;
 
@@ -228,7 +225,7 @@
     <h4 style="margin-top:20px;">Performance Secret: System.arraycopy()</h4>
     <p>While <code>Arrays.copyOf()</code> is convenient because it creates the new array for you, it actually uses <code>System.arraycopy()</code> under the hood. If you already have a destination array and just need to move a block of data, <code>System.arraycopy()</code> is the absolute fastest way to do it in Java. Instead of a slow element-by-element loop, it uses a low-level, native JNI call to move raw blocks of memory.</p>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span></div>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">System.arraycopy()</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
       <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
     <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
         <span class="kw">int</span>[] src = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>};
@@ -246,7 +243,7 @@
   <div class="subsection">
     <h3>Common Array Patterns</h3>
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Patterns</span><button class="copy-btn">⎘ Copy</button></div>
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Patterns</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
       <pre><code><span class="kw">import</span> java.util.Arrays;
 
 <span class="kw">public class</span> <span class="cl">Main</span> {
@@ -277,19 +274,72 @@
 
 <div class="section" id="usecase">
   <div class="subsection">
-    <h3>Real-World Use Case: Fast Caching</h3>
-    <p>In highly performance-sensitive applications like video game engines or high-frequency trading platforms, arrays are preferred over dynamic collections like <code>ArrayList</code>.</p>
+    <h3>Real-World Use Case: Fast Caching &amp; Frequency Maps</h3>
+    <p>In highly performance-sensitive applications like video game engines, high-frequency trading platforms, and low-level parsing, arrays are preferred over dynamic collections like <code>ArrayList</code>.</p>
     <p>Because arrays have a fixed size and are stored in a contiguous block of memory, the CPU can read them incredibly fast due to "Cache Locality". If the CPU loads index 0, it automatically pulls the next several indexes into its high-speed L1 cache, making reads nearly instantaneous compared to traversing connected nodes in memory.</p>
+    
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Fast Frequency Counter</span><button class="copy-btn">⎘ Copy</button><a href="https://onecompiler.com/java" target="_blank" class="run-btn">▶ Run</a></div>
+      <pre><code><span class="kw">public class</span> <span class="cl">FrequencyCounter</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">String</span> text = <span class="st">"hello java master"</span>;
+        <span class="kw">int</span>[] freq = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">256</span>]; <span class="cm">// ASCII character map</span>
+        
+        <span class="cm">// Count occurrences in O(N) time</span>
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; text.length(); i++) {
+            freq[text.charAt(i)]++;
+        }
+        
+        <span class="cm">// Print frequencies of lowercase letters</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Character frequencies:"</span>);
+        <span class="kw">for</span> (<span class="kw">char</span> c = <span class="st">'a'</span>; c &lt;= <span class="st">'z'</span>; c++) {
+            <span class="kw">if</span> (freq[c] &gt; <span class="nm">0</span>) {
+                <span class="cl">System</span>.out.<span class="fn">println</span>(c + <span class="st">": "</span> + freq[c]);
+            }
+        }
+    }
+}</code></pre>
+    </div>
   </div>
 </div>
 
 
 
 
-<div class="section" id="interview">
+<div class="section" id="key-takeaways"><div class="subsection">
+    <h3>Principles That Matter</h3>
+    <ul class="feature-list">
+      <li>Arrays are objects in Java. They have a fixed length once created.</li>
+      <li>Array indices are 0-based. The last element is always at length - 1.</li>
+      <li>Use Arrays utility class (e.g., Arrays.sort(), Arrays.copyOf()) for common operations.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Common Misunderstandings</h3>
+    <ul class="feature-list">
+      <li><span class="warn-icon">⚠ </span>Trying to resize an array directly. You must create a new array and copy elements.</li>
+      <li><span class="warn-icon">⚠ </span>Confusing array length (a property) with String length() (a method).</li>
+      <li><span class="warn-icon">⚠ </span>Forgetting that object arrays initialize with nulls, not empty objects.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list" style="grid-template-columns: 1fr;">
+      <li><span class="warn-icon">⚠ </span>Array covariance means String[] can be seen as Object[], but storing the wrong type fails at runtime. Generics avoided this mistake differently.</li>
+      <li><span class="warn-icon">⚠ </span>Arrays expose mutable storage directly. Passing an array often means sharing write access unless you copy it.</li>
+      <li>For performance-sensitive primitive data, arrays can be dramatically cheaper than collections because they avoid boxing and object overhead.</li>
+      <li><span class="warn-icon">⚠ </span>Arrays.asList on an array creates a fixed-size list backed by the array, which surprises developers who expect a normal ArrayList.</li>
+      <li>Multi-dimensional arrays in Java are arrays of arrays, not true rectangular blocks; rows can have different lengths.</li>
+    </ul>
+  </div><div class="subsection">
+    <h3>Mastery Checklist</h3>
+    <ul class="feature-list">
+      <li>You can iterate over an array using both standard and enhanced for-loops.</li>
+      <li>You know how to use the Arrays utility class.</li>
+      <li>You can explain how a 2D array is actually an "array of arrays" in Java.</li>
+    </ul>
+  </div></div><div class="section" id="interview">
   <div class="subsection">
     <h3>Interview Preparation</h3>
-    <div class="highlight-row">
+    <div class="interview-grid">
       <div class="hl-box">
         <div class="hl-label">Question 1</div>
         <div class="hl-value" style="font-size:16px;">What happens if you access an invalid array index?</div>
@@ -300,10 +350,160 @@
         <div class="hl-value" style="font-size:16px;">How is a 2D array structured in memory?</div>
         <div class="hl-desc">A 2D array in Java is an array of references to other arrays. This means the sub-arrays can be of different lengths (jagged arrays).</div>
       </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 3</div>
+        <div class="hl-value" style="font-size:16px;">What is array covariance and why is it dangerous?</div>
+        <div class="hl-desc">Java allows <code>String[]</code> to be assigned to <code>Object[]</code> (covariance). However, attempting to store a non-String into that reference throws <code>ArrayStoreException</code> at runtime. Generics solve this at compile time, which is why generic collections are generally safer.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 4</div>
+        <div class="hl-value" style="font-size:16px;">What is the trap with Arrays.asList()?</div>
+        <div class="hl-desc"><code>Arrays.asList()</code> returns a fixed-size list backed by the original array. You cannot call <code>.add()</code> or <code>.remove()</code> on it — it throws <code>UnsupportedOperationException</code>. To get a mutable list, wrap it: <code>new ArrayList&lt;&gt;(Arrays.asList(...))</code>.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 5</div>
+        <div class="hl-value" style="font-size:16px;">When would you use System.arraycopy() instead of Arrays.copyOf()?</div>
+        <div class="hl-desc">When you already have a pre-allocated destination array and want to copy a specific range into it. <code>System.arraycopy()</code> is a native JNI call and faster than any Java loop. <code>Arrays.copyOf()</code> is more convenient but always allocates a new array.</div>
+      </div>
+      <div class="hl-box">
+        <div class="hl-label">Question 6</div>
+        <div class="hl-value" style="font-size:16px;">What are the default values of an uninitialised array?</div>
+        <div class="hl-desc">Numeric types default to <code>0</code>, <code>boolean</code> to <code>false</code>, <code>char</code> to <code>\u0000</code>, and object/reference types to <code>null</code>.</div>
+      </div>
     </div>
   </div>
-</div></div>
-<footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
+</div>
+
+<div class="section" id="quiz">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(34,197,94,0.15);">✅</div>
+    <div><h2>Quick self-check</h2><p>Verify your understanding of arrays before moving on.</p></div>
+  </div>
+  
+  <div id="quiz-container">
+    <div class="quiz-question-block" data-q="1">
+      <div class="quiz-question"><strong>Q1: What does <code>new int[5]</code> initialise each element to?</strong></div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="A"> <span>A) null</span></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="B"> <span>B) undefined</span></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="C"> <span>C) 0</span></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="D"> <span>D) random garbage</span></label>
+      </div>
+      <div class="quiz-feedback" style="display:none;"></div>
+    </div>
+
+    <div class="quiz-question-block" data-q="2" style="margin-top:30px;">
+      <div class="quiz-question"><strong>Q2: Which method correctly prints a 1D array?</strong></div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="A"> <span>A) System.out.println(arr)</span></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="B"> <span>B) Arrays.toString(arr)</span></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="C"> <span>C) arr.toString()</span></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="D"> <span>D) Arrays.print(arr)</span></label>
+      </div>
+      <div class="quiz-feedback" style="display:none;"></div>
+    </div>
+
+    <div class="quiz-question-block" data-q="3" style="margin-top:30px;">
+      <div class="quiz-question"><strong>Q3: What is the result of <code>Arrays.asList(1,2,3).add(4)</code>?</strong></div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="A"> <span>A) The list grows to size 4</span></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="B"> <span>B) UnsupportedOperationException</span></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="C"> <span>C) NullPointerException</span></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="D"> <span>D) Silently ignored</span></label>
+      </div>
+      <div class="quiz-feedback" style="display:none;"></div>
+    </div>
+
+    <div class="quiz-question-block" data-q="4" style="margin-top:30px;">
+      <div class="quiz-question"><strong>Q4: A 2D array <code>int[][] grid = new int[3][4]</code> — what is <code>grid[2][3]</code>?</strong></div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="A"> <span>A) ArrayIndexOutOfBoundsException</span></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="B"> <span>B) null</span></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="C"> <span>C) 0</span></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="D"> <span>D) 4</span></label>
+      </div>
+      <div class="quiz-feedback" style="display:none;"></div>
+    </div>
+
+    <div style="margin-top: 30px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+      <button class="quiz-btn" id="check-quiz-btn">Check answers</button>
+      <div id="quiz-summary-score" style="font-size: 18px; font-weight: 700; color: var(--primary);"></div>
+    </div>
+  </div>
+  
+  <script>
+    (function() {
+      const correctAnswers = {
+        q1: 'C',
+        q2: 'B',
+        q3: 'B',
+        q4: 'C'
+      };
+
+      const explanations = {
+        q1: 'In Java, uninitialised arrays of numeric types default to 0.',
+        q2: 'Arrays.toString(arr) compiles a readable string representation of a 1D array. System.out.println(arr) or arr.toString() just prints the object reference/hashcode.',
+        q3: 'Arrays.asList() returns a fixed-size list backed by the original array. Modifying its size by adding or removing elements throws UnsupportedOperationException.',
+        q4: 'grid has 3 rows (indices 0, 1, 2) and 4 columns (indices 0, 1, 2, 3), so grid[2][3] is the last element. Since it is an int array, it defaults to 0.'
+      };
+
+      const checkBtn = document.getElementById('check-quiz-btn');
+      checkBtn.addEventListener('click', () => {
+        let score = 0;
+        let answeredCount = 0;
+        
+        ['q1', 'q2', 'q3', 'q4'].forEach((qKey, index) => {
+          const selectedRadio = document.querySelector(`input[name="${qKey}"]:checked`);
+          const block = selectedRadio ? selectedRadio.closest('.quiz-question-block') : document.querySelectorAll('.quiz-question-block')[index];
+          const feedback = block.querySelector('.quiz-feedback');
+          
+          block.querySelectorAll('.quiz-option').forEach(opt => {
+            opt.classList.remove('correct', 'wrong');
+          });
+
+          if (selectedRadio) {
+            answeredCount++;
+            const selectedVal = selectedRadio.value;
+            const isCorrect = selectedVal === correctAnswers[qKey];
+            
+            if (isCorrect) {
+              score++;
+            }
+
+            block.querySelectorAll('.quiz-option').forEach(opt => {
+              const val = opt.querySelector('input').value;
+              if (val === correctAnswers[qKey]) {
+                opt.classList.add('correct');
+              } else if (val === selectedVal) {
+                opt.classList.add('wrong');
+              }
+            });
+
+            feedback.style.display = 'block';
+            feedback.className = 'quiz-feedback show ' + (isCorrect ? 'success' : 'error');
+            feedback.innerHTML = `<strong>\${isCorrect ? '✓ Correct!' : '✗ Incorrect.'}</strong> \${explanations[qKey]}`;
+          } else {
+            feedback.style.display = 'block';
+            feedback.className = 'quiz-feedback show error';
+            feedback.innerHTML = `<strong>Please select an answer.</strong>`;
+          }
+        });
+
+        if (answeredCount === 4) {
+          const scoreEl = document.getElementById('quiz-summary-score');
+          scoreEl.textContent = `Your Score: \${score} / 4`;
+        }
+      });
+    })();
+  </script>
+</div>
+
+</div>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="strings.html">← Strings</a></div>
+  <div class="footer-center"><a href="../basics.html">Back to Basics</a></div>
+  <div class="footer-right"><a href="arraylist.html">ArrayList →</a></div>
+</footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
