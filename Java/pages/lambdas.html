@@ -67,12 +67,28 @@
   <div class="subsection">
     <h3>Functional Interfaces: The SAM Rule</h3>
     <p>Before Java 8, if you wanted to pass a block of code into a method (like passing a click-handler to a button), you had to create a massive, clunky "Anonymous Inner Class". It was terribly verbose.</p>
-    <p>To fix this, Java introduced <strong>Functional Interfaces</strong>. The rule is incredibly simple: A Functional Interface is any interface that has <strong>exactly one abstract method</strong> (known as the SAM rule - Single Abstract Method). As long as it has only one abstract method, the compiler can mathematically guarantee exactly what method you are trying to implement when you use a lambda.</p>
+    <div class="code-block" style="margin-bottom: 20px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Before Java 8 (Anonymous Inner Class)</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Imagine a button that needs to know what to do when clicked
+button.addActionListener(new ActionListener() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("Button was clicked!");
+    }
+});</code></pre>
+    </div>
+    <div class="code-block" style="margin-bottom: 20px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Java 8+ (Lambda Expression)</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// The exact same logic, using a Lambda
+button.addActionListener(e -> System.out.println("Button was clicked!"));</code></pre>
+    </div>
+    
+    <p>To make this work, Java introduced <strong>Functional Interfaces</strong>. The rule is incredibly simple: A Functional Interface is any interface that has <strong>exactly one abstract method</strong> (known as the SAM rule - Single Abstract Method). Because `ActionListener` only has one method (`actionPerformed`), the compiler can mathematically guarantee that the lambda `e -> ...` is implementing that exact method.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Custom Functional Interface</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="an">@FunctionalInterface</span>  <span class="cm">// Optional but recommended — compiler enforces the rule</span>
-<span class="kw">interface</span> <span class="cl">Transformer</span>&lt;<span class="cl">T</span>, <span class="cl">R</span>&gt; {
-    <span class="cl">R</span> <span class="fn">transform</span>(<span class="cl">T</span> input);
+      <pre><code>@FunctionalInterface  // Optional but recommended — compiler enforces the rule
+interface Transformer&lt;T, R&gt; {
+    R transform(T input);
 }</code></pre>
     </div>
     <h4>The Big Four: Built-in Functional Interfaces</h4>

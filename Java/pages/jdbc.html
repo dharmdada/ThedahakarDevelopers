@@ -46,6 +46,10 @@
       <div class="hl-box"><div class="hl-label">PreparedStatement</div><div class="hl-value">Pre-Compiled SQL</div><div class="hl-desc">SQL compiled once, executed many times with different parameters. Thread-safe if not shared.</div></div>
       <div class="hl-box"><div class="hl-label">ResultSet</div><div class="hl-value">Cursor</div><div class="hl-desc">Points to current row in result. Call next() to advance. Close after use or leak a cursor.</div></div>
     </div>
+    <div class="callout info" style="margin-top: 25px;">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Core Java vs Third-Party Libraries</strong>Core Java only provides the <em>rules</em> (Interfaces like <code>Connection</code>, <code>PreparedStatement</code>, and <code>DataSource</code> inside the <code>java.sql</code> package). Core Java <strong>does not</strong> know how to talk to PostgreSQL, MySQL, or Oracle. To actually connect to a database, you must download a third-party library called a <strong>JDBC Driver</strong> (e.g., the PostgreSQL JDBC Driver) and add it to your project. The Driver contains the actual classes (like <code>PGSimpleDataSource</code>) that implement the Core Java interfaces.</div>
+    </div>
   </div>
   <div class="subsection">
     <h3>Principles That Matter</h3>
@@ -62,6 +66,7 @@
       <li><strong>SQL Injection via concatenation</strong> — <code class="inline">"WHERE name = '" + userInput + "'"</code> is never acceptable. A user entering <code class="inline">'; DROP TABLE users; --</code> destroys your database.</li>
       <li><strong>Not closing ResultSet</strong> — Each unclosed ResultSet is a cursor held open on the database server. Under load, this exhausts the DB's cursor limit.</li>
       <li><strong>N+1 query problem</strong> — Fetching 100 orders then looping to fetch each order's items with a separate query = 101 queries. Use JOINs or batch fetching.</li>
+      <li><strong>Connection Leaks</strong> — A connection checked out from the pool but never closed (due to an unhandled exception or missing <code>finally</code> block) will never return to the pool. Over time, the pool empties, and the entire app freezes.</li>
       <li><strong>autoCommit=true for multi-step operations</strong> — Each statement commits individually. If step 2 fails, step 1 is already committed and cannot be rolled back.</li>
     </ul>
   </div>
@@ -74,6 +79,78 @@
       <li>You can configure HikariCP with appropriate pool size and timeouts.</li>
       <li>You can explain the N+1 problem and how to solve it with a JOIN.</li>
     </ul>
+  </div>
+</div>
+
+<div class="section" id="datasource">
+  <div class="subsection">
+    <h3>Step 1: Making the Connection (From Scratch)</h3>
+    <p>Before you can run any SQL, Java needs to connect to the database. Since Core Java only provides interfaces (empty rules), the very first thing you must do is add a <strong>Driver</strong> to your project (e.g., adding the PostgreSQL JDBC Driver to your `pom.xml` or `build.gradle`).</p>
+    
+    <h4 style="margin-top: 20px; color: var(--primary);">The Absolute Beginner Way: <code class="inline">DriverManager</code></h4>
+    <p>If you are just writing a quick script or learning JDBC for the very first time, you use the <code class="inline">DriverManager</code>. You hand it a database URL, a username, and a password, and it builds a physical network connection.</p>
+    <div class="code-block" style="margin-bottom: 15px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Hello World Database Connection</span><button class="copy-btn">Copy</button></div>
+      <pre><code>import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class BasicConnectionDemo {
+    public static void main(String[] args) {
+        // The JDBC URL tells the DriverManager which database to find.
+        // Format: jdbc:[driver-type]://[host]:[port]/[database_name]
+        String url = "jdbc:postgresql://localhost:5432/my_database";
+        String user = "postgres";
+        String password = "supersecretpassword";
+
+        // Try-with-resources ensures the connection is automatically closed when done!
+        try (Connection con = DriverManager.getConnection(url, user, password);
+             java.sql.Statement stmt = con.createStatement();
+             java.sql.ResultSet rs = stmt.executeQuery("SELECT CURRENT_DATE")) {
+             
+            System.out.println("Successfully connected to the database!");
+            if (rs.next()) {
+                System.out.println("The database current date is: " + rs.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to connect: " + e.getMessage());
+        }
+    }
+}</code></pre>
+    </div>
+    
+    <h4 style="margin-top: 30px; color: var(--primary);">The Production Way: <code class="inline">DataSource</code></h4>
+    <p>The <code class="inline">DriverManager</code> above has a fatal flaw: <strong>it is painfully slow</strong>. It takes 20 to 100 milliseconds to establish that TCP network connection. If 1,000 users visit your web app at the same time and run that code, your database will crash trying to open 1,000 new connections.</p>
+    <p>In the real world, we use a <strong><code class="inline">DataSource</code></strong> (specifically, a Connection Pool). A DataSource opens 10 connections the moment your app starts and keeps them alive in a "pool". When a user needs data, they borrow an already-open connection, use it, and instantly return it to the pool.</p>
+    <div class="code-block" style="margin-bottom: 15px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Configuring a DataSource</span><button class="copy-btn">Copy</button></div>
+      <pre><code>import org.postgresql.ds.PGSimpleDataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class DataSourceDemo {
+    public static void main(String[] args) throws SQLException {
+        // 1. Configure the DataSource EXACTLY ONCE when the app starts
+        PGSimpleDataSource ds = new PGSimpleDataSource();
+        ds.setUrl("jdbc:postgresql://localhost:5432/my_database");
+        ds.setUser("postgres");
+        ds.setPassword("supersecretpassword");
+
+        // 2. Pass the 'ds' object to your repositories. 
+        // Now, getting a connection is instant (0.01ms instead of 50ms)!
+        try (Connection con = ds.getConnection();
+             java.sql.PreparedStatement ps = con.prepareStatement("SELECT 1 AS test_col");
+             java.sql.ResultSet rs = ps.executeQuery()) {
+             
+            if (rs.next()) {
+                System.out.println("Borrowed an instant connection! Database returned: " + rs.getInt("test_col"));
+            }
+        } 
+        // When the try block ends, the connection is NOT destroyed. 
+        // It is safely returned to the pool for the next user.
+    }
+}</code></pre>
+    </div>
   </div>
 </div>
 
@@ -167,6 +244,39 @@
   </div>
 </div>
 
+<div class="section" id="pagination">
+  <div class="subsection">
+    <h3>Pagination and Large Result Sets</h3>
+    <p>Never return thousands of rows from a database in a single query. It consumes massive amounts of RAM and stalls the database. Always use <strong>Pagination</strong> to fetch data in chunks.</p>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">LIMIT and OFFSET Pagination</span><button class="copy-btn">Copy</button></div>
+      <pre><code>public List&lt;User&gt; getUsers(int page, int pageSize) throws SQLException {
+    // PostgreSQL / MySQL syntax for pagination
+    String sql = "SELECT id, name, email FROM users ORDER BY id LIMIT ? OFFSET ?";
+    
+    try (Connection con = ds.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+         
+        ps.setInt(1, pageSize); // How many to fetch
+        ps.setInt(2, (page - 1) * pageSize); // How many to skip
+        
+        try (ResultSet rs = ps.executeQuery()) {
+            List&lt;User&gt; users = new ArrayList&lt;&gt;();
+            while (rs.next()) {
+                users.add(mapRow(rs));
+            }
+            return users;
+        }
+    }
+}</code></pre>
+    </div>
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body"><strong>Keyset Pagination (Seek Method):</strong> For massive tables, <code>OFFSET</code> gets incredibly slow because the database must scan and skip all previous rows. A faster approach is to filter by the last seen ID: <code>WHERE id &gt; ? ORDER BY id LIMIT ?</code>.</div>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="transactions">
   <div class="subsection">
     <h3>Transaction Management</h3>
@@ -208,6 +318,45 @@
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
       <div class="callout-body"><strong>Savepoints</strong>: JDBC supports partial rollbacks via <code class="inline">Savepoint sp = con.setSavepoint()</code> and <code class="inline">con.rollback(sp)</code>. Use for nested logical operations where only the inner part should roll back.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="isolation">
+  <div class="subsection">
+    <h3>Database Isolation Levels</h3>
+    <p>When multiple transactions run at the same time, they can interfere with each other. The <strong>Isolation Level</strong> dictates how strict the database should be about preventing this interference. In JDBC, you can set this via <code>Connection.setTransactionIsolation()</code>.</p>
+    
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Isolation Level</th><th>Description</th><th>Performance</th></tr></thead>
+        <tbody>
+          <tr><td><strong>READ_UNCOMMITTED</strong></td><td>A transaction can see uncommitted changes from other transactions (Dirty Reads). Highly dangerous.</td><td>Fastest</td></tr>
+          <tr><td><strong>READ_COMMITTED</strong></td><td>You only see changes that have been committed. Default for Postgres and Oracle.</td><td>Fast</td></tr>
+          <tr><td><strong>REPEATABLE_READ</strong></td><td>If you read a row twice in a transaction, it will be the exact same, even if another transaction modified it in the meantime. Default for MySQL (InnoDB).</td><td>Moderate</td></tr>
+          <tr><td><strong>SERIALIZABLE</strong></td><td>The strictest level. Transactions act as if they are running one after the other, completely eliminating concurrency issues like Phantom Reads.</td><td>Slowest</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Setting Isolation Level</span><button class="copy-btn">Copy</button></div>
+      <pre><code>try (Connection con = ds.getConnection()) {
+    // Prevent Dirty Reads and Non-Repeatable Reads for this specific transaction
+    con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+    con.setAutoCommit(false);
+    
+    // Execute critical queries with guaranteed isolation
+    try (PreparedStatement ps = con.prepareStatement("SELECT balance FROM accounts WHERE id = ?")) {
+        ps.setLong(1, 1001);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                System.out.println("Balance locked and read: " + rs.getBigDecimal("balance"));
+            }
+        }
+    }
+    
+    con.commit();
+}</code></pre>
     </div>
   </div>
 </div>

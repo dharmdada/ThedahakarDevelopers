@@ -115,7 +115,10 @@ pool.<span class="fn">execute</span>(() -&gt; <span class="cl">System</span>.out
     <span class="kw">return</span> <span class="nm">42</span>;
 });
 
-<span class="cm">// Do other work...</span>
+<span class="cm">// While the future is computing in the background, the main thread can do other things</span>
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Main thread is doing other important tasks..."</span>);
+<span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">500</span>); <span class="cm">// Simulate some local work</span>
+
 <span class="cm">// Then get the result (blocks until ready)</span>
 <span class="kw">try</span> {
     <span class="kw">int</span> result = future.<span class="fn">get</span>(); <span class="cm">// 42</span>
@@ -188,7 +191,8 @@ pool.<span class="fn">shutdown</span>();</code></pre>
     <span class="an">@Override</span>
     <span class="kw">public void</span> <span class="fn">run</span>() {
         <span class="kw">while</span> (running) { <span class="cm">// Read directly from main memory</span>
-            <span class="cm">// do work...</span>
+            <span class="cm">// Simulate intensive work that requires frequent checks of the 'running' flag</span>
+            <span class="cl">Math</span>.<span class="fn">sqrt</span>(<span class="cl">Math</span>.<span class="fn">random</span>());
         }
     }
 }</code></pre>

@@ -77,7 +77,18 @@
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ Violation — UserService does everything</span><button class="copy-btn">Copy</button></div>
       <pre><code>class UserService {
     void register(User u) {
-        // validate, save to DB, send welcome email, log audit — all here
+        // 1. Validation logic embedded directly
+        if (u.email() == null || !u.email().contains("@")) {
+            throw new IllegalArgumentException("Invalid email");
+        }
+        
+        // 2. Database logic embedded directly
+        String sql = "INSERT INTO users (email) VALUES ('" + u.email() + "')";
+        databaseConnection.execute(sql);
+        
+        // 3. Email sending logic embedded directly
+        SmtpClient mailer = new SmtpClient("smtp.example.com");
+        mailer.send(u.email(), "Welcome to our platform!");
     }
 }</code></pre>
     </div>

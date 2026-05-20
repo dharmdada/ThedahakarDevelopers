@@ -90,6 +90,42 @@
   </div>
 </div>
 
+<div class="section" id="imperative-vs-declarative">
+  <div class="subsection">
+    <h3>Why Streams? Imperative vs Declarative</h3>
+    <p>Before Streams, Java developers used <strong>Imperative</strong> programming. You had to tell the computer exactly <em>how</em> to do something using loops, temporary lists, and if-statements. With Streams, Java shifted to <strong>Declarative</strong> programming. You just tell the computer <em>what</em> you want, and it figures out the how.</p>
+    
+    <div class="code-block" style="margin-bottom: 20px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Before Java 8: The Imperative Loop</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
+
+<span class="cm">// Goal: Find all unique names starting with 'A', converted to uppercase</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+<span class="kw">for</span> (<span class="cl">String</span> name : names) {
+    <span class="kw">if</span> (name.<span class="fn">startsWith</span>(<span class="st">"A"</span>)) {
+        <span class="cl">String</span> upper = name.<span class="fn">toUpperCase</span>();
+        <span class="kw">if</span> (!results.<span class="fn">contains</span>(upper)) { <span class="cm">// Check for duplicates</span>
+            results.<span class="fn">add</span>(upper);
+        }
+    }
+}
+<span class="cm">// State management, if-statements, and temporary collections clutter the logic.</span></code></pre>
+    </div>
+
+    <div class="code-block" style="margin-bottom: 20px;">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Java 8+: The Declarative Stream Pipeline</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code><span class="cm">// The exact same logic, using Streams</span>
+<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = names.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(name -&gt; name.<span class="fn">startsWith</span>(<span class="st">"A"</span>))
+    .<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase)
+    .<span class="fn">distinct</span>()
+    .<span class="fn">toList</span>(); <span class="cm">// Automatically creates the final list
+
+// It reads like plain English: "Stream names, filter A's, map to upper, keep distinct, to list."</span></code></pre>
+    </div>
+  </div>
+</div>
+
 <div class="section" id="intermediate">
   <div class="subsection">
     <h3>Intermediate Operations: Building the Plumbing</h3>

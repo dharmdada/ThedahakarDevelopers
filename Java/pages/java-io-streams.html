@@ -350,7 +350,14 @@ public class User implements Serializable {
     private int    age;
     private transient String password;  // transient = NOT serialized!
 
-    // constructors, getters...
+    public User(String name, int age) {
+        this.name = name;
+        this.age = age;
+        this.password = "default123";
+    }
+
+    public String name() { return name; }
+    public String password() { return password; }
 }
 
 // ---- Serialize to file ----
