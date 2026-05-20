@@ -26,6 +26,7 @@ window.globalSearchIndex = [
   
   // Advanced
   { id: "exceptions-io.html", title: "Exceptions & I/O", category: "Advanced" },
+  { id: "java-io-streams.html", title: "Java I/O Streams", category: "Advanced" },
   { id: "io-network.html", title: "File I/O & Networking", category: "Advanced" },
   { id: "datetime.html", title: "Date & Time API", category: "Advanced" },
   { id: "concurrency.html", title: "Concurrency & Multithreading", category: "Advanced" },

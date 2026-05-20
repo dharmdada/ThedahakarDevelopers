@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Java Collections - JavaMaster</title>
 <link rel="stylesheet" href="style.css">
@@ -8,7 +6,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Collections</span></div>
 </header>
@@ -35,6 +33,13 @@
     <p>Every collection choice carries a cost model. ArrayList is excellent for indexed reads but expensive for inserting at the front. HashMap is fast for lookup but depends on stable equals and hashCode. TreeMap keeps keys sorted but pays logarithmic cost. Good Java developers make these choices deliberately.</p>
     <p>Generics complete the collections story by making collections type-safe. A List&lt;Order&gt; communicates intent to humans and gives the compiler enough information to reject invalid values before runtime.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn what each collection promises: order, uniqueness, indexing, key lookup, queue behavior, or sorted traversal.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh implementation tradeoffs: hashing, resizing, iterator invalidation, equality contracts, memory overhead, and concurrent variants.</p>
+    <p><strong>Mastery check:</strong> You understand Collections Mastery when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -63,6 +68,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Choose collections by semantics first, performance second, and habit last.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn what each collection promises: order, uniqueness, indexing, key lookup, queue behavior, or sorted traversal.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh implementation tradeoffs: hashing, resizing, iterator invalidation, equality contracts, memory overhead, and concurrent variants.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>The wrong collection often works in demos and fails in production through slow lookups, unstable ordering, duplicate data, or broken equality.</li>
+      <li>HashMap performance depends on good hashCode and equals. If those are wrong, your data structure is correct only by accident.</li>
+      <li>Big-O hides constants, memory locality, allocation, and resizing. For small lists, a simple ArrayList scan can beat a theoretically better structure.</li>
+      <li>Do not expose mutable collections directly from domain objects; return unmodifiable views or copies when ownership must stay private.</li>
+      <li>Concurrent collections solve specific synchronization problems; they do not automatically make a multi-step business operation atomic.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Collections Master</div><div class="hl-desc">Explain Collections Mastery without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Collections Master</div><div class="hl-desc">Use Collections Mastery in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Collections Master</div><div class="hl-desc">Predict how Collections Mastery behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="card-grid">
   <a href="pages/generics.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">GEN</div><h4>Generics Deep Dive</h4><p>Type parameters, bounds, wildcards, type erasure, and PECS in real APIs.</p><div style="margin-top:10px;"><span class="tag tag-core">Core</span></div></a>
@@ -117,5 +152,6 @@
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="script.js"></script>
-</body>
-</html>
+
+
+</body></html>

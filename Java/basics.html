@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head></head><body>﻿
+
+
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Java Basics - JavaMaster</title>
 <link rel="stylesheet" href="style.css">
-</head>
-<body>
+
+
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Basics</span></div>
 </header>
@@ -39,6 +39,13 @@
     <p>A beginner should not rush through variables, operators, conditions, loops, strings, arrays, and methods. These topics are the grammar of Java. Every advanced feature still depends on them: streams depend on methods and lambdas, collections depend on types, concurrency depends on control flow, and error handling depends on method boundaries.</p>
     <p>The strongest way to learn basics is to trace programs manually. Write down variable values after each statement, follow each branch, and predict output before running the program. This builds the debugging skill that separates real programming from copying examples.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should focus on reading each line as a state transition: a value is created, tested, changed, passed, or returned.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh the basics as source-level contracts: types constrain illegal states, control flow exposes assumptions, and methods document ownership.</p>
+    <p><strong>Mastery check:</strong> You understand Java Fundamentals when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -67,6 +74,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Treat basics as the grammar of reliable programs: values, control flow, methods, and tiny state changes.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should focus on reading each line as a state transition: a value is created, tested, changed, passed, or returned.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh the basics as source-level contracts: types constrain illegal states, control flow exposes assumptions, and methods document ownership.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Most bugs in advanced systems still start as basic misunderstandings: off-by-one loops, accidental integer division, null handling, mutation order, and misleading names.</li>
+      <li>Prefer boring explicit code while learning. Clever compression hides the exact state changes your brain needs to see.</li>
+      <li>The compiler is your first reviewer. If you use types precisely, the compiler rejects entire classes of bugs before tests even run.</li>
+      <li>A basic method is not just reusable code; it is a boundary where naming, parameter order, return values, and exceptions define how future code will think.</li>
+      <li>Before optimizing syntax, optimize observability: print values, step with a debugger, and explain why each branch executed.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Explain Java Fundamentals without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Use Java Fundamentals in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Java Fundamentals</div><div class="hl-desc">Predict how Java Fundamentals behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="card-grid">
   <a href="pages/what-is-java.html" class="info-card" style="text-decoration:none;color:inherit;"><div class="ic-icon">01</div><h4>What is Java?</h4><p>History, JVM/JDK/JRE, bytecode model, platform strengths.</p><div style="margin-top:10px;"><span class="tag tag-beginner">Start Here</span></div></a>
@@ -109,5 +146,6 @@
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="script.js"></script>
-</body>
-</html>
+
+
+</body></html>

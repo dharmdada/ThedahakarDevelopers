@@ -43,6 +43,13 @@
     <p>Abstract classes are different: they can share partial implementation and state. Use an abstract class when subclasses truly share a base mechanism. Use an interface when callers only need a capability contract.</p>
     <p>Default methods were added to let interfaces evolve without breaking all implementers. They are useful, but too many default methods can turn an interface into a hidden abstract class.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn that an interface says what can be done, not how it is done.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh default methods, interface segregation, binary compatibility, sealed interfaces, and testing seams.</p>
+    <p><strong>Mastery check:</strong> You understand Interfaces when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Interfaces define a contract. They specify WHAT a class should do, not HOW.</li>
@@ -62,6 +69,36 @@
       <li>You can explain multiple inheritance of type via interfaces.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Interfaces define capabilities and boundaries that decouple callers from implementations.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn that an interface says what can be done, not how it is done.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh default methods, interface segregation, binary compatibility, sealed interfaces, and testing seams.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>An interface should usually be discovered from caller needs, not invented for every class by default.</li>
+      <li>One-method interfaces can be powerful when they name a real role; useless when they only mirror a single implementation.</li>
+      <li>Default methods help evolve APIs but can also smuggle behavior into places callers do not expect.</li>
+      <li>Small interfaces make tests easier because mocks and fakes only implement what the caller truly uses.</li>
+      <li>Sealed interfaces are excellent for closed domain alternatives where exhaustive handling matters.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Interfaces</div><div class="hl-desc">Explain Interfaces without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Interfaces</div><div class="hl-desc">Use Interfaces in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Interfaces</div><div class="hl-desc">Predict how Interfaces behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="abstract">
   <div class="subsection">
@@ -93,8 +130,14 @@
     }
 }
 
-<span class="cm">// Vehicle v = new Vehicle("X");  →  ❌ Cannot instantiate abstract class</span>
-<span class="cl">Vehicle</span> v = <span class="kw">new</span> <span class="cl">ElectricCar</span>(<span class="st">"Tesla"</span>); <span class="cm">// ✅ Polymorphism</span></code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Vehicle v = new Vehicle("X");  →  ❌ Cannot instantiate abstract class</span>
+        <span class="cl">Vehicle</span> v = <span class="kw">new</span> <span class="cl">ElectricCar</span>(<span class="st">"Tesla"</span>); <span class="cm">// ✅ Polymorphism</span>
+        v.<span class="fn">start</span>();
+        v.<span class="fn">stop</span>();
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -124,9 +167,13 @@
     <span class="kw">public void</span> <span class="fn">swim</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Duck swimming"</span>); }
 }
 
-<span class="cm">// Use interface as type</span>
-<span class="cl">Flyable</span> f = <span class="kw">new</span> <span class="cl">Duck</span>();
-f.<span class="fn">fly</span>();</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Use interface as type</span>
+        <span class="cl">Flyable</span> f = <span class="kw">new</span> <span class="cl">Duck</span>();
+        f.<span class="fn">fly</span>();
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -158,9 +205,13 @@ f.<span class="fn">fly</span>();</code></pre>
     }
 }
 
-<span class="cm">// Usage</span>
-<span class="cl">Logger</span> logger = <span class="cl">Logger</span>.<span class="fn">getDefault</span>();
-logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Usage</span>
+        <span class="cl">Logger</span> logger = <span class="cl">Logger</span>.<span class="fn">getDefault</span>();
+        logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -173,13 +224,17 @@ logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);</code></pr
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Functional Interface</span><button class="copy-btn">⎘ Copy</button></div>
       <pre><code><span class="an">@FunctionalInterface</span>
-<span class="kw">public interface</span> <span class="cl">MathOperation</span> {
-    <span class="kw">int</span> <span class="fn">operate</span>(<span class="kw">int</span> a, <span class="kw">int</span> b); // The single abstract method
+<span class="kw">interface</span> <span class="cl">MathOperation</span> {
+    <span class="kw">int</span> <span class="fn">operate</span>(<span class="kw">int</span> a, <span class="kw">int</span> b); <span class="cm">// The single abstract method</span>
 }
 
-// Now you can instantiate it using a Lambda instead of a class!
-<span class="cl">MathOperation</span> addition = (a, b) -&gt; a + b;
-<span class="cl">System</span>.out.<span class="fn">println</span>(addition.<span class="fn">operate</span>(5, 5)); // 10</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Now you can instantiate it using a Lambda instead of a class!</span>
+        <span class="cl">MathOperation</span> addition = (a, b) -&gt; a + b;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(addition.<span class="fn">operate</span>(<span class="nm">5</span>, <span class="nm">5</span>)); <span class="cm">// 10</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -214,24 +269,30 @@ logger.<span class="fn">info</span>(<span class="st">"Hello"</span>);</code></pr
     <p>Sealed classes allow you to definitively restrict which classes are allowed to extend your parent class. This gives the compiler superpowers—when you write a <code class="inline">switch</code> statement, the compiler knows exactly how many children exist, allowing for exhaustive pattern matching.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Only Circle, Rectangle, and Triangle can extend Shape</span>
-<span class="kw">public sealed class</span> <span class="cl">Shape</span>
-    <span class="kw">permits</span> <span class="cl">Circle</span>, <span class="cl">Rectangle</span>, <span class="cl">Triangle</span> {
-}
+      <pre><code>// Only Circle, Rectangle, and Triangle can extend Shape
+sealed class Shape
+    permits Circle, Rectangle, Triangle {}
 
-<span class="cm">// Subclass options:</span>
-<span class="kw">final class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> { }        <span class="cm">// Cannot be extended further</span>
-<span class="kw">sealed class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span>
-    <span class="kw">permits</span> <span class="cl">Square</span> { }                       <span class="cm">// Can only be extended by Square</span>
-<span class="kw">non-sealed class</span> <span class="cl">Triangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> { } <span class="cm">// Open to any subclass</span>
+// Subclass options:
+final class Circle extends Shape {}        // Cannot be extended further
+sealed class Rectangle extends Shape
+    permits Square {}                       // Can only be extended by Square
+final class Square extends Rectangle {}
+non-sealed class Triangle extends Shape {} // Open to any subclass
 
-<span class="cm">// Exhaustive switch (compiler checks all cases)</span>
-<span class="cl">String</span> desc = <span class="kw">switch</span> (shape) {
-    <span class="kw">case</span> <span class="cl">Circle</span> c    -&gt; <span class="st">"Circle"</span>;
-    <span class="kw">case</span> <span class="cl">Rectangle</span> r -&gt; <span class="st">"Rectangle"</span>;
-    <span class="kw">case</span> <span class="cl">Triangle</span> t  -&gt; <span class="st">"Triangle"</span>;
-    <span class="cm">// No default needed — compiler knows all subtypes!</span>
-};</code></pre>
+public class Main {
+    public static void main(String[] args) {
+        Shape shape = new Circle();
+        // Exhaustive switch (compiler checks all cases)
+        String desc = switch (shape) {
+            case Circle c    -&gt; "Circle";
+            case Rectangle r -&gt; "Rectangle";
+            case Triangle t  -&gt; "Triangle";
+            default -&gt; "Unknown shape";
+        };
+        System.out.println(desc);
+    }
+}</code></pre>
     </div>
   </div>
 </div>

@@ -33,6 +33,13 @@
     <p>Dependency management is risk management. Each dependency adds functionality but also version conflicts, transitive libraries, security exposure, and upgrade responsibility. A good build file is explicit, minimal, and repeatable.</p>
     <p>Wrappers matter because they make the build independent of whatever tool version happens to be installed on a developer's machine. The command should behave the same locally and in CI.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn what Maven or Gradle does before clicking IDE buttons.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh dependency scopes, transitive conflicts, reproducible builds, plugins, wrappers, and CI parity.</p>
+    <p><strong>Mastery check:</strong> You understand Build Tools when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Build tools (Maven, Gradle) standardize the project structure and build lifecycle.</li>
@@ -52,6 +59,36 @@
       <li>You can run a clean and build command from the terminal.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Build tools turn source code into repeatable artifacts with dependencies, tests, and lifecycle rules.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn what Maven or Gradle does before clicking IDE buttons.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh dependency scopes, transitive conflicts, reproducible builds, plugins, wrappers, and CI parity.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>The wrapper is part of the project. It prevents every developer and CI runner from using a different build-tool version.</li>
+      <li>Transitive dependencies are invisible until they conflict. Learn dependencyInsight or dependency:tree early.</li>
+      <li>Do not put secrets or machine-specific paths in build files. Builds should be portable and reviewable.</li>
+      <li>Dependency scope is architecture. A test-only library leaking into production is a real boundary failure.</li>
+      <li>Fast builds are a feature. Slow feedback changes how developers write, test, and refactor code.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Build Tools</div><div class="hl-desc">Explain Build Tools without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Build Tools</div><div class="hl-desc">Use Build Tools in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Build Tools</div><div class="hl-desc">Predict how Build Tools behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="compare">
   <div class="subsection">

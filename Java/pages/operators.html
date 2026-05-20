@@ -54,6 +54,13 @@
     <p>Operator precedence controls grouping before execution. Relying on memory of precedence makes code fragile; parentheses are cheap clarity. In business code, readability usually matters more than saving two characters.</p>
     <p>The hardest operator bugs often come from side effects. Increment and compound assignment mutate state while producing a value, so expressions like i++ + ++i are legal but hostile to readers.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn what value an expression produces and whether it changes any variable.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh precedence, short-circuit behavior, numeric promotion, bit operations, and equality semantics.</p>
+    <p><strong>Mastery check:</strong> You understand Operators when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Short-circuit operators (&amp;&amp;, ||) prevent unnecessary evaluation and NullPointerExceptions.</li>
@@ -73,6 +80,36 @@
       <li>You know the difference between prefix (++i) and postfix (i++).</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Operators are compact rules for evaluation order, conversion, comparison, and mutation.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn what value an expression produces and whether it changes any variable.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh precedence, short-circuit behavior, numeric promotion, bit operations, and equality semantics.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Most operator bugs are not about not knowing the symbol; they are about assuming a different evaluation order or type conversion.</li>
+      <li>Short-circuit operators are control-flow tools. They can safely guard null checks, but hidden side effects make them hard to reason about.</li>
+      <li>Use == for primitives and identity checks, equals for value equality, and Objects.equals when null safety matters.</li>
+      <li>Compound assignment can hide casts. x += y is not always the same as x = x + y when narrow types are involved.</li>
+      <li>Bitwise operators are not just interview trivia; they appear in flags, permissions, compression, hashing, protocols, and low-level performance code.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Operators</div><div class="hl-desc">Explain Operators without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Operators</div><div class="hl-desc">Use Operators in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Operators</div><div class="hl-desc">Predict how Operators behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <!-- ARITHMETIC -->
 <div class="section" id="arithmetic">
@@ -95,18 +132,22 @@
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Arithmetic Gotchas</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Integer division truncates!</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10</span> / <span class="nm">3</span>);     <span class="cm">// 3, NOT 3.333</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10.0</span> / <span class="nm">3</span>);   <span class="cm">// 3.333... (use double!)</span>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Integer division truncates!</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10</span> / <span class="nm">3</span>);     <span class="cm">// 3, NOT 3.333</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">10.0</span> / <span class="nm">3</span>);   <span class="cm">// 3.333... (use double!)</span>
 
-<span class="cm">// Pre-increment vs Post-increment</span>
-<span class="kw">int</span> a = <span class="nm">5</span>;
-<span class="kw">int</span> b = a++;  <span class="cm">// b = 5, a = 6  (assign THEN increment)</span>
-<span class="kw">int</span> c = ++a;  <span class="cm">// c = 7, a = 7  (increment THEN assign)</span>
+        <span class="cm">// Pre-increment vs Post-increment</span>
+        <span class="kw">int</span> a = <span class="nm">5</span>;
+        <span class="kw">int</span> b = a++;  <span class="cm">// b = 5, a = 6  (assign THEN increment)</span>
+        <span class="kw">int</span> c = ++a;  <span class="cm">// c = 7, a = 7  (increment THEN assign)</span>
 
-<span class="cm">// Integer overflow (silent!)</span>
-<span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;  <span class="cm">// 2,147,483,647</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(max + <span class="nm">1</span>);  <span class="cm">// -2,147,483,648 (wraps!)</span></code></pre>
+        <span class="cm">// Integer overflow (silent!)</span>
+        <span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;  <span class="cm">// 2,147,483,647</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(max + <span class="nm">1</span>);  <span class="cm">// -2,147,483,648 (wraps!)</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -117,9 +158,13 @@
     <p>Java does <strong>not</strong> support developer-defined operator overloading. However, the <code class="inline">+</code> operator is heavily overloaded by the Java language itself. If any operand is a String, the entire operation becomes String concatenation rather than mathematical addition. Evaluation happens left-to-right.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">String Concatenation Magic</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">5</span> + <span class="nm">5</span> + <span class="st">" = 10"</span>);  <span class="cm">// "10 = 10" (Math first, then String)</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + <span class="nm">5</span> + <span class="nm">5</span>);  <span class="cm">// "10 = 55" (String first, forces 5+5 into String concatenation)</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + (<span class="nm">5</span> + <span class="nm">5</span>));<span class="cm">// "10 = 10" (Parentheses force Math first)</span></code></pre>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="nm">5</span> + <span class="nm">5</span> + <span class="st">" = 10"</span>);  <span class="cm">// "10 = 10" (Math first, then String)</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + <span class="nm">5</span> + <span class="nm">5</span>);  <span class="cm">// "10 = 55" (String first, forces 5+5 into String concatenation)</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"10 = "</span> + (<span class="nm">5</span> + <span class="nm">5</span>));<span class="cm">// "10 = 10" (Parentheses force Math first)</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -130,17 +175,21 @@
     <h3>Assignment Operators</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Compound Assignment</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">int</span> x = <span class="nm">10</span>;
-x += <span class="nm">5</span>;  <span class="cm">// x = x + 5  → 15</span>
-x -= <span class="nm">3</span>;  <span class="cm">// x = x - 3  → 12</span>
-x *= <span class="nm">2</span>;  <span class="cm">// x = x * 2  → 24</span>
-x /= <span class="nm">4</span>;  <span class="cm">// x = x / 4  → 6</span>
-x %= <span class="nm">4</span>;  <span class="cm">// x = x % 4  → 2</span>
-x &amp;= <span class="nm">3</span>;  <span class="cm">// x = x &amp; 3  (bitwise AND)</span>
-x |= <span class="nm">5</span>;  <span class="cm">// x = x | 5  (bitwise OR)</span>
-x ^= <span class="nm">2</span>;  <span class="cm">// x = x ^ 2  (bitwise XOR)</span>
-x &lt;&lt;= <span class="nm">1</span>; <span class="cm">// x = x &lt;&lt; 1 (left shift)</span>
-x &gt;&gt;= <span class="nm">1</span>; <span class="cm">// x = x &gt;&gt; 1 (right shift)</span></code></pre>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">int</span> x = <span class="nm">10</span>;
+        x += <span class="nm">5</span>;  <span class="cm">// x = x + 5  → 15</span>
+        x -= <span class="nm">3</span>;  <span class="cm">// x = x - 3  → 12</span>
+        x *= <span class="nm">2</span>;  <span class="cm">// x = x * 2  → 24</span>
+        x /= <span class="nm">4</span>;  <span class="cm">// x = x / 4  → 6</span>
+        x %= <span class="nm">4</span>;  <span class="cm">// x = x % 4  → 2</span>
+        x &amp;= <span class="nm">3</span>;  <span class="cm">// x = x &amp; 3  (bitwise AND)</span>
+        x |= <span class="nm">5</span>;  <span class="cm">// x = x | 5  (bitwise OR)</span>
+        x ^= <span class="nm">2</span>;  <span class="cm">// x = x ^ 2  (bitwise XOR)</span>
+        x &lt;&lt;= <span class="nm">1</span>; <span class="cm">// x = x &lt;&lt; 1 (left shift)</span>
+        x &gt;&gt;= <span class="nm">1</span>; <span class="cm">// x = x &gt;&gt; 1 (right shift)</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -178,23 +227,27 @@ x &gt;&gt;= <span class="nm">1</span>; <span class="cm">// x = x &gt;&gt; 1 (rig
     <p>If the guard checks <code class="inline">condition A AND condition B</code>, and <code class="inline">A</code> is false, the guard completely ignores <code class="inline">B</code> because the overall result is already doomed to be false. This is incredibly useful for preventing errors (like checking if an object is null <em>before</em> calling a method on it).</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Logical Operators</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">boolean</span> a = <span class="kw">true</span>, b = <span class="kw">false</span>;
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">boolean</span> a = <span class="kw">true</span>, b = <span class="kw">false</span>;
 
-<span class="cm">// AND — both must be true</span>
-a &amp;&amp; b   <span class="cm">// false</span>
+        <span class="cm">// AND — both must be true</span>
+        <span class="kw">boolean</span> res1 = a &amp;&amp; b;   <span class="cm">// false</span>
 
-<span class="cm">// OR — at least one must be true</span>
-a || b   <span class="cm">// true</span>
+        <span class="cm">// OR — at least one must be true</span>
+        <span class="kw">boolean</span> res2 = a || b;   <span class="cm">// true</span>
 
-<span class="cm">// NOT — flips the value</span>
-!a       <span class="cm">// false</span>
+        <span class="cm">// NOT — flips the value</span>
+        <span class="kw">boolean</span> res3 = !a;       <span class="cm">// false</span>
 
-<span class="cm">// Short-circuit evaluation:</span>
-<span class="cm">// With &amp;&amp;, if left is false, right is NEVER evaluated</span>
-<span class="cm">// With ||, if left is true, right is NEVER evaluated</span>
-<span class="cl">String</span> s = <span class="kw">null</span>;
-<span class="kw">if</span> (s != <span class="kw">null</span> &amp;&amp; s.<span class="fn">length</span>() &gt; <span class="nm">0</span>) { <span class="cm">// Safe! s.length() won't run if s is null</span>
-    <span class="cl">System</span>.out.<span class="fn">println</span>(s);
+        <span class="cm">// Short-circuit evaluation:</span>
+        <span class="cm">// With &amp;&amp;, if left is false, right is NEVER evaluated</span>
+        <span class="cm">// With ||, if left is true, right is NEVER evaluated</span>
+        <span class="cl">String</span> s = <span class="kw">null</span>;
+        <span class="kw">if</span> (s != <span class="kw">null</span> &amp;&amp; s.<span class="fn">length</span>() &gt; <span class="nm">0</span>) { <span class="cm">// Safe! s.length() won't run if s is null</span>
+            <span class="cl">System</span>.out.<span class="fn">println</span>(s);
+        }
+    }
 }</code></pre>
     </div>
   </div>
@@ -229,14 +282,19 @@ a || b   <span class="cm">// true</span>
     <p>A shorthand for <code class="inline">if-else</code> that returns a value:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Ternary</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Syntax: condition ? valueIfTrue : valueIfFalse</span>
-<span class="kw">int</span> age = <span class="nm">20</span>;
-<span class="cl">String</span> status = (age &gt;= <span class="nm">18</span>) ? <span class="st">"Adult"</span> : <span class="st">"Minor"</span>;
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Syntax: condition ? valueIfTrue : valueIfFalse</span>
+        <span class="kw">int</span> age = <span class="nm">20</span>;
+        <span class="cl">String</span> status = (age &gt;= <span class="nm">18</span>) ? <span class="st">"Adult"</span> : <span class="st">"Minor"</span>;
 
-<span class="cm">// Nested ternary (use sparingly!)</span>
-<span class="cl">String</span> grade = (score &gt;= <span class="nm">90</span>) ? <span class="st">"A"</span>
-             : (score &gt;= <span class="nm">80</span>) ? <span class="st">"B"</span>
-             : (score &gt;= <span class="nm">70</span>) ? <span class="st">"C"</span> : <span class="st">"F"</span>;</code></pre>
+        <span class="cm">// Nested ternary (use sparingly!)</span>
+        <span class="kw">int</span> score = <span class="nm">85</span>;
+        <span class="cl">String</span> grade = (score &gt;= <span class="nm">90</span>) ? <span class="st">"A"</span>
+                     : (score &gt;= <span class="nm">80</span>) ? <span class="st">"B"</span>
+                     : (score &gt;= <span class="nm">70</span>) ? <span class="st">"C"</span> : <span class="st">"F"</span>;
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -248,25 +306,30 @@ a || b   <span class="cm">// true</span>
     <p>Checks whether an object is an instance of a specific class or interface.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">instanceof</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">Object</span> obj = <span class="st">"Hello"</span>;
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Object</span> obj = <span class="st">"Hello"</span>;
 
-<span class="cm">// Classic instanceof</span>
-<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span>) {
-    <span class="cl">String</span> s = (<span class="cl">String</span>) obj; <span class="cm">// Manual cast needed</span>
-    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>());
-}
+        <span class="cm">// Classic instanceof</span>
+        <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span>) {
+            <span class="cl">String</span> s = (<span class="cl">String</span>) obj; // Manual cast needed
+            <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>());
+        }
 
-<span class="cm">// Modern Pattern Matching instanceof (no cast needed!)</span>
-<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>()); <span class="cm">// s is already typed!</span>
-}
+        <span class="cm">// Modern Pattern Matching instanceof (no cast needed!)</span>
+        <span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">toUpperCase</span>()); // s is already typed!
+        }
 
-<span class="cm">// Works with negation too</span>
-<span class="kw">if</span> (!(obj <span class="kw">instanceof</span> <span class="cl">String</span> s)) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Not a string"</span>);
-    <span class="kw">return</span>;
-}
-<span class="cm">// s is in scope here!</span></code></pre>
+        <span class="cm">// Works with negation too
+        // (Note: we wrap negation logic in an if statement)</span>
+        <span class="kw">if</span> (!(obj <span class="kw">instanceof</span> <span class="cl">String</span> s)) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Not a string"</span>);
+        } <span class="kw">else</span> {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"String length: "</span> + s.<span class="fn">length</span>());
+        }
+    }
+}</code></pre>
     </div>
   </div>
 </div>

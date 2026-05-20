@@ -43,6 +43,13 @@
     <p>Shared mutable state is the core danger. Without coordination, one thread may see stale data, interleaved writes, or broken invariants. synchronized, locks, atomics, concurrent collections, and immutable data are different tools for controlling this danger.</p>
     <p>Executors separate task submission from thread management. CompletableFuture separates composition from blocking. Virtual threads make blocking code scale better, but they do not remove the need to protect shared state.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn that threads run independently and shared mutable data needs protection.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh happens-before, volatile, locks, executors, atomics, virtual threads, deadlocks, and structured concurrency ideas.</p>
+    <p><strong>Mastery check:</strong> You understand Concurrency when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Concurrency is about managing shared state. Synchronization is the primary tool to prevent race conditions.</li>
@@ -62,6 +69,36 @@
       <li>You can implement a Thread-safe Singleton.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Concurrency is about coordination, visibility, ownership, and failure propagation.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn that threads run independently and shared mutable data needs protection.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh happens-before, volatile, locks, executors, atomics, virtual threads, deadlocks, and structured concurrency ideas.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Thread safety is not a property of a line of code; it is a property of all access paths to shared state.</li>
+      <li>volatile gives visibility and ordering guarantees, not compound atomicity. count++ is still not safely atomic with volatile alone.</li>
+      <li>Locks protect invariants, not just variables. Lock the whole state transition that must remain consistent.</li>
+      <li>Virtual threads reduce the cost of blocking, but they do not eliminate race conditions, database limits, or bad synchronization.</li>
+      <li>The simplest concurrency bug fix is often ownership: make data immutable, confine it to one thread, or pass messages instead of sharing.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Concurrency</div><div class="hl-desc">Explain Concurrency without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Concurrency</div><div class="hl-desc">Use Concurrency in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Concurrency</div><div class="hl-desc">Predict how Concurrency behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="threads">
   <div class="subsection">
@@ -75,22 +112,29 @@
     <span class="an">@Override</span>
     <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Thread running"</span>); }
 }
-<span class="kw">new</span> <span class="cl">MyThread</span>().<span class="fn">start</span>(); <span class="cm">// MUST call start(), not run()</span>
 
 <span class="cm">// 2. Implement Runnable (Better — allows extending other classes)</span>
 <span class="kw">class</span> <span class="cl">MyTask</span> <span class="kw">implements</span> <span class="cl">Runnable</span> {
     <span class="an">@Override</span>
     <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Task running"</span>); }
 }
-<span class="kw">new</span> <span class="cl">Thread</span>(<span class="kw">new</span> <span class="cl">MyTask</span>()).<span class="fn">start</span>();
 
-<span class="cm">// 3. With Lambda (Best for simple tasks)</span>
-<span class="cl">Thread</span> t = <span class="kw">new</span> <span class="cl">Thread</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Lambda thread"</span>));
-t.<span class="fn">start</span>();
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">InterruptedException</span> {
+        <span class="kw">new</span> <span class="cl">MyThread</span>().<span class="fn">start</span>(); <span class="cm">// MUST call start(), not run()</span>
 
-<span class="cm">// Sleep and Join</span>
-<span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>); <span class="cm">// Pause current thread for 1 second</span>
-t.<span class="fn">join</span>();           <span class="cm">// Wait for thread t to finish</span></code></pre>
+        <span class="kw">new</span> <span class="cl">Thread</span>(<span class="kw">new</span> <span class="cl">MyTask</span>()).<span class="fn">start</span>();
+
+        <span class="cm">// 3. With Lambda (Best for simple tasks)</span>
+        <span class="cl">Thread</span> t = <span class="kw">new</span> <span class="cl">Thread</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Lambda thread"</span>));
+        t.<span class="fn">start</span>();
+
+        <span class="cm">// Sleep and Join</span>
+        <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>); <span class="cm">// Pause current thread for 1 second</span>
+        t.<span class="fn">join</span>();           <span class="cm">// Wait for thread t to finish</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Main done."</span>);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -103,31 +147,36 @@ t.<span class="fn">join</span>();           <span class="cm">// Wait for thread 
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">ExecutorService</span><button class="copy-btn">⎘ Copy</button></div>
       <pre><code><span class="kw">import</span> java.util.concurrent.*;
 
-<span class="cm">// Create a pool of 4 threads</span>
-<span class="cl">ExecutorService</span> pool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(<span class="nm">4</span>);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="cm">// Create a pool of 4 threads</span>
+        <span class="cl">ExecutorService</span> pool = <span class="cl">Executors</span>.<span class="fn">newFixedThreadPool</span>(<span class="nm">4</span>);
 
-<span class="cm">// Submit a Runnable (no return value)</span>
-pool.<span class="fn">execute</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running in pool"</span>));
+        <span class="cm">// Submit a Runnable (no return value)</span>
+        pool.<span class="fn">execute</span>(() -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running in pool"</span>));
 
-<span class="cm">// Submit a Callable (returns a value via Future)</span>
-<span class="cl">Future</span>&lt;<span class="cl">Integer</span>&gt; future = pool.<span class="fn">submit</span>(() -&gt; {
-    <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>);
-    <span class="kw">return</span> <span class="nm">42</span>;
-});
+        <span class="cm">// Submit a Callable (returns a value via Future)</span>
+        <span class="cl">Future</span>&lt;<span class="cl">Integer</span>&gt; future = pool.<span class="fn">submit</span>(() -&gt; {
+            <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">1000</span>);
+            <span class="kw">return</span> <span class="nm">42</span>;
+        });
 
-<span class="cm">// While the future is computing in the background, the main thread can do other things</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Main thread is doing other important tasks..."</span>);
-<span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">500</span>); <span class="cm">// Simulate some local work</span>
+        <span class="cm">// While the future is computing in the background, the main thread can do other things</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Main thread is doing other important tasks..."</span>);
+        <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">500</span>); <span class="cm">// Simulate some local work</span>
 
-<span class="cm">// Then get the result (blocks until ready)</span>
-<span class="kw">try</span> {
-    <span class="kw">int</span> result = future.<span class="fn">get</span>(); <span class="cm">// 42</span>
-} <span class="kw">catch</span> (<span class="cl">InterruptedException</span> | <span class="cl">ExecutionException</span> e) {
-    e.<span class="fn">printStackTrace</span>();
-}
+        <span class="cm">// Then get the result (blocks until ready)</span>
+        <span class="kw">try</span> {
+            <span class="kw">int</span> result = future.<span class="fn">get</span>(); <span class="cm">// 42</span>
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Result: "</span> + result);
+        } <span class="kw">catch</span> (<span class="cl">InterruptedException</span> | <span class="cl">ExecutionException</span> e) {
+            e.<span class="fn">printStackTrace</span>();
+        }
 
-<span class="cm">// Always shutdown your pools!</span>
-pool.<span class="fn">shutdown</span>();</code></pre>
+        <span class="cm">// Always shutdown your pools!</span>
+        pool.<span class="fn">shutdown</span>();
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -139,7 +188,9 @@ pool.<span class="fn">shutdown</span>();</code></pre>
     <p>Synchronization acts as a lock on the bank account. When you start your transaction, you lock the account. Your spouse's ATM must freeze and wait until you are completely finished before it is allowed to check the balance.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">class</span> <span class="cl">Counter</span> {
+      <pre><code><span class="kw">import</span> java.util.concurrent.locks.*;
+
+<span class="kw">class</span> <span class="cl">Counter</span> {
     <span class="kw">private int</span> count = <span class="nm">0</span>;
 
     <span class="cm">// synchronized method: locks the whole object (this)</span>
@@ -153,6 +204,8 @@ pool.<span class="fn">shutdown</span>();</code></pre>
             count++;
         }
     }
+
+    <span class="kw">public int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
 }
 
 <span class="cm">// Modern alternative: ReentrantLock</span>
@@ -167,6 +220,19 @@ pool.<span class="fn">shutdown</span>();</code></pre>
         } <span class="kw">finally</span> {
             lock.<span class="fn">unlock</span>(); <span class="cm">// ALWAYS in finally block!</span>
         }
+    }
+
+    <span class="kw">public int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+}
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">InterruptedException</span> {
+        <span class="cl">Counter</span> c = <span class="kw">new</span> <span class="cl">Counter</span>();
+        <span class="cl">Thread</span> t1 = <span class="kw">new</span> <span class="cl">Thread</span>(() -&gt; { <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">1000</span>; i++) c.<span class="fn">increment</span>(); });
+        <span class="cl">Thread</span> t2 = <span class="kw">new</span> <span class="cl">Thread</span>(() -&gt; { <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">1000</span>; i++) c.<span class="fn">increment</span>(); });
+        t1.<span class="fn">start</span>(); t2.<span class="fn">start</span>();
+        t1.<span class="fn">join</span>();  t2.<span class="fn">join</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Count (should be 2000): "</span> + c.<span class="fn">getCount</span>());
     }
 }</code></pre>
     </div>
@@ -195,6 +261,18 @@ pool.<span class="fn">shutdown</span>();</code></pre>
             <span class="cl">Math</span>.<span class="fn">sqrt</span>(<span class="cl">Math</span>.<span class="fn">random</span>());
         }
     }
+}
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">InterruptedException</span> {
+        <span class="cl">Worker</span> w = <span class="kw">new</span> <span class="cl">Worker</span>();
+        <span class="cl">Thread</span> t = <span class="kw">new</span> <span class="cl">Thread</span>(w);
+        t.<span class="fn">start</span>();
+        <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="nm">100</span>); <span class="cm">// let the worker run briefly</span>
+        w.<span class="fn">stop</span>();           <span class="cm">// signals worker to stop via volatile flag</span>
+        t.<span class="fn">join</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Worker stopped cleanly."</span>);
+    }
 }</code></pre>
     </div>
     <div class="callout warn">
@@ -210,23 +288,33 @@ pool.<span class="fn">shutdown</span>();</code></pre>
     <p>For simple counters and collections, use built-in thread-safe classes instead of manual locks.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Atomic variables (lock-free thread-safe updates)</span>
-<span class="cl">AtomicInteger</span> atomicCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nm">0</span>);
-atomicCount.<span class="fn">incrementAndGet</span>(); <span class="cm">// Safe across threads</span>
-atomicCount.<span class="fn">addAndGet</span>(<span class="nm">5</span>);
+      <pre><code><span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.concurrent.*;
+<span class="kw">import</span> java.util.concurrent.atomic.*;
 
-<span class="cm">// Concurrent Collections</span>
-<span class="cm">// Fast, thread-safe map (better than Hashtable or synchronized map)</span>
-<span class="cl">ConcurrentMap</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();
-map.<span class="fn">putIfAbsent</span>(<span class="st">"Key"</span>, <span class="nm">1</span>);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">InterruptedException</span> {
+        <span class="cm">// Atomic variables (lock-free thread-safe updates)</span>
+        <span class="cl">AtomicInteger</span> atomicCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nm">0</span>);
+        atomicCount.<span class="fn">incrementAndGet</span>(); <span class="cm">// Safe across threads</span>
+        atomicCount.<span class="fn">addAndGet</span>(<span class="nm">5</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Atomic count: "</span> + atomicCount.<span class="fn">get</span>());
 
-<span class="cm">// Thread-safe list (good for many reads, few writes)</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; safeList = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;();
+        <span class="cm">// Concurrent Collections</span>
+        <span class="cm">// Fast, thread-safe map (better than Hashtable or synchronized map)</span>
+        <span class="cl">ConcurrentMap</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();
+        map.<span class="fn">putIfAbsent</span>(<span class="st">"Key"</span>, <span class="nm">1</span>);
 
-<span class="cm">// Thread-safe queue</span>
-<span class="cl">BlockingQueue</span>&lt;<span class="cl">String</span>&gt; queue = <span class="kw">new</span> <span class="cl">ArrayBlockingQueue</span>&lt;&gt;(<span class="nm">100</span>);
-queue.<span class="fn">put</span>(<span class="st">"item"</span>);  <span class="cm">// Blocks if full</span>
-queue.<span class="fn">take</span>();       <span class="cm">// Blocks if empty</span></code></pre>
+        <span class="cm">// Thread-safe list (good for many reads, few writes)</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; safeList = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;();
+
+        <span class="cm">// Thread-safe queue</span>
+        <span class="cl">BlockingQueue</span>&lt;<span class="cl">String</span>&gt; queue = <span class="kw">new</span> <span class="cl">ArrayBlockingQueue</span>&lt;&gt;(<span class="nm">100</span>);
+        queue.<span class="fn">put</span>(<span class="st">"item"</span>);  <span class="cm">// Blocks if full</span>
+        <span class="cl">String</span> item = queue.<span class="fn">take</span>();       <span class="cm">// Blocks if empty</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Dequeued: "</span> + item);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -238,31 +326,35 @@ queue.<span class="fn">take</span>();       <span class="cm">// Blocks if empty<
     <p><code class="inline">CompletableFuture</code> is like taking a ticket at a deli counter. You don't stand there staring at the butcher. You take your ticket, give the butcher a list of instructions ("When my sandwich is ready, add mayo, then wrap it, then text my phone"), and you walk away to do other shopping. The pipeline executes automatically when the data is ready.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">CompletableFuture</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Run async task</span>
-<span class="cl">CompletableFuture</span>&lt;<span class="kw">void</span>&gt; task1 = <span class="cl">CompletableFuture</span>.<span class="fn">runAsync</span>(() -&gt; {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Background task"</span>);
-});
+      <pre><code>import java.util.concurrent.*;
 
-<span class="cm">// Run async and return value</span>
-<span class="cl">CompletableFuture</span>&lt;<span class="cl">String</span>&gt; fetchUser = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; {
-    <span class="kw">return</span> <span class="st">"Alice"</span>; <span class="cm">// Simulating DB call</span>
-});
+public class Main {
+    public static void main(String[] args) {
+        CompletableFuture&lt;Void&gt; task1 = CompletableFuture.runAsync(() -&gt; {
+            System.out.println("Background task");
+        });
 
-<span class="cm">// Chaining operations</span>
-fetchUser
-    .<span class="fn">thenApply</span>(name -&gt; name.<span class="fn">toUpperCase</span>())    <span class="cm">// Transform</span>
-    .<span class="fn">thenAccept</span>(name -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(name)) <span class="cm">// Consume result</span>
-    .<span class="fn">exceptionally</span>(ex -&gt; {                   <span class="cm">// Error handling</span>
-        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Error: "</span> + ex);
-        <span class="kw">return null</span>;
-    });
+        CompletableFuture&lt;String&gt; fetchUser = CompletableFuture.supplyAsync(() -&gt; "Alice");
 
-<span class="cm">// Combine two futures</span>
-<span class="cl">CompletableFuture</span>&lt;<span class="cl">Integer</span>&gt; price1 = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; <span class="nm">100</span>);
-<span class="cl">CompletableFuture</span>&lt;<span class="cl">Integer</span>&gt; price2 = <span class="cl">CompletableFuture</span>.<span class="fn">supplyAsync</span>(() -&gt; <span class="nm">50</span>);
+        fetchUser
+            .thenApply(String::toUpperCase)
+            .thenAccept(System.out::println)
+            .exceptionally(ex -&gt; {
+                ex.printStackTrace();
+                return null;
+            })
+            .join();
 
-price1.<span class="fn">thenCombine</span>(price2, (p1, p2) -&gt; p1 + p2)
-      .<span class="fn">thenAccept</span>(total -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Total: "</span> + total));</code></pre>
+        CompletableFuture&lt;Integer&gt; price1 = CompletableFuture.supplyAsync(() -&gt; 100);
+        CompletableFuture&lt;Integer&gt; price2 = CompletableFuture.supplyAsync(() -&gt; 50);
+
+        price1.thenCombine(price2, Integer::sum)
+              .thenAccept(total -&gt; System.out.println("Total: " + total))
+              .join();
+
+        task1.join();
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -274,20 +366,25 @@ price1.<span class="fn">thenCombine</span>(price2, (p1, p2) -&gt; p1 + p2)
     <p><strong>Virtual Threads</strong> (Project Loom) change everything. They are managed by the JVM, not the OS. They are so lightweight that you can easily spawn millions of them. You no longer need complex Thread Pools. The new rule in Java 21+ is: <em>One thread per task.</em></p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Virtual Threads</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Start a virtual thread</span>
-<span class="cl">Thread</span> vThread = <span class="cl">Thread</span>.<span class="fn">startVirtualThread</span>(() -&gt; {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running in a virtual thread"</span>);
-});
+      <pre><code>import java.lang.reflect.Method;
 
-<span class="cm">// Executor with virtual threads (Thread-per-task model)</span>
-<span class="kw">try</span> (<span class="kw">var</span> executor = <span class="cl">Executors</span>.<span class="fn">newVirtualThreadPerTaskExecutor</span>()) {
-    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">10_000</span>; i++) {
-        executor.<span class="fn">submit</span>(() -&gt; {
-            <span class="cl">Thread</span>.<span class="fn">sleep</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">1</span>));
-            <span class="kw">return</span> <span class="nm">42</span>;
-        });
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Runnable task = () -&gt; System.out.println("Running task on " + Thread.currentThread());
+
+        try {
+            Method startVirtualThread = Thread.class.getMethod("startVirtualThread", Runnable.class);
+            Thread virtualThread = (Thread) startVirtualThread.invoke(null, task);
+            virtualThread.join();
+            System.out.println("Virtual thread API is available on this JDK.");
+        } catch (NoSuchMethodException ex) {
+            Thread platformThread = new Thread(task);
+            platformThread.start();
+            platformThread.join();
+            System.out.println("Virtual threads require Java 21+. Used a platform thread fallback.");
+        }
     }
-} <span class="cm">// Automatically waits for all 10,000 tasks to finish!</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>

@@ -43,6 +43,13 @@
     <p>Records model shallowly immutable data. They automatically provide constructor, accessors, equals, hashCode, and toString based on components. This makes them excellent for DTOs, value results, messages, and simple domain facts.</p>
     <p>Enums and records both reduce accidental complexity. They make illegal states harder to represent and remove boilerplate that often hides the real intent of code.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should use enums instead of magic strings and records instead of boilerplate data carriers.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh enum behavior, record invariants, serialization concerns, pattern matching, and domain modeling limits.</p>
+    <p><strong>Mastery check:</strong> You understand Enums and Records when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Enums provide type safety for a fixed set of constants (e.g., DAYS_OF_WEEK).</li>
@@ -62,6 +69,36 @@
       <li>You know how to define a Record and access its components.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Enums model closed choices; records model transparent immutable data.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should use enums instead of magic strings and records instead of boilerplate data carriers.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh enum behavior, record invariants, serialization concerns, pattern matching, and domain modeling limits.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Enums can have fields, methods, and per-constant behavior; they are often cleaner than switch statements scattered across code.</li>
+      <li>Records are shallowly immutable. If a record contains a mutable List, the list can still change unless you copy it.</li>
+      <li>A compact record constructor is the right place to validate and normalize data before the object exists.</li>
+      <li>Do not use records for entities whose identity and lifecycle matter more than their current field values.</li>
+      <li>String statuses rot over time. Enums and sealed types make illegal domain states visible at compile time.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Explain Enums and Records without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Use Enums and Records in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Enums and Records</div><div class="hl-desc">Predict how Enums and Records behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="enums">
   <div class="subsection">
@@ -70,25 +107,29 @@
     <p>An <code class="inline">enum</code> (short for Enumeration) fixes this. It is a special Java class that represents a fixed, unchangeable set of values. If a method asks for an <code class="inline">OrderStatus</code> enum, it is physically impossible to pass it anything other than the exact values you defined.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Basic Enum</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public enum</span> <span class="cl">Season</span> {
-    SPRING, SUMMER, AUTUMN, WINTER
-}
+      <pre><code>enum Season { SPRING, SUMMER, AUTUMN, WINTER }
 
-<span class="cl">Season</span> s = <span class="cl">Season</span>.SUMMER;
+public class Main {
+    public static void main(String[] args) {
+        Season s = Season.SUMMER;
 
-<span class="cm">// Switch with enum</span>
-<span class="cl">String</span> msg = <span class="kw">switch</span> (s) {
-    <span class="kw">case</span> SPRING -&gt; <span class="st">"Flowers bloom"</span>;
-    <span class="kw">case</span> SUMMER -&gt; <span class="st">"Beach time"</span>;
-    <span class="kw">case</span> AUTUMN -&gt; <span class="st">"Leaves fall"</span>;
-    <span class="kw">case</span> WINTER -&gt; <span class="st">"Stay warm"</span>;
-};
+        // Switch with enum
+        String msg = switch (s) {
+            case SPRING -&gt; "Flowers bloom";
+            case SUMMER -&gt; "Beach time";
+            case AUTUMN -&gt; "Leaves fall";
+            case WINTER -&gt; "Stay warm";
+        };
+        System.out.println(msg);
 
-<span class="cm">// Useful methods</span>
-<span class="cl">Season</span>.<span class="fn">values</span>();             <span class="cm">// Array of all values</span>
-<span class="cl">Season</span>.<span class="fn">valueOf</span>(<span class="st">"SUMMER"</span>);    <span class="cm">// String → enum</span>
-s.<span class="fn">name</span>();                   <span class="cm">// "SUMMER"</span>
-s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (position, 0-indexed)</span></code></pre>
+        // Useful methods
+        Season[] all = Season.values();    // Array of all values
+        Season fromStr = Season.valueOf("SUMMER"); // String → enum
+        String name = s.name();             // "SUMMER"
+        int ord = s.ordinal();              // 1 (position, 0-indexed)
+        System.out.println(name + " at index " + ord);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -99,7 +140,7 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
     <p>In languages like C, enums are just glorified integers. In Java, <strong>Enums are full-fledged Classes</strong>. This means an enum constant isn't just a label—it's an actual object. You can give these objects fields, constructors, and even custom behavior.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Powerful Enum</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public enum</span> <span class="cl">Planet</span> {
+      <pre><code><span class="kw">enum</span> <span class="cl">Planet</span> {
     MERCURY(<span class="nm">3.303e+23</span>, <span class="nm">2.4397e6</span>),
     VENUS(<span class="nm">4.869e+24</span>, <span class="nm">6.0518e6</span>),
     EARTH(<span class="nm">5.976e+24</span>, <span class="nm">6.37814e6</span>),
@@ -125,8 +166,13 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
     }
 }
 
-<span class="cm">// Usage</span>
-<span class="kw">double</span> weight = <span class="cl">Planet</span>.EARTH.<span class="fn">surfaceWeight</span>(<span class="nm">75</span>);</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Usage</span>
+        <span class="kw">double</span> weight = <span class="cl">Planet</span>.EARTH.<span class="fn">surfaceWeight</span>(<span class="nm">75</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Weight on Earth: "</span> + weight);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -149,6 +195,13 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
         <span class="an">@Override</span>
         <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toPrettyString</span>() { <span class="kw">return</span> <span class="st">"❌ Inactive"</span>; }
     }
+}
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Status</span>.ACTIVE.<span class="fn">toPrettyString</span>());
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Status</span>.INACTIVE.<span class="fn">toPrettyString</span>());
+    }
 }</code></pre>
     </div>
   </div>
@@ -161,16 +214,20 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
     <p>Joshua Bloch (author of <em>Effective Java</em>) stated that a single-element Enum is the absolute best way to implement a Singleton in Java. The JVM natively guarantees that an Enum value is instantiated exactly once, is thread-safe, and survives serialization perfectly.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Enum Singleton</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public enum</span> <span class="cl">DatabaseConnection</span> {
-    INSTANCE; // The one and only instance
+      <pre><code><span class="kw">enum</span> <span class="cl">DatabaseConnection</span> {
+    INSTANCE; <span class="cm">// The one and only instance</span>
 
     <span class="kw">public void</span> <span class="fn">connect</span>() {
         <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Connected to DB securely."</span>);
     }
 }
 
-// Usage:
-<span class="cl">DatabaseConnection</span>.<span class="cl">INSTANCE</span>.<span class="fn">connect</span>();</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Usage:</span>
+        <span class="cl">DatabaseConnection</span>.INSTANCE.<span class="fn">connect</span>();
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -183,7 +240,7 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Record vs Class</span><button class="copy-btn">⎘ Copy</button></div>
       <pre><code><span class="cm">// ❌ Old way: ~30 lines of boilerplate</span>
-<span class="kw">public class</span> <span class="cl">PointClass</span> {
+<span class="kw">class</span> <span class="cl">PointClass</span> {
     <span class="kw">private final int</span> x, y;
     <span class="kw">public</span> <span class="fn">PointClass</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="kw">this</span>.x = x; <span class="kw">this</span>.y = y; }
     <span class="kw">public int</span> <span class="fn">x</span>() { <span class="kw">return</span> x; }
@@ -192,14 +249,18 @@ s.<span class="fn">ordinal</span>();                <span class="cm">// 1 (posit
 }
 
 <span class="cm">// ✅ Record: ONE LINE does it all</span>
-<span class="kw">public record</span> <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {}
+<span class="kw">record</span> <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {}
 
-<span class="cm">// Auto-generated:</span>
-<span class="cl">Point</span> p = <span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>);
-p.<span class="fn">x</span>();        <span class="cm">// 3 (accessor, no 'get' prefix!)</span>
-p.<span class="fn">y</span>();        <span class="cm">// 5</span>
-p.<span class="fn">toString</span>(); <span class="cm">// "Point[x=3, y=5]"</span>
-p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>)); <span class="cm">// true</span></code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Auto-generated:</span>
+        <span class="cl">Point</span> p = <span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p.<span class="fn">x</span>());          <span class="cm">// 3 (accessor, no 'get' prefix!)</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p.<span class="fn">y</span>());          <span class="cm">// 5</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p.<span class="fn">toString</span>());   <span class="cm">// "Point[x=3, y=5]"</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">5</span>))); <span class="cm">// true</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -209,40 +270,31 @@ p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Po
     <h3>Record Features</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Advanced Records</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public record</span> <span class="cl">User</span>(<span class="cl">String</span> name, <span class="cl">String</span> email, <span class="kw">int</span> age) {
-
-    <span class="cm">// Compact constructor — validation without repeating params</span>
-    <span class="kw">public</span> <span class="fn">User</span> {
-        <span class="kw">if</span> (age &lt; <span class="nm">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Age can't be negative"</span>);
-        name = name.<span class="fn">trim</span>();     <span class="cm">// Can modify before assignment</span>
-        email = email.<span class="fn">toLowerCase</span>();
+      <pre><code>record User(String name, String email, int age) {
+    public User {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("name is required");
+        }
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("valid email is required");
+        }
+        if (age &lt; 0) {
+            throw new IllegalArgumentException("age cannot be negative");
+        }
     }
 
-    <span class="cm">// Custom methods</span>
-    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">displayName</span>() {
-        <span class="kw">return</span> name + <span class="st">" ("</span> + email + <span class="st">")"</span>;
-    }
-
-    <span class="cm">// Static factory method</span>
-    <span class="kw">public static</span> <span class="cl">User</span> <span class="fn">of</span>(<span class="cl">String</span> name) {
-        <span class="kw">return new</span> <span class="cl">User</span>(name, name.<span class="fn">toLowerCase</span>() + <span class="st">"@mail.com"</span>, <span class="nm">0</span>);
+    public boolean isAdult() {
+        return age &gt;= 18;
     }
 }
 
-<span class="cm">// Records can implement interfaces</span>
-<span class="kw">public record</span> <span class="cl">Employee</span>(<span class="cl">String</span> name, <span class="kw">double</span> salary)
-    <span class="kw">implements</span> <span class="cl">Comparable</span>&lt;<span class="cl">Employee</span>&gt; {
-
-    <span class="an">@Override</span>
-    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Employee</span> other) {
-        <span class="kw">return</span> <span class="cl">Double</span>.<span class="fn">compare</span>(<span class="kw">this</span>.salary, other.salary);
+public class Main {
+    public static void main(String[] args) {
+        User user = new User("Alice", "alice@example.com", 25);
+        System.out.println(user);
+        System.out.println("Adult? " + user.isAdult());
     }
-}
-
-<span class="cm">// Records CANNOT:</span>
-<span class="cm">// ❌ extend other classes (they implicitly extend Record)</span>
-<span class="cm">// ❌ have mutable instance fields</span>
-<span class="cm">// ❌ be abstract</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>
@@ -253,13 +305,19 @@ p.<span class="fn">equals</span>(<span class="kw">new</span> <span class="cl">Po
     <p>Because Records transparently carry data, modern Java (21+) allows you to "destructure" them directly inside a <code>switch</code> statement or <code>instanceof</code> check. This extracts the fields into local variables automatically, making data processing incredibly clean.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Record Pattern Matching</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">record</span> <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {}
-<span class="kw">record</span> <span class="cl">Circle</span>(<span class="cl">Point</span> center, <span class="kw">int</span> radius) {}
+      <pre><code>record Point(int x, int y) {}
+record Circle(Point center, int radius) {}
 
-<span class="kw">public void</span> <span class="fn">processShape</span>(<span class="cl">Object</span> shape) {
-    <span class="kw">if</span> (shape <span class="kw">instanceof</span> <span class="cl">Circle</span>(<span class="cl">Point</span>(int x, int y), int r)) {
-        // x, y, and r are automatically extracted!
-        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"Circle at %d,%d with radius %d%n"</span>, x, y, r);
+public class Main {
+    public static void main(String[] args) {
+        Object shape = new Circle(new Point(10, 20), 5);
+
+        if (shape instanceof Circle circle) {
+            Point center = circle.center();
+            int radius = circle.radius();
+            System.out.println("Circle at " + center.x() + "," + center.y());
+            System.out.println("Radius: " + radius);
+        }
     }
 }</code></pre>
     </div>

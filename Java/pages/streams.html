@@ -43,6 +43,13 @@
     <p>Streams are best understood as query plans. You describe what transformation should happen, and the stream machinery controls traversal. This enables composition, but it also means debugging requires understanding the whole pipeline.</p>
     <p>Collectors are the bridge between stream processing and concrete results. They can build lists, maps, grouped summaries, joined strings, numeric statistics, and nested aggregation structures.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn source, intermediate operations, terminal operations, and why nothing happens until a terminal operation runs.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh laziness, short-circuiting, collectors, ordering, parallelism, and side-effect hazards.</p>
+    <p><strong>Mastery check:</strong> You understand Streams when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Streams are pipelines for processing sequences of elements. They don't store data.</li>
@@ -62,6 +69,36 @@
       <li>You understand the difference between map() and flatMap().</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Streams describe transformations over data, but they do not erase algorithmic responsibility.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn source, intermediate operations, terminal operations, and why nothing happens until a terminal operation runs.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh laziness, short-circuiting, collectors, ordering, parallelism, and side-effect hazards.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>A stream pipeline is lazy. Intermediate operations build a plan; terminal operations execute it.</li>
+      <li>peek is mainly for debugging. Business logic inside peek is a code smell because it makes side effects look accidental.</li>
+      <li>Collectors define data ownership and merge behavior. Bad collectors break especially hard in parallel streams.</li>
+      <li>Streams can hide algorithmic complexity. A nested stream can accidentally turn a simple feature into quadratic work.</li>
+      <li>Use streams for clear transformation pipelines; use loops when stateful logic, early exits, or debugging clarity dominate.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Streams</div><div class="hl-desc">Explain Streams without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Streams</div><div class="hl-desc">Use Streams in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Streams</div><div class="hl-desc">Predict how Streams behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="creating">
   <div class="subsection">
@@ -70,22 +107,31 @@
     <p>A <strong>Stream</strong> is data in motion. Think of a Stream like a Netflix stream. The data flows past you, you process it, and it's gone. A Stream does not store data, it does not modify the original data source, and it can only be consumed once.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// From a Collection</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
-<span class="cl">Stream</span>&lt;<span class="cl">String</span>&gt; stream = names.<span class="fn">stream</span>();
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Arrays</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.IntStream</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.Stream</span>;
 
-<span class="cm">// From values directly</span>
-<span class="cl">Stream</span>&lt;<span class="cl">String</span>&gt; s = <span class="cl">Stream</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// From a Collection</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
+        <span class="cl">Stream</span>&lt;<span class="cl">String</span>&gt; stream = names.<span class="fn">stream</span>();
 
-<span class="cm">// From an array</span>
-<span class="kw">int</span>[] arr = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>};
-<span class="cl">IntStream</span> is = <span class="cl">Arrays</span>.<span class="fn">stream</span>(arr);
+        <span class="cm">// From values directly</span>
+        <span class="cl">Stream</span>&lt;<span class="cl">String</span>&gt; s = <span class="cl">Stream</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>);
 
-<span class="cm">// Generate / Iterate</span>
-<span class="cl">Stream</span>.<span class="fn">generate</span>(<span class="cl">Math</span>::random).<span class="fn">limit</span>(<span class="nm">5</span>);  <span class="cm">// 5 random numbers</span>
-<span class="cl">Stream</span>.<span class="fn">iterate</span>(<span class="nm">0</span>, n -&gt; n + <span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">5</span>); <span class="cm">// 0, 2, 4, 6, 8</span>
-<span class="cl">IntStream</span>.<span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>);                   <span class="cm">// 1, 2, 3, 4, 5</span>
-<span class="cl">IntStream</span>.<span class="fn">rangeClosed</span>(<span class="nm">1</span>, <span class="nm">5</span>);              <span class="cm">// 1, 2, 3, 4, 5</span></code></pre>
+        <span class="cm">// From an array</span>
+        <span class="kw">int</span>[] arr = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>};
+        <span class="cl">IntStream</span> is = <span class="cl">Arrays</span>.<span class="fn">stream</span>(arr);
+
+        <span class="cm">// Generate / Iterate</span>
+        <span class="cl">Stream</span>.<span class="fn">generate</span>(<span class="cl">Math</span>::random).<span class="fn">limit</span>(<span class="nm">5</span>);  <span class="cm">// 5 random numbers</span>
+        <span class="cl">Stream</span>.<span class="fn">iterate</span>(<span class="nm">0</span>, n -&gt; n + <span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">5</span>); <span class="cm">// 0, 2, 4, 6, 8</span>
+        <span class="cl">IntStream</span>.<span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>);                   <span class="cm">// 1, 2, 3, 4, 5</span>
+        <span class="cl">IntStream</span>.<span class="fn">rangeClosed</span>(<span class="nm">1</span>, <span class="nm">5</span>);              <span class="cm">// 1, 2, 3, 4, 5</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -97,31 +143,46 @@
     
     <div class="code-block" style="margin-bottom: 20px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Before Java 8: The Imperative Loop</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-<span class="cm">// Goal: Find all unique names starting with 'A', converted to uppercase</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
-<span class="kw">for</span> (<span class="cl">String</span> name : names) {
-    <span class="kw">if</span> (name.<span class="fn">startsWith</span>(<span class="st">"A"</span>)) {
-        <span class="cl">String</span> upper = name.<span class="fn">toUpperCase</span>();
-        <span class="kw">if</span> (!results.<span class="fn">contains</span>(upper)) { <span class="cm">// Check for duplicates</span>
-            results.<span class="fn">add</span>(upper);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
+
+        <span class="cm">// Goal: Find all unique names starting with 'A', converted to uppercase</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+        <span class="kw">for</span> (<span class="cl">String</span> name : names) {
+            <span class="kw">if</span> (name.<span class="fn">startsWith</span>(<span class="st">"A"</span>)) {
+                <span class="cl">String</span> upper = name.<span class="fn">toUpperCase</span>();
+                <span class="kw">if</span> (!results.<span class="fn">contains</span>(upper)) { <span class="cm">// Check for duplicates</span>
+                    results.<span class="fn">add</span>(upper);
+                }
+            }
         }
+        <span class="cm">// State management, if-statements, and temporary collections clutter the logic.</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(results);
     }
-}
-<span class="cm">// State management, if-statements, and temporary collections clutter the logic.</span></code></pre>
+}</code></pre>
     </div>
 
     <div class="code-block" style="margin-bottom: 20px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Java 8+: The Declarative Stream Pipeline</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// The exact same logic, using Streams</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = names.<span class="fn">stream</span>()
-    .<span class="fn">filter</span>(name -&gt; name.<span class="fn">startsWith</span>(<span class="st">"A"</span>))
-    .<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase)
-    .<span class="fn">distinct</span>()
-    .<span class="fn">toList</span>(); <span class="cm">// Automatically creates the final list
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-// It reads like plain English: "Stream names, filter A's, map to upper, keep distinct, to list."</span></code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
+        <span class="cm">// The exact same logic, using Streams</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; results = names.<span class="fn">stream</span>()
+            .<span class="fn">filter</span>(name -&gt; name.<span class="fn">startsWith</span>(<span class="st">"A"</span>))
+            .<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase)
+            .<span class="fn">distinct</span>()
+            .<span class="fn">toList</span>(); <span class="cm">// Automatically creates the final list</span>
+        <span class="cm">// It reads like plain English: "Stream names, filter A's, map to upper, keep distinct, to list."</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(results);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -133,30 +194,37 @@
     <p>In Java, <strong>Intermediate Operations</strong> (like <code class="inline">filter</code>, <code class="inline">map</code>, <code class="inline">sorted</code>) are exactly like these pipes. They are <strong>Lazy</strong>. When you call <code class="inline">.filter()</code>, Java does absolutely no filtering yet. It simply remembers that you want to filter the data later.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Filter, Map, FlatMap, Sorted, Distinct</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Comparator</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-<span class="cm">// filter: keep elements matching a condition</span>
-names.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n.<span class="fn">startsWith</span>(<span class="st">"A"</span>)); <span class="cm">// Alice, Alice</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Alice"</span>, <span class="st">"Charlie"</span>, <span class="st">"Bob"</span>);
 
-<span class="cm">// map: transform each element</span>
-names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase); <span class="cm">// ALICE, BOB, ...</span>
+        <span class="cm">// filter: keep elements matching a condition</span>
+        names.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n.<span class="fn">startsWith</span>(<span class="st">"A"</span>)); <span class="cm">// Alice, Alice</span>
 
-<span class="cm">// flatMap: flatten nested structures</span>
-<span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt; nested = <span class="cl">List</span>.<span class="fn">of</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>,<span class="nm">2</span>), <span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">3</span>,<span class="nm">4</span>));
-nested.<span class="fn">stream</span>().<span class="fn">flatMap</span>(<span class="cl">List</span>::stream); <span class="cm">// 1, 2, 3, 4</span>
+        <span class="cm">// map: transform each element</span>
+        names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase); <span class="cm">// ALICE, BOB, ...</span>
 
-<span class="cm">// distinct: remove duplicates</span>
-names.<span class="fn">stream</span>().<span class="fn">distinct</span>(); <span class="cm">// Alice, Bob, Charlie</span>
+        <span class="cm">// flatMap: flatten nested structures</span>
+        <span class="cl">List</span>&lt;<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt; nested = <span class="cl">List</span>.<span class="fn">of</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>,<span class="nm">2</span>), <span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">3</span>,<span class="nm">4</span>));
+        nested.<span class="fn">stream</span>().<span class="fn">flatMap</span>(<span class="cl">List</span>::stream); <span class="cm">// 1, 2, 3, 4</span>
 
-<span class="cm">// sorted</span>
-names.<span class="fn">stream</span>().<span class="fn">sorted</span>(); <span class="cm">// Natural order</span>
-names.<span class="fn">stream</span>().<span class="fn">sorted</span>(<span class="cl">Comparator</span>.<span class="fn">reverseOrder</span>());
+        <span class="cm">// distinct: remove duplicates</span>
+        names.<span class="fn">stream</span>().<span class="fn">distinct</span>(); <span class="cm">// Alice, Bob, Charlie</span>
 
-<span class="cm">// peek: debug/inspect without modifying</span>
-names.<span class="fn">stream</span>().<span class="fn">peek</span>(<span class="cl">System</span>.out::println).<span class="fn">count</span>();
+        <span class="cm">// sorted</span>
+        names.<span class="fn">stream</span>().<span class="fn">sorted</span>(); <span class="cm">// Natural order</span>
+        names.<span class="fn">stream</span>().<span class="fn">sorted</span>(<span class="cl">Comparator</span>.<span class="fn">reverseOrder</span>());
 
-<span class="cm">// limit &amp; skip</span>
-names.<span class="fn">stream</span>().<span class="fn">skip</span>(<span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">2</span>); <span class="cm">// Skip first 2, take next 2</span></code></pre>
+        <span class="cm">// peek: debug/inspect without modifying</span>
+        names.<span class="fn">stream</span>().<span class="fn">peek</span>(<span class="cl">System</span>.out::println).<span class="fn">count</span>();
+
+        <span class="cm">// limit &amp; skip</span>
+        names.<span class="fn">stream</span>().<span class="fn">skip</span>(<span class="nm">2</span>).<span class="fn">limit</span>(<span class="nm">2</span>); <span class="cm">// Skip first 2, take next 2</span>
+    }
+}</code></pre>
     </div>
     <h4 style="margin-top:20px;">The Magic of Lazy Evaluation &amp; Short-Circuiting</h4>
     <p>Because streams are lazy, the JVM can deeply optimize the execution pipeline. Imagine you are searching a list of 1,000,000 users to find the first one from "New York" who is over 18. If you chain <code>.filter(isAdult).filter(isNY).findFirst()</code>, the JVM does <strong>not</strong> filter all 1,000,000 users first.</p>
@@ -171,31 +239,39 @@ names.<span class="fn">stream</span>().<span class="fn">skip</span>(<span class=
     <p>A <strong>Terminal Operation</strong> (like <code class="inline">collect</code>, <code class="inline">count</code>, <code class="inline">forEach</code>) is the faucet. The moment you call a terminal operation, the Stream actually executes all the lazy intermediate operations in one highly-optimized pass. Once a terminal operation is called, the stream is dead and cannot be reused.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">collect, reduce, forEach, count, match, find</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>);
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.Optional</span>;
 
-<span class="cm">// collect: gather results into a collection</span>
-<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; evens = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n % <span class="nm">2</span> == <span class="nm">0</span>).<span class="fn">toList</span>();
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>);
 
-<span class="cm">// reduce: combine all elements into one value</span>
-<span class="kw">int</span> sum = nums.<span class="fn">stream</span>().<span class="fn">reduce</span>(<span class="nm">0</span>, <span class="cl">Integer</span>::sum); <span class="cm">// 15</span>
+        <span class="cm">// collect: gather results into a collection</span>
+        <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; evens = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n % <span class="nm">2</span> == <span class="nm">0</span>).<span class="fn">toList</span>();
 
-<span class="cm">// count</span>
-<span class="kw">long</span> count = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n &gt; <span class="nm">3</span>).<span class="fn">count</span>(); <span class="cm">// 2</span>
+        <span class="cm">// reduce: combine all elements into one value</span>
+        <span class="kw">int</span> sum = nums.<span class="fn">stream</span>().<span class="fn">reduce</span>(<span class="nm">0</span>, <span class="cl">Integer</span>::sum); <span class="cm">// 15</span>
 
-<span class="cm">// min / max</span>
-<span class="cl">Optional</span>&lt;<span class="cl">Integer</span>&gt; max = nums.<span class="fn">stream</span>().<span class="fn">max</span>(<span class="cl">Integer</span>::compare);
+        <span class="cm">// count</span>
+        <span class="kw">long</span> count = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n &gt; <span class="nm">3</span>).<span class="fn">count</span>(); <span class="cm">// 2</span>
 
-<span class="cm">// forEach</span>
-nums.<span class="fn">stream</span>().<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+        <span class="cm">// min / max</span>
+        <span class="cl">Optional</span>&lt;<span class="cl">Integer</span>&gt; max = nums.<span class="fn">stream</span>().<span class="fn">max</span>(<span class="cl">Integer</span>::compare);
 
-<span class="cm">// anyMatch / allMatch / noneMatch</span>
-<span class="kw">boolean</span> hasEven = nums.<span class="fn">stream</span>().<span class="fn">anyMatch</span>(n -&gt; n % <span class="nm">2</span> == <span class="nm">0</span>); <span class="cm">// true</span>
+        <span class="cm">// forEach</span>
+        nums.<span class="fn">stream</span>().<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
 
-<span class="cm">// findFirst / findAny</span>
-<span class="cl">Optional</span>&lt;<span class="cl">Integer</span>&gt; first = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n &gt; <span class="nm">3</span>).<span class="fn">findFirst</span>();
+        <span class="cm">// anyMatch / allMatch / noneMatch</span>
+        <span class="kw">boolean</span> hasEven = nums.<span class="fn">stream</span>().<span class="fn">anyMatch</span>(n -&gt; n % <span class="nm">2</span> == <span class="nm">0</span>); <span class="cm">// true</span>
 
-<span class="cm">// toArray</span>
-<span class="kw">int</span>[] arr = nums.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(i -&gt; i).<span class="fn">toArray</span>();</code></pre>
+        <span class="cm">// findFirst / findAny</span>
+        <span class="cl">Optional</span>&lt;<span class="cl">Integer</span>&gt; first = nums.<span class="fn">stream</span>().<span class="fn">filter</span>(n -&gt; n &gt; <span class="nm">3</span>).<span class="fn">findFirst</span>();
+
+        <span class="cm">// toArray</span>
+        <span class="kw">int</span>[] arr = nums.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(i -&gt; i).<span class="fn">toArray</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Sum: "</span> + sum + <span class="st">", evens: "</span> + evens);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -207,32 +283,41 @@ nums.<span class="fn">stream</span>().<span class="fn">forEach</span>(<span clas
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Common Collectors</span><button class="copy-btn">⎘ Copy</button></div>
       <pre><code><span class="kw">import static</span> java.util.stream.<span class="cl">Collectors</span>.*;
+<span class="kw">import</span> <span class="cl">java.util.IntSummaryStatistics</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.Map</span>;
+<span class="kw">import</span> <span class="cl">java.util.Set</span>;
 
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Alice"</span>);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Alice"</span>);
 
-<span class="cm">// To List, Set, Map</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">toList</span>());
-<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; set = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">toSet</span>());
-<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = names.<span class="fn">stream</span>().<span class="fn">distinct</span>()
-    .<span class="fn">collect</span>(<span class="fn">toMap</span>(n -&gt; n, <span class="cl">String</span>::length));
+        <span class="cm">// To List, Set, Map</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">toList</span>());
+        <span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; set = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">toSet</span>());
+        <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = names.<span class="fn">stream</span>().<span class="fn">distinct</span>()
+            .<span class="fn">collect</span>(<span class="fn">toMap</span>(n -&gt; n, <span class="cl">String</span>::length));
 
-<span class="cm">// Joining strings</span>
-<span class="cl">String</span> joined = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">joining</span>(<span class="st">", "</span>));
-<span class="cm">// "Alice, Bob, Charlie, Alice"</span>
+        <span class="cm">// Joining strings</span>
+        <span class="cl">String</span> joined = names.<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">joining</span>(<span class="st">", "</span>));
+        <span class="cm">// "Alice, Bob, Charlie, Alice"</span>
 
-<span class="cm">// Grouping</span>
-<span class="cl">Map</span>&lt;<span class="cl">Integer</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; byLength = names.<span class="fn">stream</span>()
-    .<span class="fn">collect</span>(<span class="fn">groupingBy</span>(<span class="cl">String</span>::length));
-<span class="cm">// {3=[Bob], 5=[Alice, Alice], 7=[Charlie]}</span>
+        <span class="cm">// Grouping</span>
+        <span class="cl">Map</span>&lt;<span class="cl">Integer</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; byLength = names.<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="fn">groupingBy</span>(<span class="cl">String</span>::length));
+        <span class="cm">// {3=[Bob], 5=[Alice, Alice], 7=[Charlie]}</span>
 
-<span class="cm">// Partitioning (split into two groups by a predicate)</span>
-<span class="cl">Map</span>&lt;<span class="cl">Boolean</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; partitioned = names.<span class="fn">stream</span>()
-    .<span class="fn">collect</span>(<span class="fn">partitioningBy</span>(n -&gt; n.<span class="fn">length</span>() &gt; <span class="nm">4</span>));
+        <span class="cm">// Partitioning (split into two groups by a predicate)</span>
+        <span class="cl">Map</span>&lt;<span class="cl">Boolean</span>, <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; partitioned = names.<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="fn">partitioningBy</span>(n -&gt; n.<span class="fn">length</span>() &gt; <span class="nm">4</span>));
 
-<span class="cm">// Statistics</span>
-<span class="cl">IntSummaryStatistics</span> stats = names.<span class="fn">stream</span>()
-    .<span class="fn">collect</span>(<span class="fn">summarizingInt</span>(<span class="cl">String</span>::length));
-<span class="cm">// count=4, sum=20, min=3, average=5.0, max=7</span></code></pre>
+        <span class="cm">// Statistics</span>
+        <span class="cl">IntSummaryStatistics</span> stats = names.<span class="fn">stream</span>()
+            .<span class="fn">collect</span>(<span class="fn">summarizingInt</span>(<span class="cl">String</span>::length));
+        <span class="cm">// count=4, sum=20, min=3, average=5.0, max=7</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(joined + <span class="st">" | "</span> + stats);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -242,13 +327,22 @@ nums.<span class="fn">stream</span>().<span class="fn">forEach</span>(<span clas
     <h3>Parallel Streams</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Process elements in parallel using multiple threads</span>
-<span class="kw">long</span> count = names.<span class="fn">parallelStream</span>()
-    .<span class="fn">filter</span>(n -&gt; n.<span class="fn">length</span>() &gt; <span class="nm">3</span>)
-    .<span class="fn">count</span>();
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-<span class="cm">// Convert sequential to parallel</span>
-names.<span class="fn">stream</span>().<span class="fn">parallel</span>().<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Alice"</span>);
+
+        <span class="cm">// Process elements in parallel using multiple threads</span>
+        <span class="kw">long</span> count = names.<span class="fn">parallelStream</span>()
+            .<span class="fn">filter</span>(n -&gt; n.<span class="fn">length</span>() &gt; <span class="nm">3</span>)
+            .<span class="fn">count</span>();
+
+        <span class="cm">// Convert sequential to parallel</span>
+        names.<span class="fn">stream</span>().<span class="fn">parallel</span>().<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Count: "</span> + count);
+    }
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>

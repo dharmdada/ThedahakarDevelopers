@@ -43,6 +43,13 @@
     <p>Overriding enables runtime polymorphism: Java chooses the implementation based on the actual object, not the variable type. This is powerful because callers can depend on a stable parent contract while implementations vary.</p>
     <p>The Object methods equals, hashCode, and toString influence how objects behave in collections, logs, debugging, and comparisons. Poor implementations create bugs far from the class where the mistake was made.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn extends, overriding, super, and why a child object can be used through a parent reference.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh Liskov substitution, fragile base classes, final methods, protected leakage, and composition alternatives.</p>
+    <p><strong>Mastery check:</strong> You understand Inheritance when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Inheritance models an "IS-A" relationship. A Dog IS-A Animal.</li>
@@ -62,6 +69,36 @@
       <li>You can explain what 'protected' access means.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Inheritance is a strict substitution promise, not a shortcut for sharing code.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn extends, overriding, super, and why a child object can be used through a parent reference.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh Liskov substitution, fragile base classes, final methods, protected leakage, and composition alternatives.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>If a subclass weakens a parent promise, the hierarchy is broken even if the compiler accepts it.</li>
+      <li>Protected fields are often worse than public methods because they expose representation to every subclass forever.</li>
+      <li>Base classes become hard to change because subclasses may depend on undocumented call order or internal hooks.</li>
+      <li>Prefer inheritance for true is-a behavior with stable contracts; prefer composition for reuse and changing behavior.</li>
+      <li>Making a class final can be a design strength when extension would break invariants.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Inheritance</div><div class="hl-desc">Explain Inheritance without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Inheritance</div><div class="hl-desc">Use Inheritance in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Inheritance</div><div class="hl-desc">Predict how Inheritance behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="inheritance">
   <div class="subsection">
@@ -70,7 +107,15 @@
     <p>Unlike languages like C++, Java strictly enforces <strong>single inheritance</strong> for classes. A class can only <code class="inline">extend</code> one parent. This prevents the infamous "Deadly Diamond of Death" (where a child inherits conflicting methods from two parents).</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Basic Inheritance</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">class</span> <span class="cl">Animal</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Dog</span> d = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
+        d.<span class="fn">eat</span>();  <span class="cm">// Inherited from Animal</span>
+        d.<span class="fn">bark</span>(); <span class="cm">// Own method</span>
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Animal</span> {
     <span class="kw">protected</span> <span class="cl">String</span> name;
 
     <span class="kw">public</span> <span class="fn">Animal</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
@@ -89,11 +134,7 @@
     }
 
     <span class="kw">public void</span> <span class="fn">bark</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Woof!"</span>); }
-}
-
-<span class="cl">Dog</span> d = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
-d.<span class="fn">eat</span>();  <span class="cm">// Inherited from Animal</span>
-d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></pre>
+}</code></pre>
     </div>
     <h4 style="margin-top:20px;">The Diamond Problem</h4>
     <p>Java forbids multiple inheritance for classes. If a class could extend both <code>Machine</code> and <code>Animal</code>, and both had a <code>move()</code> method, which one would the child inherit? This ambiguity is called the <strong>Diamond Problem</strong>. By restricting classes to <code>extends</code> only one parent, Java eliminates this bug entirely.</p>
@@ -106,7 +147,14 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
     <p>Just as <code class="inline">this</code> refers to "myself", the <code class="inline">super</code> keyword refers to "my parent". When a child class is created, the JVM must first fully create the parent portion of that object. Therefore, the very first line of any child constructor must be a call to <code class="inline">super()</code> to initialize the parent.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">class</span> <span class="cl">Parent</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Child</span> c = <span class="kw">new</span> <span class="cl">Child</span>();
+        c.<span class="fn">demo</span>();
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Parent</span> {
     <span class="kw">protected int</span> x = <span class="nm">10</span>;
     <span class="kw">public void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Parent"</span>); }
 }
@@ -119,11 +167,7 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
         <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="kw">super</span>.x);  <span class="cm">// 10 (parent's field)</span>
         <span class="kw">super</span>.<span class="fn">show</span>();                <span class="cm">// Call parent's method</span>
     }
-}
-
-<span class="cm">// super() in constructor must be the FIRST statement</span>
-<span class="cm">// If you don't call super(), Java inserts super() automatically</span>
-<span class="cm">// (only works if parent has a no-arg constructor)</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>
@@ -134,7 +178,16 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
     <p>A subclass provides its own implementation of a method defined in its parent. The method signature must match exactly.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">class</span> <span class="cl">Shape</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Shape</span> s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">5.0</span>);
+        <span class="cl">Shape</span> s2 = <span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">4.0</span>, <span class="nm">6.0</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Circle area: "</span> + s1.<span class="fn">area</span>());
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Rectangle area: "</span> + s2.<span class="fn">area</span>());
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Shape</span> {
     <span class="kw">public double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="nm">0</span>; }
 }
 
@@ -175,24 +228,48 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
     <p>If you have an <code class="inline">Animal</code> remote control, you can point it at a <code class="inline">Dog</code> TV, a <code class="inline">Cat</code> TV, or a <code class="inline">Bird</code> TV. When you press the <code class="inline">speak()</code> button on the remote, Java dynamically figures out which TV it is pointing to at <strong>runtime</strong>, and executes the correct overridden method (bark, meow, or chirp).</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Runtime Polymorphism</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Parent reference → child object</span>
-<span class="cl">Shape</span> s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">5</span>);
-<span class="cl">Shape</span> s2 = <span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">4</span>, <span class="nm">6</span>);
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Parent reference → child object</span>
+        <span class="cl">Shape</span> s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">5</span>);
+        <span class="cl">Shape</span> s2 = <span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">4</span>, <span class="nm">6</span>);
 
-<span class="cm">// Java calls the OVERRIDDEN method based on actual object type</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(s1.<span class="fn">area</span>()); <span class="cm">// Circle's area: 78.54</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(s2.<span class="fn">area</span>()); <span class="cm">// Rectangle's area: 24.0</span>
+        <span class="cm">// Java calls the OVERRIDDEN method based on actual object type</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(s1.<span class="fn">area</span>()); <span class="cm">// Circle's area: 78.54</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(s2.<span class="fn">area</span>()); <span class="cm">// Rectangle's area: 24.0</span>
 
-<span class="cm">// Power of polymorphism: one method handles ALL shapes</span>
-<span class="kw">public void</span> <span class="fn">printArea</span>(<span class="cl">Shape</span> shape) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Area: "</span> + shape.<span class="fn">area</span>());
+        <span class="cl">Main</span> demo = <span class="kw">new</span> <span class="cl">Main</span>();
+        demo.<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">3</span>));
+        demo.<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">2</span>, <span class="nm">5</span>));
+    }
+
+    <span class="cm">// Power of polymorphism: one method handles ALL shapes</span>
+    <span class="kw">public void</span> <span class="fn">printArea</span>(<span class="cl">Shape</span> shape) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Area: "</span> + shape.<span class="fn">area</span>());
+    }
 }
-<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Circle</span>(<span class="nm">3</span>));
-<span class="fn">printArea</span>(<span class="kw">new</span> <span class="cl">Rectangle</span>(<span class="nm">2</span>, <span class="nm">5</span>));
 
-<span class="cm">// Compile-time vs Runtime polymorphism:</span>
-<span class="cm">// Compile-time = Method Overloading (same name, different params)</span>
-<span class="cm">// Runtime = Method Overriding (same signature, different class)</span></code></pre>
+<span class="kw">class</span> <span class="cl">Shape</span> {
+    <span class="kw">public double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="nm">0</span>; }
+}
+
+<span class="kw">class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private double</span> radius;
+    <span class="kw">public</span> <span class="fn">Circle</span>(<span class="kw">double</span> r) { <span class="kw">this</span>.radius = r; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">area</span>() {
+        <span class="kw">return</span> <span class="cl">Math</span>.PI * radius * radius;
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Rectangle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">private double</span> w, h;
+    <span class="kw">public</span> <span class="fn">Rectangle</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) { <span class="kw">this</span>.w = w; <span class="kw">this</span>.h = h; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">area</span>() { <span class="kw">return</span> w * h; }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">💡</span>
@@ -211,25 +288,44 @@ d.<span class="fn">bark</span>(); <span class="cm">// Own method</span></code></
     </ul>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Upcasting: child → parent (always safe, automatic)</span>
-<span class="cl">Dog</span> dog = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
-<span class="cl">Animal</span> animal = dog; <span class="cm">// Automatic upcasting</span>
-animal.<span class="fn">eat</span>();     <span class="cm">// ✅ Works</span>
-<span class="cm">// animal.bark();  →  ❌ Compile error! Animal doesn't have bark()</span>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Upcasting: child → parent (always safe, automatic)</span>
+        <span class="cl">Dog</span> dog = <span class="kw">new</span> <span class="cl">Dog</span>(<span class="st">"Rex"</span>, <span class="st">"Lab"</span>);
+        <span class="cl">Animal</span> animal = dog; <span class="cm">// Automatic upcasting</span>
+        animal.<span class="fn">eat</span>();     <span class="cm">// ✅ Works</span>
+        <span class="cm">// animal.bark();  →  ❌ Compile error! Animal doesn't have bark()</span>
 
-<span class="cm">// Downcasting: parent → child (risky, manual)</span>
-<span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span> d) {  <span class="cm">// Pattern matching — safe check + cast</span>
-    d.<span class="fn">bark</span>(); <span class="cm">// ✅ Safe!</span>
+        <span class="cm">// Downcasting: parent → child (risky, manual)</span>
+        <span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span> d) {  <span class="cm">// Pattern matching — safe check + cast</span>
+            d.<span class="fn">bark</span>(); <span class="cm">// ✅ Safe!</span>
+        }
+
+        <span class="cm">// Without pattern matching (older style)</span>
+        <span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span>) {
+            <span class="cl">Dog</span> d2 = (<span class="cl">Dog</span>) animal; <span class="cm">// Manual cast</span>
+            d2.<span class="fn">bark</span>();
+        }
+
+        <span class="cm">// Bad downcast → ClassCastException at runtime!</span>
+        <span class="cm">// Cat cat = (Cat) animal;  →  💥 animal is actually a Dog!</span>
+    }
 }
 
-<span class="cm">// Without pattern matching (older style)</span>
-<span class="kw">if</span> (animal <span class="kw">instanceof</span> <span class="cl">Dog</span>) {
-    <span class="cl">Dog</span> d2 = (<span class="cl">Dog</span>) animal; <span class="cm">// Manual cast</span>
-    d2.<span class="fn">bark</span>();
+<span class="kw">class</span> <span class="cl">Animal</span> {
+    <span class="kw">protected</span> <span class="cl">String</span> name;
+    <span class="kw">public</span> <span class="fn">Animal</span>(<span class="cl">String</span> name) { <span class="kw">this</span>.name = name; }
+    <span class="kw">public void</span> <span class="fn">eat</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(name + <span class="st">" is eating"</span>); }
 }
 
-<span class="cm">// Bad downcast → ClassCastException at runtime!</span>
-<span class="cm">// Cat cat = (Cat) animal;  →  💥 animal is actually a Dog!</span></code></pre>
+<span class="kw">class</span> <span class="cl">Dog</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="kw">private</span> <span class="cl">String</span> breed;
+    <span class="kw">public</span> <span class="fn">Dog</span>(<span class="cl">String</span> name, <span class="cl">String</span> breed) {
+        <span class="kw">super</span>(name);
+        <span class="kw">this</span>.breed = breed;
+    }
+    <span class="kw">public void</span> <span class="fn">bark</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Woof!"</span>); }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -240,9 +336,25 @@ animal.<span class="fn">eat</span>();     <span class="cm">// ✅ Works</span>
     <p>In Java, the <code class="inline">java.lang.Object</code> class is the absolute root of the inheritance tree. Even if you don't write <code class="inline">extends</code>, your class secretly <code class="inline">extends Object</code>. This guarantees that every single object in Java shares a common set of foundational methods.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">Person</span> {
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Objects</span>;
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Person</span> p1 = <span class="kw">new</span> <span class="cl">Person</span>(<span class="st">"Alice"</span>, <span class="nm">25</span>);
+        <span class="cl">Person</span> p2 = <span class="kw">new</span> <span class="cl">Person</span>(<span class="st">"Alice"</span>, <span class="nm">25</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p1);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p1.<span class="fn">equals</span>(p2)); <span class="cm">// true</span>
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Person</span> {
     <span class="kw">private</span> <span class="cl">String</span> name;
     <span class="kw">private int</span> age;
+
+    <span class="kw">public</span> <span class="fn">Person</span>(<span class="cl">String</span> name, <span class="kw">int</span> age) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.age = age;
+    }
 
     <span class="cm">// toString — called by println, string concat, debugging</span>
     <span class="an">@Override</span>

@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Methods in Java – JavaMaster</title>
 <meta name="description" content="Deep dive into Java methods: signatures, overloading, pass-by-value semantics, recursion, varargs, and clean code best practices.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
 </header>
@@ -36,6 +34,13 @@
     <p>In Java, methods are strictly attached to classes (Static) or objects (Instance). There are no "global" functions floating outside of a class.</p>
     <p>A critical concept in Java is its argument-passing mechanism: <strong>Pass-by-Value</strong>. Java <em>always</em> copies the value of the argument. For primitives, it copies the raw data. For objects, it copies the <em>memory reference</em> (the pointer). This means a method can mutate the state of an object passed to it, but it cannot reassign the caller's variable to point to a completely new object.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn parameters, return values, scope, and how one method calls another.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh overload resolution, varargs, immutability expectations, exception contracts, and API evolution.</p>
+    <p><strong>Mastery check:</strong> You understand Methods when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Clean Code Principles</h3>
     <ul class="feature-list">
@@ -50,60 +55,109 @@
     <div class="code-block" style="display:flex;gap:15px;flex-wrap:wrap;">
       <div style="flex:1;min-width:300px;">
         <div class="code-header"><span class="code-lang">Bad (Arrow)</span></div>
-        <pre><code style="font-size:13px;">public void process(User user) {
-  if (user != null) {
-    if (user.isActive()) {
-      if (user.hasCredit()) {
-        // Finally, do the work
-        executeTransaction(user);
-      } else {
-        log("No credit");
-      }
+        <pre><code style="font-size:13px;">class User {
+    private final String name;
+    User(String name) { this.name = name; }
+    String name() { return name; }
+}
+
+class BadExample {
+    public void process(User user) {
+        if (user != null) {
+            if (!user.name().isBlank()) {
+                System.out.println("Processing " + user.name());
+            }
+        }
     }
-  }
-}</code></pre>
-      </div>
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new BadExample().process(new User("Alice"));
+    }
+}</code></pre></div><code style="font-size:13px;">
       <div style="flex:1;min-width:300px;">
         <div class="code-header"><span class="code-lang">Good (Guard Clauses)</span></div>
-        <pre><code style="font-size:13px;">public void process(User user) {
-  if (user == null) return;
-  if (!user.isActive()) return;
-  if (!user.hasCredit()) {
-    log("No credit");
-    return;
-  }
-  
-  // The happy path is flat!
-  executeTransaction(user);
-}</code></pre>
-      </div>
+        <pre><code style="font-size:13px;">class User {
+    private final String name;
+    User(String name) { this.name = name; }
+    String name() { return name; }
+}
+
+class GoodExample {
+    public void process(User user) {
+        if (user == null) return;
+        if (user.name().isBlank()) return;
+        System.out.println("Processing " + user.name());
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new GoodExample().process(new User("Alice"));
+    }
+}</code></pre></div><code style="font-size:13px;">
+    </code></code></div><code style="font-size:13px;"><code style="font-size:13px;">
+  </code></code></div><code style="font-size:13px;"><code style="font-size:13px;">
+</code></code></div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Methods are contracts: inputs, outputs, side effects, exceptions, and naming must agree.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn parameters, return values, scope, and how one method calls another.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh overload resolution, varargs, immutability expectations, exception contracts, and API evolution.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>A method name should reveal the side effect. calculateTotal and saveInvoice must not feel interchangeable.</li>
+      <li>Too many parameters usually means a missing concept. Group related values into a record or class when they travel together.</li>
+      <li>Overloading can become ambiguous with null, boxing, varargs, and generics. Prefer clarity over clever API surfaces.</li>
+      <li>Return empty collections instead of null for collection results unless null has a distinct business meaning.</li>
+      <li>Small methods are not automatically good; useful methods preserve one level of abstraction and have a reason to exist.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Methods</div><div class="hl-desc">Explain Methods without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Methods</div><div class="hl-desc">Use Methods in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Methods</div><div class="hl-desc">Predict how Methods behaves under scale, refactoring, bad input, and production tooling.</div></div>
     </div>
   </div>
 </div>
+<code style="font-size:13px;"><code style="font-size:13px;">
 
 <div class="section" id="anatomy">
   <div class="subsection">
-    <h3>Method Anatomy & Signatures</h3>
+    <h3>Method Anatomy &amp; Signatures</h3>
     <p>A method declaration defines its contract with the caller. The JVM uses the <strong>Method Signature</strong> (the method's name and the exact ordered list of parameter types) to uniquely identify a method. Note: The return type and thrown exceptions are <em>not</em> part of the signature used for resolution.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Method Structure</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Modifiers | Return Type | Name | Parameters | Exceptions
-public static final List<String> processData(int id, String type) throws IOException {
-    // Method body
-    if (id < 0) {
-        throw new IllegalArgumentException("ID must be positive");
-    }
-    return new ArrayList<>(); // Must return the declared type
-}
+      <pre><code>import java.io.IOException;
+import java.util.*;
 
-// Void method - performs an action, returns nothing
-protected void logEvent(String message) {
-    System.out.println(Instant.now() + " : " + message);
-    // return; // Optional explicit return for void methods
-}</code></pre>
-    </div>
-  </div>
-</div>
+public class Main {
+    static List&lt;String&gt; loadNames() throws IOException {
+        return new ArrayList&lt;&gt;(List.of("Alice", "Bob"));
+    }
+
+    static void printNames(List&lt;String&gt; names) {
+        for (String name : names) {
+            System.out.println(name);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        List&lt;String&gt; names = loadNames();
+        printNames(names);
+    }
+}</code></pre></div><code>
+  </code></div><code>
+</code></div><code>
 
 <div class="section" id="passbyvalue">
   <div class="subsection">
@@ -115,13 +169,16 @@ protected void logEvent(String message) {
     </ul>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Pass-by-value demonstration</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class PassByValueDemo {
+      <pre><code>      import java.util.List;
+import java.util.ArrayList;
+
+public class Main {
     public static void main(String[] args) {
         int x = 5;
         modifyPrimitive(x);
         System.out.println(x); // Still 5! (Caller's variable is untouched)
 
-        List<String> list = new ArrayList<>(List.of("A"));
+        List&lt;String&gt; list = new ArrayList&lt;&gt;(List.of("A"));
         modifyReference(list);
         System.out.println(list); // [A, B]! (The object was mutated)
 
@@ -133,18 +190,18 @@ protected void logEvent(String message) {
         val = 99; // Only changes the local copy
     }
 
-    static void modifyReference(List<String> ref) {
+    static void modifyReference(List&lt;String&gt; ref) {
         ref.add("B"); // Modifies the object the reference points to
     }
 
-    static void reassignReference(List<String> ref) {
-        ref = new ArrayList<>(); // Changes local pointer only!
+    static void reassignReference(List&lt;String&gt; ref) {
+        ref = new ArrayList&lt;&gt;(); // Changes local pointer only!
         ref.add("C");
     }
-}</code></pre>
-    </div>
-  </div>
-</div>
+}
+    </code></pre></div><code>
+  </code></div><code>
+</code></div><code>
 
 <div class="section" id="static-vs-instance">
   <div class="subsection">
@@ -168,29 +225,23 @@ protected void logEvent(String message) {
     <p>The Java compiler looks at the arguments provided in the method call and binds it to the most specific matching method signature.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Compile-time resolution</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class Printer {
-    public void print(int i) { System.out.println("Printing int: " + i); }
-    public void print(String s) { System.out.println("Printing String: " + s); }
-    public void print(String s, int count) { 
-        for(int i=0; i<count; i++) System.out.println(s);
-    }
-    
-    // ERROR: Duplicate method! Return type is NOT part of the signature.
-    // public String print(int i) { return String.valueOf(i); } 
+      <pre><code>class Printer {
+    public void print(int value) { System.out.println("Printing int: " + value); }
+    public void print(String value) { System.out.println("Printing String: " + value); }
+    public void print(double value) { System.out.println("Printing double: " + value); }
+}
 
+public class Main {
     public static void main(String[] args) {
-        Printer p = new Printer();
-        p.print(42);         // Binds to print(int)
-        p.print("Hello");    // Binds to print(String)
-        
-        // Autoboxing/Widening resolution
-        short s = 10;
-        p.print(s); // Binds to print(int) because short widens to int automatically
+        Printer printer = new Printer();
+        printer.print(42);
+        printer.print("hello");
+        printer.print(3.14);
     }
-}</code></pre>
-    </div>
-  </div>
-</div>
+}</code></pre><code>
+    </code></div><code>
+  </code></div><code>
+</code></div><code>
 
 <div class="section" id="varargs">
   <div class="subsection">
@@ -202,7 +253,7 @@ protected void logEvent(String message) {
     </ul>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Varargs usage</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class Logger {
+      <pre><code>public class Main {
     // 'args' is treated as an Object[] array inside the method
     public void log(String level, Object... args) {
         System.out.print("[" + level + "] ");
@@ -213,7 +264,7 @@ protected void logEvent(String message) {
     }
 
     public static void main(String[] args) {
-        Logger logger = new Logger();
+        Main logger = new Main();
         logger.log("INFO"); // Zero varargs passed (args is an empty array)
         logger.log("ERROR", "Connection failed", 404); // Two varargs passed
         
@@ -228,37 +279,49 @@ protected void logEvent(String message) {
 
 <div class="section" id="recursion">
   <div class="subsection">
-    <h3>Recursion & The Call Stack</h3>
+    <h3>Recursion &amp; The Call Stack</h3>
     <p>Recursion is a technique where a method calls itself to solve a smaller piece of the same problem. It is elegant for hierarchical data (like file systems or trees) but must be used carefully in Java.</p>
     <p>Every time a method is called, a new <strong>Stack Frame</strong> is pushed onto the JVM's Call Stack. This frame holds the method's local variables and parameters. When the method returns, the frame is popped. If recursion goes too deep without a base case to stop it, the stack runs out of memory, throwing a <code class="inline">StackOverflowError</code>.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Base cases and recursive steps</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Calculates n! (factorial)
-public static long factorial(int n) {
-    // 1. Base Case: The condition where recursion stops
-    if (n <= 1) {
-        return 1;
-    }
-    // 2. Recursive Step: Calling itself with a smaller input
-    return n * factorial(n - 1);
-}
+      <pre><code>      <pre><code><span class="kw">import</span> <span class="cl">java.io.File</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
 
-// Traversing a file directory structure
-public static void findFiles(File dir, String extension, List<File> result) {
-    if (!dir.isDirectory()) return;
-    
-    for (File file : dir.listFiles()) {
-        if (file.isDirectory()) {
-            // Recursive call to search sub-folders
-            findFiles(file, extension, result);
-        } else if (file.getName().endsWith(extension)) {
-            result.add(file);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>("Factorial of 5: " + factorial(<span class="nm">5</span>));
+    }
+
+    // Calculates n! (factorial)
+    <span class="kw">public static long</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+        // 1. Base Case: The condition where recursion stops
+        <span class="kw">if</span> (n &lt;= <span class="nm">1</span>) {
+            <span class="kw">return</span> <span class="nm">1</span>;
+        }
+        // 2. Recursive Step: Calling itself with a smaller input
+        <span class="kw">return</span> n * factorial(n - <span class="nm">1</span>);
+    }
+
+    // Traversing a file directory structure
+    <span class="kw">public static void</span> <span class="fn">findFiles</span>(<span class="cl">File</span> dir, <span class="cl">String</span> extension, <span class="cl">List</span>&lt;<span class="cl">File</span>&gt; result) {
+        <span class="kw">if</span> (!dir.isDirectory()) <span class="kw">return</span>;
+        
+        <span class="cl">File</span>[] files = dir.listFiles();
+        <span class="kw">if</span> (files == <span class="kw">null</span>) <span class="kw">return</span>;
+        <span class="kw">for</span> (<span class="cl">File</span> file : files) {
+            <span class="kw">if</span> (file.isDirectory()) {
+                // Recursive call to search sub-folders
+                findFiles(file, extension, result);
+            } <span class="kw">else if</span> (file.getName().endsWith(extension)) {
+                result.add(file);
+            }
         }
     }
 }</code></pre>
-    </div>
-  </div>
-</div>
+    </code></pre></div><code>
+  </code></div><code>
+</code></div><code>
 
 
 <div class="section" id="interview">
@@ -273,7 +336,7 @@ public static void findFiles(File dir, String extension, List<File> result) {
       <div class="hl-box">
         <div class="hl-label">Question 2</div>
         <div class="hl-value" style="font-size:15px;">Explain "Pass-by-Value" for Objects.</div>
-        <div class="hl-desc">Java passes a <em>copy of the reference</em>. The copy points to the exact same object in the heap. Therefore, you can mutate the object's properties (e.g., <code class="inline">list.add("X")</code>), but if you assign the parameter to a new object (<code class="inline">list = new ArrayList<>()</code>), the caller's reference remains unchanged.</div>
+        <div class="hl-desc">Java passes a <em>copy of the reference</em>. The copy points to the exact same object in the heap. Therefore, you can mutate the object's properties (e.g., <code class="inline">list.add("X")</code>), but if you assign the parameter to a new object (<code class="inline">list = new ArrayList&lt;&gt;()</code>), the caller's reference remains unchanged.</div>
       </div>
       <div class="hl-box">
         <div class="hl-label">Question 3</div>
@@ -289,10 +352,10 @@ public static void findFiles(File dir, String extension, List<File> result) {
   </div>
 </div>
 
-</div>
+</code></code></code></code></code></code></div><code style="font-size:13px;"><code style="font-size:13px;"><code><code>
 <footer><p>JavaMaster — <a href="../oop.html" style="color:var(--accent);">Next: Object-Oriented Programming →</a></p></footer>
-</div>
+</code></code></code></code></div><code style="font-size:13px;"><code style="font-size:13px;"><code><code>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</code></code></code></code></body></html>

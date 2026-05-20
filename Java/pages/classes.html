@@ -54,6 +54,13 @@
     <p>Fields are implementation details unless there is a deliberate reason to expose them. Getters and setters are not automatic good design; they are only useful when reading or changing the value is part of the object's valid contract.</p>
     <p>Static members belong to the class rather than an object. They are useful for constants and stateless helpers, but overuse of static state makes code harder to test and reason about.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn fields, constructors, methods, objects, and how references point to objects.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh immutability, visibility, lifecycle, cohesion, equality, and representation exposure.</p>
+    <p><strong>Mastery check:</strong> You understand Classes and Objects when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>A class is a blueprint. Objects are instances built from that blueprint.</li>
@@ -73,6 +80,36 @@
       <li>You can create an immutable class.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Classes should protect invariants and make valid usage the easiest path.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn fields, constructors, methods, objects, and how references point to objects.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh immutability, visibility, lifecycle, cohesion, equality, and representation exposure.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Constructors should leave objects fully valid. Half-initialized objects create bugs that no amount of getters can fix.</li>
+      <li>Private fields are not enough; if you return a mutable internal object, outside code can still break your invariant.</li>
+      <li>equals and hashCode must be designed together, especially for objects used as map keys or set elements.</li>
+      <li>Static state couples tests and requests through hidden global memory. Use it sparingly and reset it deliberately.</li>
+      <li>A class is cohesive when its fields and methods change for the same reason; otherwise it is multiple concepts wearing one name.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Explain Classes and Objects without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Use Classes and Objects in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Classes and Object</div><div class="hl-desc">Predict how Classes and Objects behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="anatomy">
   <div class="subsection">
@@ -83,8 +120,17 @@
     <p>In Java, every single piece of data and logic must reside inside a class. Let's look at the anatomical structure of a Java class.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Complete Class Structure</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">Student</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Creating objects</span>
+        <span class="cl">Student</span> s1 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Alice"</span>, <span class="nm">20</span>);
+        <span class="cl">Student</span> s2 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Bob"</span>, <span class="nm">22</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(s1);           <span class="cm">// Student{name='Alice', age=20}</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Student</span>.<span class="fn">getCount</span>()); <span class="cm">// 2</span>
+    }
+}
 
+<span class="kw">class</span> <span class="cl">Student</span> {
     <span class="cm">// ── FIELDS (State) ────────────────────────</span>
     <span class="kw">private</span> <span class="cl">String</span> name;          <span class="cm">// Instance field</span>
     <span class="kw">private int</span> age;
@@ -109,13 +155,7 @@
     <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() {
         <span class="kw">return</span> <span class="st">"Student{name='%s', age=%d}"</span>.<span class="fn">formatted</span>(name, age);
     }
-}
-
-<span class="cm">// Creating objects</span>
-<span class="cl">Student</span> s1 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Alice"</span>, <span class="nm">20</span>);
-<span class="cl">Student</span> s2 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="st">"Bob"</span>, <span class="nm">22</span>);
-<span class="cl">System</span>.out.<span class="fn">println</span>(s1);           <span class="cm">// Student{name='Alice', age=20}</span>
-<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="cl">Student</span>.<span class="fn">getCount</span>()); <span class="cm">// 2</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>
@@ -132,7 +172,15 @@
     </ul>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Constructor Types</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">Car</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Car</span> c1 = <span class="kw">new</span> <span class="cl">Car</span>();                    <span class="cm">// Default</span>
+        <span class="cl">Car</span> c2 = <span class="kw">new</span> <span class="cl">Car</span>(<span class="st">"Toyota"</span>, <span class="nm">2023</span>);      <span class="cm">// Parameterized</span>
+        <span class="cl">Car</span> c3 = <span class="kw">new</span> <span class="cl">Car</span>(c2);                  <span class="cm">// Copy</span>
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Car</span> {
     <span class="kw">private</span> <span class="cl">String</span> brand;
     <span class="kw">private int</span> year;
 
@@ -152,11 +200,7 @@
         <span class="kw">this</span>.brand = other.brand;
         <span class="kw">this</span>.year = other.year;
     }
-}
-
-<span class="cl">Car</span> c1 = <span class="kw">new</span> <span class="cl">Car</span>();                    <span class="cm">// Default</span>
-<span class="cl">Car</span> c2 = <span class="kw">new</span> <span class="cl">Car</span>(<span class="st">"Toyota"</span>, <span class="nm">2023</span>);      <span class="cm">// Parameterized</span>
-<span class="cl">Car</span> c3 = <span class="kw">new</span> <span class="cl">Car</span>(c2);                  <span class="cm">// Copy</span></code></pre>
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>
@@ -179,7 +223,7 @@
         <div class="hl-desc">A pointer to the Class metadata (the blueprint) in the Metaspace. This is how the JVM knows what type the object is at runtime.</div>
       </div>
       <div class="hl-box">
-        <div class="hl-label">3. Instance Data & Padding</div>
+        <div class="hl-label">3. Instance Data &amp; Padding</div>
         <div class="hl-desc">The actual fields (e.g., <code>int age</code>). The JVM will often add "padding" bytes so the object size is a multiple of 8 bytes, which makes CPU cache access faster.</div>
       </div>
     </div>
@@ -198,22 +242,43 @@
     <p>The most common use case is resolving naming collisions. If a method parameter has the exact same name as a class field (which is very common in constructors and setters), the compiler gets confused. By prefixing the variable with <code class="inline">this.</code>, you explicitly tell the compiler: "I am talking about the field that belongs to this object, not the parameter you just handed me."</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// 1. Distinguish field from parameter</span>
-<span class="kw">public void</span> <span class="fn">setName</span>(<span class="cl">String</span> name) {
-    <span class="kw">this</span>.name = name; <span class="cm">// this.name = field, name = parameter</span>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Car</span> myCar = <span class="kw">new</span> <span class="cl">Car</span>().<span class="fn">setBrand</span>(<span class="st">"BMW"</span>).<span class="fn">setYear</span>(<span class="nm">2024</span>);
+    }
 }
 
-<span class="cm">// 2. Call another constructor (must be FIRST statement)</span>
-<span class="kw">public</span> <span class="fn">Car</span>() {
-    <span class="kw">this</span>(<span class="st">"Default"</span>, <span class="nm">2024</span>); <span class="cm">// Calls Car(String, int)</span>
-}
+<span class="kw">class</span> <span class="cl">Car</span> {
+    <span class="kw">private</span> <span class="cl">String</span> name;
+    <span class="kw">private</span> <span class="cl">String</span> brand;
+    <span class="kw">private int</span> year;
 
-<span class="cm">// 3. Return current object (for method chaining / fluent API)</span>
-<span class="kw">public</span> <span class="cl">Car</span> <span class="fn">setBrand</span>(<span class="cl">String</span> brand) {
-    <span class="kw">this</span>.brand = brand;
-    <span class="kw">return</span> <span class="kw">this</span>;
-}
-<span class="cm">// Allows: new Car().setBrand("BMW").setYear(2024);</span></code></pre>
+    <span class="cm">// Call another constructor (must be FIRST statement)</span>
+    <span class="kw">public</span> <span class="fn">Car</span>() {
+        <span class="kw">this</span>(<span class="st">"Default"</span>, <span class="nm">2024</span>); <span class="cm">// Calls Car(String, int)</span>
+    }
+
+    <span class="kw">public</span> <span class="fn">Car</span>(<span class="cl">String</span> name, <span class="kw">int</span> year) {
+        <span class="kw">this</span>.name = name;
+        <span class="kw">this</span>.year = year;
+    }
+
+    <span class="cm">// Distinguish field from parameter</span>
+    <span class="kw">public void</span> <span class="fn">setName</span>(<span class="cl">String</span> name) {
+        <span class="kw">this</span>.name = name; <span class="cm">// this.name = field, name = parameter</span>
+    }
+
+    <span class="cm">// Return current object (for method chaining / fluent API)</span>
+    <span class="kw">public</span> <span class="cl">Car</span> <span class="fn">setBrand</span>(<span class="cl">String</span> brand) {
+        <span class="kw">this</span>.brand = brand;
+        <span class="kw">return</span> <span class="kw">this</span>;
+    }
+
+    <span class="kw">public</span> <span class="cl">Car</span> <span class="fn">setYear</span>(<span class="kw">int</span> year) {
+        <span class="kw">this</span>.year = year;
+        <span class="kw">return</span> <span class="kw">this</span>;
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -224,7 +289,17 @@
     <p><code class="inline">static</code> means "belongs to the class, not to any instance". Shared across all objects.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">MathUtils</span> {
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Map</span>;
+<span class="kw">import</span> <span class="cl">java.util.HashMap</span>;
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Called on the CLASS, not an object</span>
+        <span class="kw">int</span> result = <span class="cl">MathUtils</span>.<span class="fn">max</span>(<span class="nm">5</span>, <span class="nm">10</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="cl">MathUtils</span> {
     <span class="cm">// Static field — one copy shared by all instances</span>
     <span class="kw">public static final double</span> PI = <span class="nm">3.14159265</span>;
 
@@ -239,10 +314,7 @@
         cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
         cache.<span class="fn">put</span>(<span class="st">"default"</span>, <span class="nm">0</span>);
     }
-}
-
-<span class="cm">// Called on the CLASS, not an object</span>
-<span class="kw">int</span> result = <span class="cl">MathUtils</span>.<span class="fn">max</span>(<span class="nm">5</span>, <span class="nm">10</span>);</code></pre>
+}</code></pre>
     </div>
     <div class="callout danger">
       <span class="callout-icon">🔥</span>
@@ -281,19 +353,28 @@
     <p>To enforce this, we make the fields <code class="inline">private</code> (hiding them from the outside world), and expose <code class="inline">public</code> methods (Getters and Setters). This allows the class to inject <strong>validation logic</strong> whenever someone tries to change the data.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">BankAccount</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">BankAccount</span> account = <span class="kw">new</span> <span class="cl">BankAccount</span>();
+        account.<span class="fn">deposit</span>(<span class="nm">500.0</span>);
+        account.<span class="fn">withdraw</span>(<span class="nm">200.0</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Balance: "</span> + account.<span class="fn">getBalance</span>());
+    }
+}
+
+<span class="kw">class</span> <span class="cl">BankAccount</span> {
     <span class="kw">private double</span> balance; <span class="cm">// Hidden from outside</span>
 
     <span class="cm">// Getter: read-only access</span>
     <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
 
     <span class="cm">// Setter with VALIDATION — this is the power of encapsulation</span>
-    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="double">double</span> amount) {
         <span class="kw">if</span> (amount &lt;= <span class="nm">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Amount must be positive"</span>);
         <span class="kw">this</span>.balance += amount;
     }
 
-    <span class="kw">public void</span> <span class="fn">withdraw</span>(<span class="kw">double</span> amount) {
+    <span class="kw">public void</span> <span class="fn">withdraw</span>(<span class="double">double</span> amount) {
         <span class="kw">if</span> (amount &gt; balance) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="st">"Insufficient funds"</span>);
         <span class="kw">this</span>.balance -= amount;
     }
@@ -307,12 +388,24 @@
     <h3>Inner &amp; Nested Classes</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">Outer</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Outer</span> outer = <span class="kw">new</span> <span class="cl">Outer</span>();
+        <span class="cl">Outer</span>.<span class="cl">Inner</span> inner = outer.<span class="kw">new</span> <span class="cl">Inner</span>();        <span class="cm">// Needs outer instance</span>
+        <span class="cl">Outer</span>.<span class="cl">StaticNested</span> sn = <span class="kw">new</span> <span class="cl">Outer</span>.<span class="cl">StaticNested</span>(); <span class="cm">// No outer needed</span>
+
+        inner.<span class="fn">show</span>();
+        sn.<span class="fn">show</span>();
+        outer.<span class="fn">demo</span>();
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Outer</span> {
     <span class="kw">private int</span> x = <span class="nm">10</span>;
 
     <span class="cm">// Inner class (non-static) — can access outer's fields</span>
-    <span class="kw">class</span> <span class="cl">Inner</span> {
-        <span class="kw">void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(x); } <span class="cm">// Accesses outer x!</span>
+    <span class="kw">class</span> <span class="cl">Inner {
+        void</span> <span class="fn">show</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(x); } <span class="cm">// Accesses outer x!</span>
     }
 
     <span class="cm">// Static nested class — cannot access outer's instance fields</span>
@@ -326,18 +419,15 @@
             <span class="an">@Override</span>
             <span class="kw">public void</span> <span class="fn">run</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Anonymous!"</span>); }
         };
+        r.<span class="fn">run</span>();
 
         <span class="cm">// Local class (inside a method)</span>
-        <span class="kw">class</span> <span class="cl">LocalClass</span> {
-            <span class="kw">void</span> <span class="fn">greet</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"I'm local"</span>); }
+        <span class="kw">class</span> <span class="cl">LocalClass {
+            void</span> <span class="fn">greet</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"I'm local"</span>); }
         }
+        <span class="kw">new</span> <span class="cl">LocalClass</span>().<span class="fn">greet</span>();
     }
-}
-
-<span class="cm">// Usage</span>
-<span class="cl">Outer</span> outer = <span class="kw">new</span> <span class="cl">Outer</span>();
-<span class="cl">Outer</span>.<span class="cl">Inner</span> inner = outer.<span class="kw">new</span> <span class="cl">Inner</span>();        <span class="cm">// Needs outer instance</span>
-<span class="cl">Outer</span>.<span class="cl">StaticNested</span> sn = <span class="kw">new</span> <span class="cl">Outer</span>.<span class="cl">StaticNested</span>(); <span class="cm">// No outer needed</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>
@@ -347,8 +437,19 @@
     <h3>Final Classes &amp; Methods</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Final class: CANNOT be subclassed</span>
-<span class="kw">public final class</span> <span class="cl">Constants</span> {
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">final int</span> x = <span class="nm">10</span>;
+        <span class="cm">// x = 20;  →  ❌ Compile error!</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Final variable x: "</span> + x);
+
+        <span class="cl">Base</span> base = <span class="kw">new</span> <span class="cl">Base</span>();
+        base.<span class="fn">important</span>();
+    }
+}
+
+<span class="cm">// Final class: CANNOT be subclassed</span>
+<span class="kw">final class</span> <span class="cl">Constants</span> {
     <span class="kw">public static final int</span> MAX = <span class="nm">100</span>;
 }
 <span class="cm">// class Sub extends Constants {}  →  ❌ Compile error!</span>
@@ -358,11 +459,7 @@
     <span class="kw">public final void</span> <span class="fn">important</span>() {
         <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Cannot change me"</span>);
     }
-}
-
-<span class="cm">// Final variable: assigned once, cannot change</span>
-<span class="kw">final int</span> x = <span class="nm">10</span>;
-<span class="cm">// x = 20;  →  ❌ Compile error!</span></code></pre>
+}</code></pre>
     </div>
   </div>
 </div>

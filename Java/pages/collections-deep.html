@@ -43,6 +43,13 @@
     <p>A collection API should reveal what the caller may rely on. If ordering matters, return List or SortedSet. If uniqueness matters, use Set. If key lookup matters, use Map. Vague types and undocumented contracts create hidden bugs.</p>
     <p>Performance discussions should include data size, operation frequency, memory overhead, and mutation pattern. Big-O is a starting point, not a complete performance guarantee.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should connect each collection to a simple use case: list, set, map, queue, stack, sorted data.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh hash flooding, tree bins, fail-fast iterators, comparator consistency, memory overhead, and concurrent alternatives.</p>
+    <p><strong>Mastery check:</strong> You understand Collections Deep Dive when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Choose the right data structure for the job (e.g., ArrayList for fast reads, HashSet for uniqueness).</li>
@@ -62,6 +69,36 @@
       <li>You can correctly override equals() and hashCode() according to the contract.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Deep collection knowledge means understanding contracts, implementation costs, and mutation behavior.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should connect each collection to a simple use case: list, set, map, queue, stack, sorted data.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh hash flooding, tree bins, fail-fast iterators, comparator consistency, memory overhead, and concurrent alternatives.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>HashMap iteration order is not a contract. If order matters, choose LinkedHashMap, TreeMap, or sort explicitly.</li>
+      <li>Comparator inconsistent with equals can make sorted sets and maps appear to lose or merge values unexpectedly.</li>
+      <li>Fail-fast iterators detect some concurrent modification bugs but are not a synchronization guarantee.</li>
+      <li>The load factor balances memory and collision cost. Default settings are good, but huge maps may need deliberate sizing.</li>
+      <li>A collection API should clarify ownership: can callers mutate it, retain it, or rely on its ordering?</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Collections Deep D</div><div class="hl-desc">Explain Collections Deep Dive without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Collections Deep D</div><div class="hl-desc">Use Collections Deep Dive in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Collections Deep D</div><div class="hl-desc">Predict how Collections Deep Dive behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="hierarchy">
   <div class="subsection">
@@ -97,24 +134,30 @@
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">List Operations</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Creating lists</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; mutable = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"a"</span>, <span class="st">"b"</span>));
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; immutable = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"x"</span>, <span class="st">"y"</span>);      <span class="cm">// Unmodifiable!</span>
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; copy = <span class="cl">List</span>.<span class="fn">copyOf</span>(mutable);          <span class="cm">// Unmodifiable copy</span>
+      <pre><code>import java.util.*;
 
-<span class="cm">// Common operations</span>
-mutable.<span class="fn">add</span>(<span class="st">"c"</span>);
-mutable.<span class="fn">add</span>(<span class="nm">0</span>, <span class="st">"first"</span>);    <span class="cm">// Insert at index</span>
-mutable.<span class="fn">set</span>(<span class="nm">1</span>, <span class="st">"replaced"</span>);  <span class="cm">// Replace at index</span>
-mutable.<span class="fn">remove</span>(<span class="st">"c"</span>);         <span class="cm">// Remove by value</span>
-mutable.<span class="fn">remove</span>(<span class="nm">0</span>);            <span class="cm">// Remove by index</span>
-mutable.<span class="fn">contains</span>(<span class="st">"a"</span>);       <span class="cm">// true/false</span>
-mutable.<span class="fn">indexOf</span>(<span class="st">"a"</span>);        <span class="cm">// Index or -1</span>
-mutable.<span class="fn">subList</span>(<span class="nm">0</span>, <span class="nm">2</span>);       <span class="cm">// View of range</span>
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; mutable = new ArrayList&lt;&gt;(List.of("a", "b"));
+        List&lt;String&gt; immutable = List.of("x", "y");
+        List&lt;String&gt; copy = List.copyOf(mutable);
 
-<span class="cm">// Sorting</span>
-mutable.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">naturalOrder</span>());
-mutable.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">comparing</span>(<span class="cl">String</span>::length).<span class="fn">reversed</span>());</code></pre>
+        mutable.add("c");
+        mutable.add(0, "first");
+        mutable.set(1, "replaced");
+        mutable.remove("c");
+        mutable.remove(0);
+
+        System.out.println("Contains a? " + mutable.contains("a"));
+        System.out.println("Index of a: " + mutable.indexOf("a"));
+        System.out.println("Immutable: " + immutable);
+        System.out.println("Copy: " + copy);
+
+        mutable.sort(Comparator.naturalOrder());
+        mutable.sort(Comparator.comparing(String::length).reversed());
+        System.out.println(mutable);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -137,20 +180,27 @@ mutable.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span cl
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Set Operations</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; a = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(<span class="cl">Set</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>));
-<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; b = <span class="cl">Set</span>.<span class="fn">of</span>(<span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>);
+      <pre><code>import java.util.*;
 
-<span class="cm">// Union</span>
-<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; union = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
-union.<span class="fn">addAll</span>(b); <span class="cm">// {A, B, C, D}</span>
+public class Main {
+    public static void main(String[] args) {
+        Set&lt;String&gt; a = new HashSet&lt;&gt;(Set.of("A", "B", "C"));
+        Set&lt;String&gt; b = Set.of("B", "C", "D");
 
-<span class="cm">// Intersection</span>
-<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; inter = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
-inter.<span class="fn">retainAll</span>(b); <span class="cm">// {B, C}</span>
+        Set&lt;String&gt; union = new HashSet&lt;&gt;(a);
+        union.addAll(b);
 
-<span class="cm">// Difference</span>
-<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; diff = <span class="kw">new</span> <span class="cl">HashSet</span>&lt;&gt;(a);
-diff.<span class="fn">removeAll</span>(b); <span class="cm">// {A}</span></code></pre>
+        Set&lt;String&gt; intersection = new HashSet&lt;&gt;(a);
+        intersection.retainAll(b);
+
+        Set&lt;String&gt; difference = new HashSet&lt;&gt;(a);
+        difference.removeAll(b);
+
+        System.out.println("Union: " + union);
+        System.out.println("Intersection: " + intersection);
+        System.out.println("Difference: " + difference);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -174,31 +224,28 @@ diff.<span class="fn">removeAll</span>(b); <span class="cm">// {A}</span></code>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Map Operations</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
-map.<span class="fn">put</span>(<span class="st">"Alice"</span>, <span class="nm">25</span>);
-map.<span class="fn">put</span>(<span class="st">"Bob"</span>, <span class="nm">30</span>);
+      <pre><code>import java.util.*;
 
-<span class="cm">// Safe get with default</span>
-<span class="kw">int</span> age = map.<span class="fn">getOrDefault</span>(<span class="st">"Charlie"</span>, <span class="nm">0</span>); <span class="cm">// 0</span>
+public class Main {
+    public static void main(String[] args) {
+        Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+        map.put("Alice", 25);
+        map.put("Bob", 30);
 
-<span class="cm">// putIfAbsent — only adds if key doesn't exist</span>
-map.<span class="fn">putIfAbsent</span>(<span class="st">"Alice"</span>, <span class="nm">99</span>); <span class="cm">// Ignored, Alice already exists</span>
+        int age = map.getOrDefault("Charlie", 0);
+        map.putIfAbsent("Alice", 99);
+        map.computeIfAbsent("Dave", key -&gt; key.length());
+        map.merge("Alice", 5, Integer::sum);
 
-<span class="cm">// computeIfAbsent — lazy initialization</span>
-map.<span class="fn">computeIfAbsent</span>(<span class="st">"Dave"</span>, k -&gt; k.<span class="fn">length</span>()); <span class="cm">// Dave=4</span>
+        map.forEach((key, value) -&gt; System.out.println(key + ": " + value));
+        System.out.println("Charlie age: " + age);
 
-<span class="cm">// merge — combine old + new value</span>
-map.<span class="fn">merge</span>(<span class="st">"Alice"</span>, <span class="nm">5</span>, <span class="cl">Integer</span>::sum); <span class="cm">// Alice=30 (25+5)</span>
-
-<span class="cm">// Iterating</span>
-map.<span class="fn">forEach</span>((key, val) -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(key + <span class="st">": "</span> + val));
-
-<span class="cm">// Immutable maps</span>
-<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; imm = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="nm">1</span>, <span class="st">"B"</span>, <span class="nm">2</span>);
-<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; imm2 = <span class="cl">Map</span>.<span class="fn">ofEntries</span>(
-    <span class="cl">Map</span>.<span class="fn">entry</span>(<span class="st">"A"</span>, <span class="nm">1</span>),
-    <span class="cl">Map</span>.<span class="fn">entry</span>(<span class="st">"B"</span>, <span class="nm">2</span>)
-);</code></pre>
+        Map&lt;String, Integer&gt; immutable = Map.of("A", 1, "B", 2);
+        Map&lt;String, Integer&gt; immutable2 = Map.ofEntries(Map.entry("A", 1), Map.entry("B", 2));
+        System.out.println(immutable);
+        System.out.println(immutable2);
+    }
+}</code></pre>
     </div>
 
     <h4 style="margin-top:20px;">Under the Hood: HashMap Load Factor</h4>
@@ -215,26 +262,32 @@ map.<span class="fn">forEach</span>((key, val) -&gt; <span class="cl">System</sp
     <p>A <code class="inline">Deque</code> (Double Ended Queue) is a line where you can add or remove from <em>either</em> the front or the back. Because of this, it is the standard class used to implement <strong>Stacks</strong> (LIFO - Last-In, First-Out), like a stack of plates.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Queue (FIFO)</span>
-<span class="cl">Queue</span>&lt;<span class="cl">String</span>&gt; queue = <span class="kw">new</span> <span class="cl">LinkedList</span>&lt;&gt;();
-queue.<span class="fn">offer</span>(<span class="st">"First"</span>);   <span class="cm">// Add to tail</span>
-queue.<span class="fn">offer</span>(<span class="st">"Second"</span>);
-queue.<span class="fn">peek</span>();            <span class="cm">// View head: "First" (doesn't remove)</span>
-queue.<span class="fn">poll</span>();            <span class="cm">// Remove head: "First"</span>
+      <pre><code>import java.util.*;
 
-<span class="cm">// PriorityQueue (sorted by priority)</span>
-<span class="cl">PriorityQueue</span>&lt;<span class="cl">Integer</span>&gt; pq = <span class="kw">new</span> <span class="cl">PriorityQueue</span>&lt;&gt;();
-pq.<span class="fn">offer</span>(<span class="nm">30</span>); pq.<span class="fn">offer</span>(<span class="nm">10</span>); pq.<span class="fn">offer</span>(<span class="nm">20</span>);
-pq.<span class="fn">poll</span>(); <span class="cm">// 10 (smallest first)</span>
+public class Main {
+    public static void main(String[] args) {
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.offer("First");
+        queue.offer("Second");
+        System.out.println(queue.peek());
+        System.out.println(queue.poll());
 
-<span class="cm">// Deque (Double-ended queue — also used as Stack)</span>
-<span class="cl">Deque</span>&lt;<span class="cl">String</span>&gt; deque = <span class="kw">new</span> <span class="cl">ArrayDeque</span>&lt;&gt;();
-deque.<span class="fn">push</span>(<span class="st">"A"</span>);   <span class="cm">// Stack: push to front</span>
-deque.<span class="fn">push</span>(<span class="st">"B"</span>);
-deque.<span class="fn">pop</span>();         <span class="cm">// Stack: pop from front → "B"</span>
+        PriorityQueue&lt;Integer&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.offer(30);
+        pq.offer(10);
+        pq.offer(20);
+        System.out.println("Priority poll: " + pq.poll());
 
-deque.<span class="fn">offerFirst</span>(<span class="st">"Front"</span>);
-deque.<span class="fn">offerLast</span>(<span class="st">"Back"</span>);</code></pre>
+        Deque&lt;String&gt; deque = new ArrayDeque&lt;&gt;();
+        deque.push("A");
+        deque.push("B");
+        System.out.println("Stack pop: " + deque.pop());
+
+        deque.offerFirst("Front");
+        deque.offerLast("Back");
+        System.out.println(deque);
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">💡</span>
@@ -250,26 +303,32 @@ deque.<span class="fn">offerLast</span>(<span class="st">"Back"</span>);</code><
     <p>Wildcards (<code class="inline">?</code>) are used when dealing with generic collections. The golden rule of wildcards is <strong>PECS</strong> (Producer Extends, Consumer Super). If you only need to <em>read</em> from a collection, use <code class="inline">extends</code>. If you only need to <em>write</em> to it, use <code class="inline">super</code>.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Wildcards</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Upper bounded: ? extends T — read-only, accepts T and subclasses</span>
-<span class="kw">public double</span> <span class="fn">sum</span>(<span class="cl">List</span>&lt;? <span class="kw">extends</span> <span class="cl">Number</span>&gt; list) {
-    <span class="kw">return</span> list.<span class="fn">stream</span>().<span class="fn">mapToDouble</span>(<span class="cl">Number</span>::doubleValue).<span class="fn">sum</span>();
-}
-<span class="fn">sum</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>));      <span class="cm">// ✅ List&lt;Integer&gt;</span>
-<span class="fn">sum</span>(<span class="cl">List</span>.<span class="fn">of</span>(<span class="nm">1.5</span>, <span class="nm">2.5</span>));    <span class="cm">// ✅ List&lt;Double&gt;</span>
+      <pre><code>import java.util.*;
 
-<span class="cm">// Lower bounded: ? super T — write-only, accepts T and superclasses</span>
-<span class="kw">public void</span> <span class="fn">addNumbers</span>(<span class="cl">List</span>&lt;? <span class="kw">super</span> <span class="cl">Integer</span>&gt; list) {
-    list.<span class="fn">add</span>(<span class="nm">1</span>);
-    list.<span class="fn">add</span>(<span class="nm">2</span>);
-}
+public class Main {
+    public static double sum(List&lt;? extends Number&gt; list) {
+        return list.stream().mapToDouble(Number::doubleValue).sum();
+    }
 
-<span class="cm">// PECS: Producer Extends, Consumer Super</span>
-<span class="cm">// Reading FROM a collection → use extends (producer)</span>
-<span class="cm">// Writing TO a collection → use super (consumer)</span>
+    public static void addNumbers(List&lt;? super Integer&gt; list) {
+        list.add(1);
+        list.add(2);
+    }
 
-<span class="cm">// Generic method</span>
-<span class="kw">public</span> &lt;<span class="cl">T</span> <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;<span class="cl">T</span>&gt;&gt; <span class="cl">T</span> <span class="fn">max</span>(<span class="cl">T</span> a, <span class="cl">T</span> b) {
-    <span class="kw">return</span> (a.<span class="fn">compareTo</span>(b) &gt;= <span class="nm">0</span>) ? a : b;
+    public static &lt;T extends Comparable&lt;T&gt;&gt; T max(T a, T b) {
+        return a.compareTo(b) &gt;= 0 ? a : b;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(sum(List.of(1, 2, 3)));
+        System.out.println(sum(List.of(1.5, 2.5)));
+
+        List&lt;Number&gt; numbers = new ArrayList&lt;&gt;();
+        addNumbers(numbers);
+        System.out.println(numbers);
+
+        System.out.println(max("apple", "banana"));
+    }
 }</code></pre>
     </div>
   </div>
@@ -280,28 +339,34 @@ deque.<span class="fn">offerLast</span>(<span class="st">"Back"</span>);</code><
     <h3>Comparable vs Comparator</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Comparable — natural ordering defined INSIDE the class</span>
-<span class="kw">public record</span> <span class="cl">Employee</span>(<span class="cl">String</span> name, <span class="kw">double</span> salary)
-    <span class="kw">implements</span> <span class="cl">Comparable</span>&lt;<span class="cl">Employee</span>&gt; {
+      <pre><code>import java.util.*;
 
-    <span class="an">@Override</span>
-    <span class="kw">public int</span> <span class="fn">compareTo</span>(<span class="cl">Employee</span> other) {
-        <span class="kw">return</span> <span class="cl">Double</span>.<span class="fn">compare</span>(<span class="kw">this</span>.salary, other.salary);
+record Employee(String name, double salary) implements Comparable&lt;Employee&gt; {
+    @Override
+    public int compareTo(Employee other) {
+        return Double.compare(this.salary, other.salary);
     }
 }
-<span class="cl">Collections</span>.<span class="fn">sort</span>(employees); <span class="cm">// Uses compareTo</span>
 
-<span class="cm">// Comparator — external sorting, can have multiple</span>
-<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; byName = <span class="cl">Comparator</span>.<span class="fn">comparing</span>(<span class="cl">Employee</span>::name);
-<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; bySalaryDesc = <span class="cl">Comparator</span>
-    .<span class="fn">comparingDouble</span>(<span class="cl">Employee</span>::salary).<span class="fn">reversed</span>();
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Employee&gt; employees = new ArrayList&lt;&gt;(List.of(
+            new Employee("Bob", 70000),
+            new Employee("Alice", 90000),
+            new Employee("Alice", 80000)
+        ));
 
-<span class="cm">// Chain comparators</span>
-<span class="cl">Comparator</span>&lt;<span class="cl">Employee</span>&gt; byNameThenSalary = <span class="cl">Comparator</span>
-    .<span class="fn">comparing</span>(<span class="cl">Employee</span>::name)
-    .<span class="fn">thenComparingDouble</span>(<span class="cl">Employee</span>::salary);
+        Collections.sort(employees);
+        System.out.println("By natural salary: " + employees);
 
-employees.<span class="fn">sort</span>(byNameThenSalary);</code></pre>
+        Comparator&lt;Employee&gt; byNameThenSalary = Comparator
+            .comparing(Employee::name)
+            .thenComparingDouble(Employee::salary);
+
+        employees.sort(byNameThenSalary);
+        System.out.println("By name then salary: " + employees);
+    }
+}</code></pre>
     </div>
   </div>
 </div>

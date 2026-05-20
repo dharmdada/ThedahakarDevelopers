@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Design Patterns and SOLID - JavaMaster</title>
 <meta name="description" content="Master Java design patterns: Singleton, Builder, Factory, Strategy, Observer, Decorator, Adapter, Facade, Command and SOLID principles with real code examples.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Professional</span></div>
 </header>
@@ -37,6 +35,13 @@
     <p>Patterns should <strong>emerge from pressure in the code</strong>, not be applied upfront. The most common mistake is applying patterns before the problem exists. The second most common mistake is not recognizing when a pattern would save you from a growing mess.</p>
     <p>In modern Java, many classic patterns have cleaner implementations. Strategy is just a functional interface + lambda. Command is a <code class="inline">Runnable</code> or <code class="inline">Supplier</code>. Observer is an event bus or reactive stream. Know the pattern conceptually, apply it with modern Java idioms.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn the problem each pattern solves before memorizing class diagrams.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh when patterns emerge naturally, when they overfit, and how modern Java changes older implementations.</p>
+    <p><strong>Mastery check:</strong> You understand Design Patterns when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -66,6 +71,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Patterns are names for tradeoffs, not badges to attach to every problem.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn the problem each pattern solves before memorizing class diagrams.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh when patterns emerge naturally, when they overfit, and how modern Java changes older implementations.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>A pattern is useful only when it reduces change cost. If it adds indirection without a likely variation point, it is ceremony.</li>
+      <li>Strategy is often just an interface plus a few implementations; do not overbuild it.</li>
+      <li>Singleton is global state with a formal outfit. It should be rare, carefully initialized, and easy to test around.</li>
+      <li>Factory methods are valuable when construction choices are complex or need names; otherwise constructors and records are clearer.</li>
+      <li>Modern Java features can simplify classic patterns: records for value objects, lambdas for strategies, sealed types for known variants.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Design Patterns</div><div class="hl-desc">Explain Design Patterns without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Design Patterns</div><div class="hl-desc">Use Design Patterns in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Design Patterns</div><div class="hl-desc">Predict how Design Patterns behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="solid">
   <div class="subsection">
@@ -75,34 +110,58 @@
     <p>A class should have <strong>one reason to change</strong>. If it handles both business logic and email sending, it changes when business rules change AND when email templates change.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ Violation — UserService does everything</span><button class="copy-btn">Copy</button></div>
-      <pre><code>class UserService {
-    void register(User u) {
-        // 1. Validation logic embedded directly
-        if (u.email() == null || !u.email().contains("@")) {
+      <pre><code>record User(String email) {}
+
+class UserService {
+    void register(User user) {
+        if (user.email() == null || !user.email().contains("@")) {
             throw new IllegalArgumentException("Invalid email");
         }
-        
-        // 2. Database logic embedded directly
-        String sql = "INSERT INTO users (email) VALUES ('" + u.email() + "')";
-        databaseConnection.execute(sql);
-        
-        // 3. Email sending logic embedded directly
-        SmtpClient mailer = new SmtpClient("smtp.example.com");
-        mailer.send(u.email(), "Welcome to our platform!");
+        System.out.println("Saving " + user.email());
+        System.out.println("Sending welcome email");
+        System.out.println("Writing audit log");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new UserService().register(new User("alice@example.com"));
     }
 }</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Fixed — each class has one job</span><button class="copy-btn">Copy</button></div>
-      <pre><code>class UserRegistrationService {
-    private final UserRepository repo;
-    private final EmailService    email;
-    private final AuditLogger     audit;
+      <pre><code>record User(String email) {}
+interface UserRepository { void save(User user); }
+interface EmailService { void sendWelcome(User user); }
+interface AuditLogger { void log(String event); }
 
-    void register(User u) {
-        repo.save(u);
-        email.sendWelcome(u);
-        audit.log("REGISTER", u.id());
+class UserRegistrationService {
+    private final UserRepository repo;
+    private final EmailService email;
+    private final AuditLogger audit;
+
+    UserRegistrationService(UserRepository repo, EmailService email, AuditLogger audit) {
+        this.repo = repo;
+        this.email = email;
+        this.audit = audit;
+    }
+
+    void register(User user) {
+        repo.save(user);
+        email.sendWelcome(user);
+        audit.log("registered " + user.email());
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        var service = new UserRegistrationService(
+            user -&gt; System.out.println("Saved " + user.email()),
+            user -&gt; System.out.println("Welcome " + user.email()),
+            System.out::println
+        );
+        service.register(new User("alice@example.com"));
     }
 }</code></pre>
     </div>
@@ -115,14 +174,24 @@
     double apply(double price);
 }
 
-class NoDiscount       implements DiscountPolicy { public double apply(double p) { return p; } }
-class TenPercentOff    implements DiscountPolicy { public double apply(double p) { return p * 0.90; } }
-class HappyHourPolicy  implements DiscountPolicy { public double apply(double p) { return p * 0.75; } }
+class NoDiscount implements DiscountPolicy {
+    public double apply(double price) { return price; }
+}
 
-class DiscountCalculator {
-    // This class never changes when new policies are added
-    double finalPrice(double base, DiscountPolicy policy) {
-        return policy.apply(base);
+class BlackFridayDiscount implements DiscountPolicy {
+    public double apply(double price) { return price * 0.70; }
+}
+
+class CheckoutService {
+    private final DiscountPolicy policy;
+    CheckoutService(DiscountPolicy policy) { this.policy = policy; }
+    double total(double price) { return policy.apply(price); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        CheckoutService checkout = new CheckoutService(new BlackFridayDiscount());
+        System.out.println(checkout.total(100.0));
     }
 }</code></pre>
     </div>
@@ -132,55 +201,90 @@ class DiscountCalculator {
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ Classic LSP violation: Square extends Rectangle</span><button class="copy-btn">Copy</button></div>
       <pre><code>class Rectangle {
-    int width, height;
-    void setWidth(int w)  { this.width = w; }
-    void setHeight(int h) { this.height = h; }
+    protected int width;
+    protected int height;
+    void setWidth(int width) { this.width = width; }
+    void setHeight(int height) { this.height = height; }
     int area() { return width * height; }
 }
 
 class Square extends Rectangle {
-    @Override void setWidth(int w)  { this.width = this.height = w; } // breaks contract!
-    @Override void setHeight(int h) { this.width = this.height = h; }
+    @Override void setWidth(int width) { this.width = width; this.height = width; }
+    @Override void setHeight(int height) { this.width = height; this.height = height; }
 }
 
-// Caller expects: r.setWidth(5); r.setHeight(3); area() == 15
-// With Square:   area() == 9 — BROKEN!</code></pre>
+public class Main {
+    static void resize(Rectangle rectangle) {
+        rectangle.setWidth(5);
+        rectangle.setHeight(4);
+        System.out.println("Area: " + rectangle.area());
+    }
+
+    public static void main(String[] args) {
+        resize(new Rectangle());
+        resize(new Square());
+    }
+}</code></pre>
     </div>
 
     <h4 style="margin-top:18px; color:var(--accent);">I — Interface Segregation Principle</h4>
     <p>No class should be forced to implement methods it doesn't use. Split fat interfaces.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Split into focused interfaces</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// ❌ Fat interface forces PrinterScanner to implement fax
-interface AllInOneMachine { void print(); void scan(); void fax(); }
-
-// ✅ Segregated interfaces
-interface Printer  { void print(); }
-interface Scanner  { void scan();  }
+      <pre><code>interface Printer { void print(); }
+interface ScannerDevice { void scan(); }
 interface FaxMachine { void fax(); }
 
-class OfficePrinter implements Printer, Scanner {}     // no fax forced
-class LegacyFax     implements Printer, FaxMachine {}  // no scan forced</code></pre>
+class SimplePrinter implements Printer {
+    public void print() { System.out.println("Printing"); }
+}
+
+class OfficeMachine implements Printer, ScannerDevice, FaxMachine {
+    public void print() { System.out.println("Printing"); }
+    public void scan() { System.out.println("Scanning"); }
+    public void fax() { System.out.println("Faxing"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Printer printer = new SimplePrinter();
+        printer.print();
+    }
+}</code></pre>
     </div>
 
     <h4 style="margin-top:18px; color:var(--accent);">D — Dependency Inversion Principle</h4>
     <p>Depend on abstractions (interfaces), not concrete classes. High-level modules should not depend on low-level modules.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ OrderService depends on Repository interface, not MySQL impl</span><button class="copy-btn">Copy</button></div>
-      <pre><code>interface OrderRepository {
+      <pre><code>import java.util.*;
+
+record Order(long id) {}
+interface OrderRepository {
     void save(Order order);
     Optional&lt;Order&gt; findById(long id);
 }
 
-class OrderService {
-    private final OrderRepository repo; // abstraction, not MySqlOrderRepository!
-
-    OrderService(OrderRepository repo) { this.repo = repo; }
-    void placeOrder(Order o) { repo.save(o); }
+class InMemoryOrderRepository implements OrderRepository {
+    private final Map&lt;Long, Order&gt; orders = new HashMap&lt;&gt;();
+    public void save(Order order) { orders.put(order.id(), order); }
+    public Optional&lt;Order&gt; findById(long id) { return Optional.ofNullable(orders.get(id)); }
 }
 
-// Production: inject MySqlOrderRepository
-// Tests:      inject InMemoryOrderRepository — no DB needed!</code></pre>
+class OrderService {
+    private final OrderRepository repo;
+    OrderService(OrderRepository repo) { this.repo = repo; }
+    void create(Order order) { repo.save(order); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        OrderRepository repo = new InMemoryOrderRepository();
+        OrderService service = new OrderService(repo);
+        service.create(new Order(101));
+        System.out.println(repo.findById(101));
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -192,61 +296,87 @@ class OrderService {
     <h4 style="color:var(--accent); margin-top:8px;">Singleton — Thread-Safe Implementation</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Best option: Enum Singleton (serialization + reflection safe)</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public enum AppConfig {
+      <pre><code>enum AppConfig {
     INSTANCE;
 
-    private final String dbUrl = System.getenv("DB_URL");
-    public String getDbUrl() { return dbUrl; }
+    private final String dbUrl = System.getenv().getOrDefault("DB_URL", "jdbc:h2:mem:test");
+
+    String dbUrl() { return dbUrl; }
 }
-// Usage: AppConfig.INSTANCE.getDbUrl()</code></pre>
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(AppConfig.INSTANCE.dbUrl());
+    }
+}</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Alternative: Initialization-on-demand holder (lazy, thread-safe)</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class ConnectionPool {
+      <pre><code>class ConnectionPool {
     private ConnectionPool() {}
 
     private static class Holder {
-        static final ConnectionPool INSTANCE = new ConnectionPool();
+        private static final ConnectionPool INSTANCE = new ConnectionPool();
     }
 
-    public static ConnectionPool getInstance() { return Holder.INSTANCE; }
+    static ConnectionPool getInstance() {
+        return Holder.INSTANCE;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println(ConnectionPool.getInstance() == ConnectionPool.getInstance());
+    }
 }</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Builder — Complex Object Construction</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Builder pattern — eliminates telescoping constructors</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class EmailMessage {
-    private final String to, subject, body, replyTo;
+      <pre><code>class EmailMessage {
+    private final String to;
+    private final String subject;
+    private final String body;
+    private final String replyTo;
     private final boolean html;
 
-    private EmailMessage(Builder b) {
-        this.to = b.to; this.subject = b.subject;
-        this.body = b.body; this.replyTo = b.replyTo;
-        this.html = b.html;
+    private EmailMessage(Builder builder) {
+        this.to = builder.to;
+        this.subject = builder.subject;
+        this.body = builder.body;
+        this.replyTo = builder.replyTo;
+        this.html = builder.html;
     }
 
-    public static class Builder {
-        private final String to, subject;     // required
-        private String body = "", replyTo = "";
-        private boolean html = false;
+    static class Builder {
+        private final String to;
+        private String subject = "";
+        private String body = "";
+        private String replyTo = "";
+        private boolean html;
 
-        public Builder(String to, String subject) {
-            this.to = to; this.subject = subject;
-        }
-        public Builder body(String body)       { this.body = body;       return this; }
-        public Builder replyTo(String replyTo) { this.replyTo = replyTo; return this; }
-        public Builder html(boolean html)      { this.html = html;       return this; }
-        public EmailMessage build()            { return new EmailMessage(this); }
+        Builder(String to) { this.to = to; }
+        Builder subject(String subject) { this.subject = subject; return this; }
+        Builder body(String body) { this.body = body; return this; }
+        Builder replyTo(String replyTo) { this.replyTo = replyTo; return this; }
+        Builder html(boolean html) { this.html = html; return this; }
+        EmailMessage build() { return new EmailMessage(this); }
     }
+
+    @Override public String toString() { return subject + " -&gt; " + to + " html=" + html; }
 }
 
-// Usage — self-documenting!
-EmailMessage msg = new EmailMessage.Builder("user@example.com", "Welcome!")
-    .body("&lt;h1&gt;Welcome!&lt;/h1&gt;")
-    .html(true)
-    .replyTo("noreply@company.com")
-    .build();</code></pre>
+public class Main {
+    public static void main(String[] args) {
+        EmailMessage message = new EmailMessage.Builder("alice@example.com")
+            .subject("Welcome")
+            .body("Hello Alice")
+            .html(false)
+            .build();
+        System.out.println(message);
+    }
+}</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Factory Method — Object Creation by Type</h4>
@@ -257,26 +387,28 @@ EmailMessage msg = new EmailMessage.Builder("user@example.com", "Welcome!")
 }
 
 class EmailNotification implements Notification {
-    public void send(String msg) { /* send email */ }
-}
-class SmsNotification implements Notification {
-    public void send(String msg) { /* send SMS */ }
-}
-class PushNotification implements Notification {
-    public void send(String msg) { /* send push */ }
+    public void send(String message) { System.out.println("Email: " + message); }
 }
 
-class NotificationFactory {
-    public static Notification create(String type) {
-        return switch (type.toUpperCase()) {
-            case "EMAIL" -> new EmailNotification();
-            case "SMS"   -> new SmsNotification();
-            case "PUSH"  -> new PushNotification();
-            default -> throw new IllegalArgumentException("Unknown type: " + type);
-        };
+abstract class NotificationDecorator implements Notification {
+    protected final Notification wrapped;
+    NotificationDecorator(Notification wrapped) { this.wrapped = wrapped; }
+}
+
+class LoggingNotification extends NotificationDecorator {
+    LoggingNotification(Notification wrapped) { super(wrapped); }
+    public void send(String message) {
+        System.out.println("Log before send");
+        wrapped.send(message);
     }
 }
-// Usage: NotificationFactory.create("EMAIL").send("Hello!");</code></pre>
+
+public class Main {
+    public static void main(String[] args) {
+        Notification notification = new LoggingNotification(new EmailNotification());
+        notification.send("Build complete");
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -288,21 +420,27 @@ class NotificationFactory {
     <h4 style="color:var(--accent);">Strategy — Algorithm Selection at Runtime</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Strategy with Java functional interface (modern, clean)</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Strategy IS a functional interface in modern Java
+      <pre><code>import java.util.*;
+
 @FunctionalInterface
 interface SortStrategy {
     void sort(List&lt;Integer&gt; data);
 }
 
-class DataProcessor {
+class NumberSorter {
     private final SortStrategy strategy;
-    DataProcessor(SortStrategy strategy) { this.strategy = strategy; }
-    void process(List&lt;Integer&gt; data) { strategy.sort(data); }
+    NumberSorter(SortStrategy strategy) { this.strategy = strategy; }
+    void sort(List&lt;Integer&gt; data) { strategy.sort(data); }
 }
 
-// Usage: swap algorithms at construction time
-DataProcessor p1 = new DataProcessor(Collections::sort);        // built-in
-DataProcessor p2 = new DataProcessor(data -&gt; data.sort(Comparator.reverseOrder()));</code></pre>
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; numbers = new ArrayList&lt;&gt;(List.of(3, 1, 2));
+        NumberSorter sorter = new NumberSorter(Collections::sort);
+        sorter.sort(numbers);
+        System.out.println(numbers);
+    }
+}</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Decorator — Add Behavior Without Subclassing</h4>
@@ -312,66 +450,88 @@ DataProcessor p2 = new DataProcessor(data -&gt; data.sort(Comparator.reverseOrde
     String process(String text);
 }
 
-class PlainText implements TextProcessor {
-    public String process(String text) { return text; }
+class TrimProcessor implements TextProcessor {
+    public String process(String text) { return text.trim(); }
 }
 
-class UpperCaseDecorator implements TextProcessor {
-    private final TextProcessor inner;
-    UpperCaseDecorator(TextProcessor inner) { this.inner = inner; }
-    public String process(String text) { return inner.process(text).toUpperCase(); }
+class UppercaseProcessor implements TextProcessor {
+    public String process(String text) { return text.toUpperCase(); }
 }
 
-class TrimDecorator implements TextProcessor {
-    private final TextProcessor inner;
-    TrimDecorator(TextProcessor inner) { this.inner = inner; }
-    public String process(String text) { return inner.process(text).trim(); }
+class ProcessorChain implements TextProcessor {
+    private final TextProcessor first;
+    private final TextProcessor second;
+    ProcessorChain(TextProcessor first, TextProcessor second) {
+        this.first = first;
+        this.second = second;
+    }
+    public String process(String text) { return second.process(first.process(text)); }
 }
 
-// Chain decorators at runtime — no subclass explosion!
-TextProcessor pipeline = new UpperCaseDecorator(new TrimDecorator(new PlainText()));
-pipeline.process("  hello world  "); // "HELLO WORLD"</code></pre>
+public class Main {
+    public static void main(String[] args) {
+        TextProcessor processor = new ProcessorChain(new TrimProcessor(), new UppercaseProcessor());
+        System.out.println(processor.process("  hello  "));
+    }
+}</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Observer — Decoupled Event Notification</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Observer with functional listeners (modern Java style)</span><button class="copy-btn">Copy</button></div>
-      <pre><code>class OrderEventBus {
+      <pre><code>import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
+
+record Order(long id) {}
+
+class OrderEventBus {
     private final List&lt;Consumer&lt;Order&gt;&gt; listeners = new CopyOnWriteArrayList&lt;&gt;();
 
-    public void subscribe(Consumer&lt;Order&gt; listener)    { listeners.add(listener); }
-    public void publish(Order order)                    { listeners.forEach(l -&gt; l.accept(order)); }
+    public void subscribe(Consumer&lt;Order&gt; listener) { listeners.add(listener); }
+    public void publish(Order order) { listeners.forEach(listener -&gt; listener.accept(order)); }
 }
 
-// Usage — no tight coupling between OrderService and email/inventory/audit
-OrderEventBus bus = new OrderEventBus();
-bus.subscribe(o -&gt; emailService.sendConfirmation(o));
-bus.subscribe(o -&gt; inventory.reserve(o));
-bus.subscribe(o -&gt; audit.log("ORDER_PLACED", o));
-
-bus.publish(newOrder); // all listeners notified</code></pre>
+public class Main {
+    public static void main(String[] args) {
+        OrderEventBus bus = new OrderEventBus();
+        bus.subscribe(order -&gt; System.out.println("Audit order " + order.id()));
+        bus.subscribe(order -&gt; System.out.println("Email for order " + order.id()));
+        bus.publish(new Order(42));
+    }
+}</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Adapter — Wrap Incompatible Interfaces</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Adapting legacy payment gateway to modern interface</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Your clean interface
+      <pre><code>record Money(String currency, long cents) {}
+record PaymentResult(boolean success, String message) {}
+
 interface PaymentGateway {
     PaymentResult charge(String customerId, Money amount);
 }
 
-// Legacy third-party library you can't change
-class LegacyPayLib {
-    public int processPayment(String cid, double amt, String currency) { /* ... */ return 0; }
+class ThirdPartyPaymentClient {
+    String makePayment(String customerId, long cents, String currency) {
+        return "OK:" + customerId + ":" + cents + currency;
+    }
 }
 
-// Adapter bridges them
-class LegacyPaymentAdapter implements PaymentGateway {
-    private final LegacyPayLib legacy = new LegacyPayLib();
+class ThirdPartyPaymentAdapter implements PaymentGateway {
+    private final ThirdPartyPaymentClient client;
+    ThirdPartyPaymentAdapter(ThirdPartyPaymentClient client) { this.client = client; }
 
     public PaymentResult charge(String customerId, Money amount) {
-        int code = legacy.processPayment(customerId, amount.value(), amount.currency());
-        return code == 0 ? PaymentResult.success() : PaymentResult.failure(code);
+        String response = client.makePayment(customerId, amount.cents(), amount.currency());
+        return new PaymentResult(response.startsWith("OK"), response);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        PaymentGateway gateway = new ThirdPartyPaymentAdapter(new ThirdPartyPaymentClient());
+        System.out.println(gateway.charge("cust-1", new Money("USD", 2500)));
     }
 }</code></pre>
     </div>
@@ -427,5 +587,5 @@ class LegacyPaymentAdapter implements PaymentGateway {
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>

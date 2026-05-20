@@ -35,6 +35,13 @@
     <p>The central design idea is portability through abstraction. Source code is compiled once into bytecode, and each JVM implementation translates that bytecode to native execution for its operating system and CPU. This model lets teams standardize application behavior without standardizing every machine underneath.</p>
     <p>Java also values long-term compatibility. A serious enterprise language must let old code keep running while new features arrive. This is why Java evolves cautiously: records, lambdas, modules, pattern matching, and virtual threads were introduced in ways that preserve the older ecosystem.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should separate Java source code from the JVM that runs compiled bytecode.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh how platform independence is achieved through bytecode, verification, class loading, JIT compilation, and standard APIs.</p>
+    <p><strong>Mastery check:</strong> You understand What Is Java when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Java is a platform (JVM), not just a language. Understand the bytecode lifecycle.</li>
@@ -119,8 +126,8 @@ java HelloWorld         # execute on JVM</code></pre>
     <h3>Why Teams Choose Java for Enterprise</h3>
     <p>Startups often pick Python or Node.js for rapid prototyping. However, when systems scale to millions of users, require extreme reliability, or need to be maintained by teams of hundreds over decades, Java is frequently the language of choice.</p>
     <ul class="feature-list">
-      <li><strong>Strong Typing & Refactoring:</strong> The compiler catches defects instantly. Changing a method signature safely updates hundreds of usages across a massive codebase, supported by unmatched IDE tooling (IntelliJ, Eclipse).</li>
-      <li><strong>Observability & Profiling:</strong> The JVM exposes deep metrics. Tools like JFR (Java Flight Recorder) allow developers to record a running production application with <1% overhead and analyze memory, CPU, and lock contention.</li>
+      <li><strong>Strong Typing &amp; Refactoring:</strong> The compiler catches defects instantly. Changing a method signature safely updates hundreds of usages across a massive codebase, supported by unmatched IDE tooling (IntelliJ, Eclipse).</li>
+      <li><strong>Observability &amp; Profiling:</strong> The JVM exposes deep metrics. Tools like JFR (Java Flight Recorder) allow developers to record a running production application with &lt;1% overhead and analyze memory, CPU, and lock contention.</li>
       <li><strong>Backward Compatibility:</strong> Code written in Java 8 (2014) still compiles and runs on Java 21, often significantly faster due to JVM improvements without touching the source code.</li>
       <li><strong>State-of-the-Art Garbage Collection:</strong> Modern collectors like ZGC and Shenandoah can manage multi-terabyte heaps with pause times under 1 millisecond.</li>
       <li><strong>Concurrecy (Project Loom):</strong> Virtual Threads allow Java to handle millions of concurrent connections natively, bypassing the OS thread limits that constrain other languages.</li>
@@ -150,10 +157,40 @@ java HelloWorld         # execute on JVM</code></pre>
     </div>
   </div>
 </div></div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Understand Java as a language, runtime, library ecosystem, and deployment model working together.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should separate Java source code from the JVM that runs compiled bytecode.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh how platform independence is achieved through bytecode, verification, class loading, JIT compilation, and standard APIs.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Java is not just a language; it is a contract between compiler, bytecode verifier, runtime, libraries, and tooling.</li>
+      <li>The same Java code can behave differently across environments when classpaths, encodings, locales, time zones, native libraries, or JVM flags differ.</li>
+      <li>Java survives in enterprises because compatibility, observability, tooling, and predictable runtime behavior matter more than fashionable syntax.</li>
+      <li>Most frameworks are elaborate systems built on a few core mechanisms: class loading, annotations, reflection, proxies, collections, threads, and I/O.</li>
+      <li>Learning Java deeply pays off outside Java too because the JVM teaches runtime design, memory management, type systems, and concurrency tradeoffs.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">What Is Java</div><div class="hl-desc">Explain What Is Java without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">What Is Java</div><div class="hl-desc">Use What Is Java in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">What Is Java</div><div class="hl-desc">Predict how What Is Java behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 <footer><p>JavaMaster - <a href="setup.html" style="color:var(--accent);">Next: Setup and Hello World</a></p></footer>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
 
 
-</body></html>
+</div></body></html>

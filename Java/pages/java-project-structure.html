@@ -33,6 +33,13 @@
     <p>Layered folders are useful only if dependencies point in the right direction. Controllers should not contain business rules. Domain logic should not depend on HTTP. Repository code should not leak database details into the public API.</p>
     <p>As projects grow, package structure should reflect business capability as much as technical layer. A billing package containing invoice, payment, and tax behavior is often easier to maintain than global controller, service, and repository folders containing every feature.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn where source, tests, resources, packages, and build files live.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh package boundaries, module layering, dependency direction, resource loading, and test isolation.</p>
+    <p><strong>Mastery check:</strong> You understand Java Project Structure when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Follow standard directory layouts (e.g., src/main/java, src/test/java). Don't invent your own.</li>
@@ -52,6 +59,36 @@
       <li>You know where to place static assets and property files.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Project structure is architecture made visible to tools and humans.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn where source, tests, resources, packages, and build files live.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh package boundaries, module layering, dependency direction, resource loading, and test isolation.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>A messy project structure slows every future change because developers cannot predict where code belongs.</li>
+      <li>Package names should reflect stable domain boundaries, not temporary UI screens or framework folders only.</li>
+      <li>Tests should mirror behavior boundaries, not blindly mirror every implementation class.</li>
+      <li>Resources load differently from files on disk once packaged into a JAR. Use classpath resource APIs deliberately.</li>
+      <li>A good structure makes illegal dependencies obvious before architecture diagrams are needed.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Java Project Struc</div><div class="hl-desc">Explain Java Project Structure without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Java Project Struc</div><div class="hl-desc">Use Java Project Structure in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Java Project Struc</div><div class="hl-desc">Predict how Java Project Structure behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="anatomy">
   <div class="subsection">

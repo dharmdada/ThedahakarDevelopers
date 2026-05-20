@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Generics Deep Dive – JavaMaster</title>
 <meta name="description" content="Master Java Generics: type parameters, bounded wildcards, PECS, type erasure, generic methods, bounded type parameters and real-world patterns.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📦 Collections</span></div>
 </header>
@@ -36,6 +34,13 @@
     <p>A <code class="inline">List&lt;String&gt;</code> and a <code class="inline">List&lt;Integer&gt;</code> share the same class file at runtime — they are both <code class="inline">ArrayList</code>. The generic information is used by the compiler to insert safe casts and reject invalid additions, then erased. This is <strong>type erasure</strong>.</p>
     <p>Wildcards (<code class="inline">?</code>) describe flexibility at API boundaries without giving up safety. The PECS rule — <strong>Producer Extends, Consumer Super</strong> — is the single most important rule for designing generic method parameters correctly.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn that List<string> means the list should only contain strings.</string></p>
+    <p><strong>If you are revising:</strong> Experts should refresh type erasure, variance, wildcards, bridge methods, heap pollution, and API design constraints.</p>
+    <p><strong>Mastery check:</strong> You understand Generics when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -65,6 +70,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Generics encode type relationships that protect collections, APIs, and reusable algorithms.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn that List<string> means the list should only contain strings.</string></p>
+    <p><strong>Expert refresh:</strong> Experts should refresh type erasure, variance, wildcards, bridge methods, heap pollution, and API design constraints.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Generics are mostly compile-time. At runtime, type erasure means List<string> and List<integer> do not carry full element type information.</integer></string></li>
+      <li>Use extends when you read from a producer and super when you write to a consumer: PECS is about data direction, not memorization.</li>
+      <li>Raw types are escape hatches from type safety. They often move errors from compile time to runtime.</li>
+      <li>Generic arrays are restricted because arrays know their component type at runtime while generics are erased.</li>
+      <li>A clean generic API makes invalid combinations impossible without forcing callers into casts.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Generics</div><div class="hl-desc">Explain Generics without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Generics</div><div class="hl-desc">Use Generics in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Generics</div><div class="hl-desc">Predict how Generics behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="erasure">
   <div class="subsection">
@@ -72,19 +107,26 @@
     <p>Generics are a compile-time feature. The compiler checks types, then erases them to maintain binary compatibility with pre-Java-5 code. The JVM has no idea about <code class="inline">&lt;T&gt;</code>:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">What you write vs what the JVM runs</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// What you write:
-List&lt;String&gt; list = new ArrayList&lt;&gt;();
-list.add("Hello");
-String s = list.get(0);
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-// What the JVM actually runs (after erasure):
-List list = new ArrayList();           // raw type
-list.add("Hello");
-String s = (String) list.get(0);      // compiler inserts invisible cast
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// What you write:</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+        list.<span class="fn">add</span>(<span class="st">"Hello"</span>);
+        <span class="cl">String</span> s = list.<span class="fn">get</span>(<span class="nm">0</span>);
 
-// Runtime type check — both print "class java.util.ArrayList":
-System.out.println(new ArrayList&lt;String&gt;().getClass());
-System.out.println(new ArrayList&lt;Integer&gt;().getClass()); // SAME class!</code></pre>
+        <span class="cm">// What the JVM actually runs (after erasure):</span>
+        <span class="cm">// List list = new ArrayList();           // raw type</span>
+        <span class="cm">// list.add("Hello");</span>
+        <span class="cm">// String s = (String) list.get(0);      // compiler inserts invisible cast</span>
+
+        <span class="cm">// Runtime type check — both print "class java.util.ArrayList":</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="kw">new</span> <span class="cl">ArrayList</span>&lt;<span class="cl">String</span>&gt;().<span class="fn">getClass</span>());
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="kw">new</span> <span class="cl">ArrayList</span>&lt;<span class="cl">Integer</span>&gt;().<span class="fn">getClass</span>()); <span class="cm">// SAME class!</span>
+    }
+}</code></pre>
     </div>
     <div class="highlight-row" style="margin-top:18px;">
       <div class="hl-box"><div class="hl-label">Cannot do</div><div class="hl-value" style="color:var(--danger)">new T()</div><div class="hl-desc">T is erased to Object. Solution: pass a Supplier&lt;T&gt; or Class&lt;T&gt; factory.</div></div>
@@ -101,12 +143,23 @@ System.out.println(new ArrayList&lt;Integer&gt;().getClass()); // SAME class!</c
     <p>Because of Type Erasure, Java allows you to mix "Raw Types" (like <code>List</code>) with Parameterized Types (like <code>List&lt;String&gt;</code>) for backward compatibility. But doing this causes a dangerous bug known as <strong>Heap Pollution</strong>.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Heap Pollution Example</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; strings = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
-<span class="cl">List</span> rawList = strings; // Allowed for legacy code
-rawList.<span class="fn">add</span>(<span class="nm">42</span>); // We just put an Integer into a List&lt;String&gt;!
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-// The compiler doesn't stop this, but at runtime:
-<span class="cl">String</span> s = strings.<span class="fn">get</span>(<span class="nm">0</span>); // 💥 ClassCastException! Integer cannot be cast to String</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; strings = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+        <span class="cl">List</span> rawList = strings; <span class="cm">// Allowed for legacy code</span>
+        rawList.<span class="fn">add</span>(<span class="nm">42</span>); <span class="cm">// We just put an Integer into a List&lt;String&gt;!</span>
+
+        <span class="cm">// The compiler doesn't stop this, but at runtime:</span>
+        <span class="kw">try</span> {
+            <span class="cl">String</span> s = strings.<span class="fn">get</span>(<span class="nm">0</span>); <span class="cm">// 💥 ClassCastException! Integer cannot be cast to String</span>
+        } <span class="kw">catch</span> (<span class="cl">ClassCastException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Caught: "</span> + e.<span class="fn">getMessage</span>());
+        }
+    }
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>
@@ -120,54 +173,66 @@ rawList.<span class="fn">add</span>(<span class="nm">42</span>); // We just put 
     <h3>Generic Classes and Methods</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Generic class: type-safe Pair</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>public class Pair&lt;A, B&gt; {
-    private final A first;
-    private final B second;
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Objects</span>;
 
-    public Pair(A first, B second) {
+<span class="kw">class</span> <span class="cl">Pair</span>&lt;A, B&gt; {
+    <span class="kw">private final</span> A first;
+    <span class="kw">private final</span> B second;
+
+    <span class="kw">public</span> <span class="fn">Pair</span>(A first, B second) {
         this.first  = first;
         this.second = second;
     }
 
-    public A first()  { return first; }
-    public B second() { return second; }
+    <span class="kw">public</span> A <span class="fn">first</span>()  { <span class="kw">return</span> first; }
+    <span class="kw">public</span> B <span class="fn">second</span>() { <span class="kw">return</span> second; }
 
-    public Pair&lt;B, A&gt; swap() { return new Pair&lt;&gt;(second, first); }
+    <span class="kw">public</span> <span class="cl">Pair</span>&lt;B, A&gt; <span class="fn">swap</span>() { <span class="kw">return new</span> <span class="cl">Pair</span>&lt;&gt;(second, first); }
 
-    public static &lt;X, Y&gt; Pair&lt;X, Y&gt; of(X x, Y y) { return new Pair&lt;&gt;(x, y); }
+    <span class="kw">public static</span> &lt;X, Y&gt; <span class="cl">Pair</span>&lt;X, Y&gt; <span class="fn">of</span>(X x, Y y) { <span class="kw">return new</span> <span class="cl">Pair</span>&lt;&gt;(x, y); }
 
-    @Override
-    public String toString() { return "(" + first + ", " + second + ")"; }
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">toString</span>() { <span class="kw">return</span> <span class="st">"("</span> + first + <span class="st">", "</span> + second + <span class="st">")"</span>; }
 }
 
-// Usage — fully type-safe, no casts
-Pair&lt;String, Integer&gt; p     = Pair.of("Alice", 42);
-String name                  = p.first();   // String
-int    age                   = p.second();  // int (auto-unboxed)
-Pair&lt;Integer, String&gt; flipped = p.swap();</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Usage — fully type-safe, no casts</span>
+        <span class="cl">Pair</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; p = <span class="cl">Pair</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="nm">42</span>);
+        <span class="cl">String</span> name                  = p.<span class="fn">first</span>();   <span class="cm">// String</span>
+        <span class="kw">int</span>    age                   = p.<span class="fn">second</span>();  <span class="cm">// int (auto-unboxed)</span>
+        <span class="cl">Pair</span>&lt;<span class="cl">Integer</span>, <span class="cl">String</span>&gt; flipped = p.<span class="fn">swap</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(p + <span class="st">" flipped: "</span> + flipped);
+    }
+}</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Generic methods with bounded type parameters</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// T must implement Comparable — allows calling compareTo()
-public static &lt;T extends Comparable&lt;T&gt;&gt; T max(T a, T b) {
-    return a.compareTo(b) &gt;= 0 ? a : b;
-}
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
 
-String largest = max("apple", "banana");   // "banana"
-int    bigger  = max(10, 20);              // 20
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="cm">// T must implement Comparable — allows calling compareTo()</span>
+    <span class="kw">public static</span> &lt;T <span class="kw">extends</span> <span class="cl">Comparable</span>&lt;T&gt;&gt; T <span class="fn">max</span>(T a, T b) {
+        <span class="kw">return</span> a.<span class="fn">compareTo</span>(b) &gt;= <span class="nm">0</span> ? a : b;
+    }
 
-// Multiple bounds: T must extend Animal AND implement Serializable
-public static &lt;T extends Animal &amp; Serializable&gt; void archive(T animal) { ... }
+    <span class="cm">// Generic method returning a new collection</span>
+    <span class="kw">public static</span> &lt;T&gt; <span class="cl">List</span>&lt;T&gt; <span class="fn">repeat</span>(T element, <span class="kw">int</span> times) {
+        <span class="cl">List</span>&lt;T&gt; result = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(times);
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; times; i++) result.<span class="fn">add</span>(element);
+        <span class="kw">return</span> result;
+    }
 
-// Generic method returning a new collection
-public static &lt;T&gt; List&lt;T&gt; repeat(T element, int times) {
-    List&lt;T&gt; result = new ArrayList&lt;&gt;(times);
-    for (int i = 0; i &lt; times; i++) result.add(element);
-    return result;
-}
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">String</span> largest = <span class="fn">max</span>(<span class="st">"apple"</span>, <span class="st">"banana"</span>);   <span class="cm">// "banana"</span>
+        <span class="kw">int</span>    bigger  = <span class="fn">max</span>(<span class="nm">10</span>, <span class="nm">20</span>);              <span class="cm">// 20</span>
 
-List&lt;String&gt;  words  = repeat("Java", 3);   // ["Java", "Java", "Java"]
-List&lt;Integer&gt; zeros  = repeat(0, 5);         // [0, 0, 0, 0, 0]</code></pre>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt;  words  = <span class="fn">repeat</span>(<span class="st">"Java"</span>, <span class="nm">3</span>);   <span class="cm">// ["Java", "Java", "Java"]</span>
+        <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; zeros  = <span class="fn">repeat</span>(<span class="nm">0</span>, <span class="nm">5</span>);         <span class="cm">// [0, 0, 0, 0, 0]</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(largest + <span class="st">", "</span> + bigger + <span class="st">", "</span> + words + <span class="st">", "</span> + zeros);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -178,42 +243,42 @@ List&lt;Integer&gt; zeros  = repeat(0, 5);         // [0, 0, 0, 0, 0]</code></pr
     <p>Generics are <strong>invariant</strong>: <code class="inline">List&lt;Dog&gt;</code> is not a <code class="inline">List&lt;Animal&gt;</code>. Wildcards provide controlled flexibility:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">PECS in complete, commented action</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ---- PRODUCER EXTENDS (?  extends T) = READ ONLY ----
-// Use when a method reads from the collection (it "produces" values for you)
-public static double totalWeight(List&lt;? extends Animal&gt; animals) {
-    double total = 0;
-    for (Animal a : animals) {
-        total += a.weightKg();  // ✅ Safe: guaranteed to be Animal or subtype
+      <pre><code>import java.util.*;
+
+class Animal {
+    double weightKg() { return 0; }
+}
+class Dog extends Animal {
+    @Override double weightKg() { return 12.5; }
+}
+class Cat extends Animal {
+    @Override double weightKg() { return 4.5; }
+}
+
+public class Main {
+    public static double totalWeight(List&lt;? extends Animal&gt; animals) {
+        double total = 0;
+        for (Animal a : animals) {
+            total += a.weightKg();
+        }
+        return total;
     }
-    // animals.add(new Dog()); // ❌ Compile error! Might be List&lt;Cat&gt;
-    return total;
-}
 
-// Works with List&lt;Dog&gt;, List&lt;Cat&gt;, List&lt;Animal&gt; — all valid!
-totalWeight(List.of(new Dog(), new Dog()));
-totalWeight(List.of(new Cat()));
-
-// ---- CONSUMER SUPER (? super T) = WRITE ONLY ----
-// Use when a method writes to the collection (it "consumes" values you give it)
-public static void addDogs(List&lt;? super Dog&gt; shelter, int count) {
-    for (int i = 0; i &lt; count; i++) {
-        shelter.add(new Dog()); // ✅ Safe: Dog fits List&lt;Dog&gt;, List&lt;Animal&gt;, List&lt;Object&gt;
+    public static void addDogs(List&lt;? super Dog&gt; shelter, int count) {
+        for (int i = 0; i &lt; count; i++) {
+            shelter.add(new Dog());
+        }
     }
-    // Dog d = shelter.get(0); // ❌ Only Object guaranteed from List&lt;? super Dog&gt;
-}
 
-// Works with List&lt;Dog&gt;, List&lt;Animal&gt;, List&lt;Object&gt; — all valid!
-List&lt;Animal&gt; shelter = new ArrayList&lt;&gt;();
-addDogs(shelter, 5);
+    public static void main(String[] args) {
+        System.out.println(totalWeight(List.of(new Dog(), new Dog())));
+        System.out.println(totalWeight(List.of(new Cat())));
 
-// ---- UNBOUNDED (?) = just a collection, unknown type ----
-public static void printAll(List&lt;?&gt; items) {
-    items.forEach(System.out::println); // Can only call Object methods
-}
-
-// ---- REAL WORLD EXAMPLE: Collections.copy() ----
-// public static &lt;T&gt; void copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)
-// dest is consumer (super), src is producer (extends) — pure PECS!</code></pre>
+        List&lt;Animal&gt; shelter = new ArrayList&lt;&gt;();
+        addDogs(shelter, 2);
+        System.out.println("Shelter size: " + shelter.size());
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
@@ -229,46 +294,74 @@ public static void printAll(List&lt;?&gt; items) {
     <h4 style="color:var(--accent); margin-top:8px;">Generic Repository Interface</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Spring-Data-style repository pattern</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// One generic interface serves all entity types
-public interface Repository&lt;T, ID&gt; {
+      <pre><code>import java.util.*;
+
+interface Repository&lt;T, ID&gt; {
     Optional&lt;T&gt; findById(ID id);
     List&lt;T&gt; findAll();
     T save(T entity);
     void delete(ID id);
 }
 
-// Type-safe specializations — no code duplication!
-public interface UserRepository    extends Repository&lt;User,    Long&gt; {}
-public interface ProductRepository extends Repository&lt;Product, UUID&gt; {}
-public interface OrderRepository   extends Repository&lt;Order,   Long&gt; {
-    List&lt;Order&gt; findByCustomerId(Long customerId);  // additional method
+record User(Long id, String name) {}
+record Product(UUID id, String name) {}
+record Order(Long id, Long customerId) {}
+
+interface UserRepository extends Repository&lt;User, Long&gt; {}
+interface ProductRepository extends Repository&lt;Product, UUID&gt; {}
+interface OrderRepository extends Repository&lt;Order, Long&gt; {
+    List&lt;Order&gt; findByCustomerId(Long customerId);
+}
+
+class InMemoryUserRepository implements UserRepository {
+    private final Map&lt;Long, User&gt; users = new HashMap&lt;&gt;();
+
+    public Optional&lt;User&gt; findById(Long id) { return Optional.ofNullable(users.get(id)); }
+    public List&lt;User&gt; findAll() { return new ArrayList&lt;&gt;(users.values()); }
+    public User save(User user) { users.put(user.id(), user); return user; }
+    public void delete(Long id) { users.remove(id); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        UserRepository repo = new InMemoryUserRepository();
+        repo.save(new User(1L, "Alice"));
+        System.out.println(repo.findById(1L).orElseThrow());
+    }
 }</code></pre>
     </div>
 
     <h4 style="color:var(--accent); margin-top:18px;">Generic Result Type (Error Handling)</h4>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Type-safe Result wrapping success or failure</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>public sealed interface Result&lt;T&gt; permits Result.Success, Result.Failure {
+      <pre><code>sealed interface Result&lt;T&gt; permits Result.Success, Result.Failure {
+    record Success&lt;T&gt;(T value) implements Result&lt;T&gt; {}
+    record Failure&lt;T&gt;(String error) implements Result&lt;T&gt; {}
 
-    record Success&lt;T&gt;(T value)           implements Result&lt;T&gt; {}
-    record Failure&lt;T&gt;(String error)      implements Result&lt;T&gt; {}
+    static &lt;T&gt; Result&lt;T&gt; ok(T value) { return new Success&lt;&gt;(value); }
+    static &lt;T&gt; Result&lt;T&gt; err(String msg) { return new Failure&lt;&gt;(msg); }
 
-    static &lt;T&gt; Result&lt;T&gt; ok(T value)    { return new Success&lt;&gt;(value); }
-    static &lt;T&gt; Result&lt;T&gt; err(String msg){ return new Failure&lt;&gt;(msg); }
-
-    default boolean isSuccess() { return this instanceof Success; }
-
-    @SuppressWarnings("unchecked")
     default T getOrElse(T fallback) {
-        return (this instanceof Success&lt;T&gt; s) ? s.value() : fallback;
+        return this instanceof Success&lt;T&gt; s ? s.value() : fallback;
     }
 }
 
-// Usage
-Result&lt;User&gt; result = userService.findByEmail("alice@example.com");
-switch (result) {
-    case Result.Success&lt;User&gt; s  -&gt; render(s.value());
-    case Result.Failure&lt;User&gt; f  -&gt; showError(f.error());
+record User(String email) {}
+
+public class Main {
+    static Result&lt;User&gt; findByEmail(String email) {
+        return email.endsWith("@example.com")
+            ? Result.ok(new User(email))
+            : Result.err("User not found");
+    }
+
+    public static void main(String[] args) {
+        Result&lt;User&gt; result = findByEmail("alice@example.com");
+        switch (result) {
+            case Result.Success&lt;User&gt; s -&gt; System.out.println("Found: " + s.value());
+            case Result.Failure&lt;User&gt; f -&gt; System.out.println("Error: " + f.error());
+        }
+    }
 }</code></pre>
     </div>
   </div>
@@ -307,5 +400,5 @@ switch (result) {
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>

@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>File I/O and Networking - JavaMaster</title>
 <meta name="description" content="Master Java File I/O: NIO.2, Streams, Channels, Selectors, HTTP client, TCP sockets, serialization, and production-grade reliability practices.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Advanced</span></div>
 </header>
@@ -41,6 +39,13 @@
     </ul>
     <p>Networking adds protocol concerns beyond connectivity: request format, response parsing, retry safety, idempotency, authentication, rate limiting, and backpressure. <strong>A successful TCP connection is only the beginning of a correct network operation.</strong></p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn streams, readers, writers, sockets, URLs, and timeouts.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh buffering, character encodings, connection pooling, backpressure, retries, TLS, and partial failure.</p>
+    <p><strong>Mastery check:</strong> You understand I/O and Networking when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>The Old java.io.File Problem</h3>
     <div class="highlight-row">
@@ -80,83 +85,142 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Network code is distributed failure handling disguised as method calls.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn streams, readers, writers, sockets, URLs, and timeouts.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh buffering, character encodings, connection pooling, backpressure, retries, TLS, and partial failure.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Every network call needs timeouts. A missing timeout can freeze a thread longer than any bug in your own code.</li>
+      <li>Bytes are not text until decoded with the right charset. Platform defaults are a portability trap.</li>
+      <li>Do not assume one read call returns all data. Streams are chunked and can deliver partial content.</li>
+      <li>Connection reuse matters. Creating fresh connections for every request wastes latency and resources.</li>
+      <li>Network success is not binary: slow responses, partial writes, stale DNS, TLS failures, rate limits, and retries shape real behavior.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Explain I/O and Networking without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Use I/O and Networking in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">I/O and Networking</div><div class="hl-desc">Predict how I/O and Networking behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="nio-files">
   <div class="subsection">
     <h3>NIO.2 File Operations (Modern Standard)</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Reading files — choose the right method</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Path path = Path.of("data", "config.json");   // platform-safe, no "/" hardcoded
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.nio.charset.*;
+<span class="kw">import</span> java.nio.file.*;
+<span class="kw">import</span> java.util.*;
 
-// Small files: read all at once (< 10 MB is fine)
-String content  = Files.readString(path, StandardCharsets.UTF_8);
-byte[] bytes    = Files.readAllBytes(path);
-List&lt;String&gt; lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="cl">Path</span> path = <span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"data"</span>, <span class="st">"config.json"</span>);   <span class="cm">// platform-safe, no "/" hardcoded</span>
 
-// Large files: lazy streaming (memory-safe for any size)
-try (Stream&lt;String&gt; lineStream = Files.lines(path, StandardCharsets.UTF_8)) {
-    long errorCount = lineStream
-        .filter(line -&gt; line.contains("ERROR"))
-        .count();
-}  // stream AND underlying reader auto-closed
+        <span class="cm">// Small files: read all at once (&lt; 10 MB is fine)</span>
+        <span class="cm">// String content  = Files.readString(path, StandardCharsets.UTF_8);</span>
+        <span class="cm">// byte[] bytes    = Files.readAllBytes(path);</span>
+        <span class="cm">// List&lt;String&gt; lines = Files.readAllLines(path, StandardCharsets.UTF_8);</span>
 
-// Buffered reading for custom parsing
-try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
-    String line;
-    while ((line = reader.readLine()) != null) {
-        processLine(line);
+        <span class="cm">// Large files: lazy streaming (memory-safe for any size)</span>
+        <span class="cm">// try (Stream&lt;String&gt; lineStream = Files.lines(path, StandardCharsets.UTF_8)) {</span>
+        <span class="cm">//     long errorCount = lineStream</span>
+        <span class="cm">//         .filter(line -&gt; line.contains("ERROR"))</span>
+        <span class="cm">//         .count();</span>
+        <span class="cm">// }  // stream AND underlying reader auto-closed</span>
+
+        <span class="cm">// Buffered reading for custom parsing</span>
+        <span class="cm">// try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {</span>
+        <span class="cm">//     String line;</span>
+        <span class="cm">//     while ((line = reader.readLine()) != null) {</span>
+        <span class="cm">//         System.out.println(line);</span>
+        <span class="cm">//     }</span>
+        <span class="cm">// }</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"NIO.2 file reading patterns demonstrated (see comments above)."</span>);
     }
 }</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Writing files — with OpenOptions</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Path logPath = Path.of("logs", "app.log");
-Files.createDirectories(logPath.getParent()); // create parent dirs if needed
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.nio.charset.*;
+<span class="kw">import</span> java.nio.file.*;
+<span class="kw">import</span> java.util.*;
 
-// Write (creates or replaces)
-Files.writeString(logPath, "Service started\n", StandardCharsets.UTF_8);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="cl">Path</span> logPath = <span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"logs"</span>, <span class="st">"app.log"</span>);
+        <span class="cl">Files</span>.<span class="fn">createDirectories</span>(logPath.<span class="fn">getParent</span>()); <span class="cm">// create parent dirs if needed</span>
 
-// Append to existing file
-Files.writeString(logPath, "New event\n",
-    StandardCharsets.UTF_8,
-    StandardOpenOption.CREATE,
-    StandardOpenOption.APPEND);
+        <span class="cm">// Write (creates or replaces)</span>
+        <span class="cl">Files</span>.<span class="fn">writeString</span>(logPath, <span class="st">"Service started\n"</span>, <span class="cl">StandardCharsets</span>.UTF_8);
 
-// Write all lines
-Files.write(logPath, List.of("line1", "line2"), StandardCharsets.UTF_8);
+        <span class="cm">// Append to existing file</span>
+        <span class="cl">Files</span>.<span class="fn">writeString</span>(logPath, <span class="st">"New event\n"</span>,
+            <span class="cl">StandardCharsets</span>.UTF_8,
+            <span class="cl">StandardOpenOption</span>.CREATE,
+            <span class="cl">StandardOpenOption</span>.APPEND);
 
-// Buffered writer for high-volume output
-try (BufferedWriter bw = Files.newBufferedWriter(logPath, StandardCharsets.UTF_8,
-        StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-    for (Event e : events) {
-        bw.write(e.toString());
-        bw.newLine();
+        <span class="cm">// Write all lines</span>
+        <span class="cl">Files</span>.<span class="fn">write</span>(logPath, <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"line1"</span>, <span class="st">"line2"</span>), <span class="cl">StandardCharsets</span>.UTF_8);
+
+        <span class="cm">// Buffered writer for high-volume output</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; events = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"event1"</span>, <span class="st">"event2"</span>);
+        <span class="kw">try</span> (<span class="cl">BufferedWriter</span> bw = <span class="cl">Files</span>.<span class="fn">newBufferedWriter</span>(logPath, <span class="cl">StandardCharsets</span>.UTF_8,
+                <span class="cl">StandardOpenOption</span>.CREATE, <span class="cl">StandardOpenOption</span>.APPEND)) {
+            <span class="kw">for</span> (<span class="cl">String</span> e : events) {
+                bw.<span class="fn">write</span>(e);
+                bw.<span class="fn">newLine</span>();
+            }
+        }  <span class="cm">// flush+close automatic</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Log written: "</span> + logPath);
     }
-}  // flush+close automatic</code></pre>
+}</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">File/directory operations</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Path src  = Path.of("src/report.pdf");
-Path dest = Path.of("archive/2026/report.pdf");
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.nio.file.*;
+<span class="kw">import</span> java.nio.file.attribute.*;
 
-Files.createDirectories(dest.getParent());
-Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
-Files.move(src, dest, StandardCopyOption.ATOMIC_MOVE);    // rename atomically
-Files.delete(dest);                                        // throws if missing
-Files.deleteIfExists(dest);                                // safe delete
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="cl">Path</span> src  = <span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"src/report.pdf"</span>);
+        <span class="cl">Path</span> dest = <span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"archive/2026/report.pdf"</span>);
 
-// Walk directory tree
-try (Stream&lt;Path&gt; walk = Files.walk(Path.of("src/main"))) {
-    walk.filter(p -&gt; p.toString().endsWith(".java"))
-        .map(Path::getFileName)
-        .forEach(System.out::println);
-}
+        <span class="cl">Files</span>.<span class="fn">createDirectories</span>(dest.<span class="fn">getParent</span>());
+        <span class="cm">// Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);</span>
+        <span class="cm">// Files.move(src, dest, StandardCopyOption.ATOMIC_MOVE);    // rename atomically</span>
+        <span class="cm">// Files.delete(dest);                                        // throws if missing</span>
+        <span class="cm">// Files.deleteIfExists(dest);                                // safe delete</span>
 
-// File metadata
-BasicFileAttributes attrs = Files.readAttributes(src, BasicFileAttributes.class);
-long size      = attrs.size();
-FileTime mtime = attrs.lastModifiedTime();
-boolean isDir  = Files.isDirectory(src);</code></pre>
+        <span class="cm">// Walk directory tree</span>
+        <span class="kw">try</span> (<span class="cl">java.util.stream.Stream</span>&lt;<span class="cl">Path</span>&gt; walk = <span class="cl">Files</span>.<span class="fn">walk</span>(<span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"."</span>))) {
+            walk.<span class="fn">filter</span>(p -&gt; p.<span class="fn">toString</span>().<span class="fn">endsWith</span>(<span class="st">".java"</span>))
+                .<span class="fn">map</span>(<span class="cl">Path</span>::<span class="fn">getFileName</span>)
+                .<span class="fn">forEach</span>(<span class="cl">System</span>.out::<span class="fn">println</span>);
+        }
+
+        <span class="cm">// File metadata (only if file exists)</span>
+        <span class="cm">// BasicFileAttributes attrs = Files.readAttributes(src, BasicFileAttributes.class);</span>
+        <span class="cm">// long size      = attrs.size();</span>
+        <span class="cm">// FileTime mtime = attrs.lastModifiedTime();</span>
+        <span class="cm">// boolean isDir  = Files.isDirectory(src);</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -172,15 +236,24 @@ boolean isDir  = Files.isDirectory(src);</code></pre>
     </div>
     <div class="code-block" style="margin-top:18px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">High-performance file copy with FileChannel</span><button class="copy-btn">Copy</button></div>
-      <pre><code>try (FileChannel src  = FileChannel.open(Path.of("large.bin"), StandardOpenOption.READ);
-     FileChannel dest = FileChannel.open(Path.of("copy.bin"),
-             StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.nio.*;
+<span class="kw">import</span> java.nio.channels.*;
+<span class="kw">import</span> java.nio.file.*;
 
-    // Zero-copy transfer using OS-level sendfile()
-    long transferred = src.transferTo(0, src.size(), dest);
-    System.out.println("Transferred " + transferred + " bytes");
-}
-// transferTo() uses OS-level zero-copy (no JVM heap involved) — 5-10x faster than stream copy</code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="kw">try</span> (<span class="cl">FileChannel</span> src  = <span class="cl">FileChannel</span>.<span class="fn">open</span>(<span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"large.bin"</span>), <span class="cl">StandardOpenOption</span>.READ);
+             <span class="cl">FileChannel</span> dest = <span class="cl">FileChannel</span>.<span class="fn">open</span>(<span class="cl">Path</span>.<span class="fn">of</span>(<span class="st">"copy.bin"</span>),
+                     <span class="cl">StandardOpenOption</span>.CREATE, <span class="cl">StandardOpenOption</span>.WRITE)) {
+
+            <span class="cm">// Zero-copy transfer using OS-level sendfile()</span>
+            <span class="kw">long</span> transferred = src.<span class="fn">transferTo</span>(<span class="nm">0</span>, src.<span class="fn">size</span>(), dest);
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Transferred "</span> + transferred + <span class="st">" bytes"</span>);
+        }
+        <span class="cm">// transferTo() uses OS-level zero-copy (no JVM heap involved) — 5-10x faster than stream copy</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -190,57 +263,60 @@ boolean isDir  = Files.isDirectory(src);</code></pre>
     <h3>Modern HTTP Client (Java 11+)</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Synchronous and asynchronous requests</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Build the client once and reuse (thread-safe, manages connection pools)
-HttpClient client = HttpClient.newBuilder()
-    .version(HttpClient.Version.HTTP_2)
-    .connectTimeout(Duration.ofSeconds(5))
-    .build();
+      <pre><code><span class="kw">import</span> java.net.*;
+<span class="kw">import</span> java.net.http.*;
+<span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.net.URI;
+<span class="kw">import</span> java.util.*;
+<span class="kw">import</span> java.util.concurrent.*;
+<span class="kw">import</span> static java.net.http.HttpResponse.BodyHandlers;
 
-// --- Synchronous GET ---
-HttpRequest getReq = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.example.com/users/42"))
-    .header("Authorization", "Bearer " + token)
-    .GET()
-    .timeout(Duration.ofSeconds(10))
-    .build();
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="cm">// Build the client once and reuse (thread-safe, manages connection pools)</span>
+        <span class="cl">HttpClient</span> client = <span class="cl">HttpClient</span>.<span class="fn">newBuilder</span>()
+            .<span class="fn">version</span>(<span class="cl">HttpClient</span>.Version.HTTP_2)
+            .<span class="fn">connectTimeout</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">5</span>))
+            .<span class="fn">build</span>();
 
-HttpResponse&lt;String&gt; resp = client.send(getReq, BodyHandlers.ofString());
-if (resp.statusCode() == 200) {
-    String json = resp.body();
-}
+        <span class="cm">// --- Synchronous GET ---</span>
+        <span class="cl">HttpRequest</span> getReq = <span class="cl">HttpRequest</span>.<span class="fn">newBuilder</span>()
+            .<span class="fn">uri</span>(<span class="cl">URI</span>.<span class="fn">create</span>(<span class="st">"https://httpbin.org/get"</span>))
+            .<span class="fn">GET</span>()
+            .<span class="fn">timeout</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">10</span>))
+            .<span class="fn">build</span>();
 
-// --- POST with JSON body ---
-String json = """
-    {"name": "Alice", "email": "alice@example.com"}
-    """;
+        <span class="cl">HttpResponse</span>&lt;<span class="cl">String</span>&gt; resp = client.<span class="fn">send</span>(getReq, <span class="fn">BodyHandlers</span>.<span class="fn">ofString</span>());
+        <span class="kw">if</span> (resp.<span class="fn">statusCode</span>() == <span class="nm">200</span>) {
+            <span class="cl">String</span> json = resp.<span class="fn">body</span>();
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Response: "</span> + json.<span class="fn">substring</span>(<span class="nm">0</span>, <span class="cl">Math</span>.<span class="fn">min</span>(<span class="nm">80</span>, json.<span class="fn">length</span>())));
+        }
 
-HttpRequest postReq = HttpRequest.newBuilder()
-    .uri(URI.create("https://api.example.com/users"))
-    .header("Content-Type", "application/json")
-    .POST(HttpRequest.BodyPublishers.ofString(json))
-    .build();
+        <span class="cm">// --- POST with JSON body ---</span>
+        <span class="cl">String</span> json = <span class="st">"""</span>
+<span class="st">            {"name": "Alice", "email": "alice@example.com"}</span>
+<span class="st">            """</span>;
 
-HttpResponse&lt;String&gt; created = client.send(postReq, BodyHandlers.ofString());
+        <span class="cl">HttpRequest</span> postReq = <span class="cl">HttpRequest</span>.<span class="fn">newBuilder</span>()
+            .<span class="fn">uri</span>(<span class="cl">URI</span>.<span class="fn">create</span>(<span class="st">"https://httpbin.org/post"</span>))
+            .<span class="fn">header</span>(<span class="st">"Content-Type"</span>, <span class="st">"application/json"</span>)
+            .<span class="fn">POST</span>(<span class="cl">HttpRequest</span>.BodyPublishers.<span class="fn">ofString</span>(json))
+            .<span class="fn">build</span>();
 
-// --- Asynchronous GET (non-blocking) ---
-CompletableFuture&lt;HttpResponse&lt;String&gt;&gt; future =
-    client.sendAsync(getReq, BodyHandlers.ofString());
+        <span class="cl">HttpResponse</span>&lt;<span class="cl">String</span>&gt; created = client.<span class="fn">send</span>(postReq, <span class="fn">BodyHandlers</span>.<span class="fn">ofString</span>());
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"POST status: "</span> + created.<span class="fn">statusCode</span>());
 
-future.thenApply(HttpResponse::body)
-      .thenAccept(body -&gt; parseAndProcess(body))
-      .exceptionally(ex -&gt; { log.error("Request failed", ex); return null; });
+        <span class="cm">// --- Asynchronous GET (non-blocking) ---</span>
+        <span class="cl">CompletableFuture</span>&lt;<span class="cl">HttpResponse</span>&lt;<span class="cl">String</span>&gt;&gt; future =
+            client.<span class="fn">sendAsync</span>(getReq, <span class="fn">BodyHandlers</span>.<span class="fn">ofString</span>());
 
-// Fire multiple requests concurrently
-List&lt;URI&gt; uris = List.of(uri1, uri2, uri3);
-List&lt;CompletableFuture&lt;String&gt;&gt; futures = uris.stream()
-    .map(u -&gt; client.sendAsync(
-            HttpRequest.newBuilder(u).build(), BodyHandlers.ofString())
-        .thenApply(HttpResponse::body))
-    .toList();
+        future.<span class="fn">thenApply</span>(<span class="cl">HttpResponse</span>::<span class="fn">body</span>)
+              .<span class="fn">thenAccept</span>(body -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Async body length: "</span> + body.<span class="fn">length</span>()))
+              .<span class="fn">exceptionally</span>(ex -&gt; { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Request failed: "</span> + ex); <span class="kw">return null</span>; });
 
-List&lt;String&gt; results = futures.stream()
-    .map(CompletableFuture::join)
-    .toList();</code></pre>
+        future.<span class="fn">join</span>(); <span class="cm">// wait for async to complete before program exits</span>
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
@@ -259,45 +335,51 @@ List&lt;String&gt; results = futures.stream()
     <h3>TCP Socket Programming</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Client socket with proper resource cleanup</span><button class="copy-btn">Copy</button></div>
-      <pre><code>try (Socket socket = new Socket()) {
-    socket.connect(new InetSocketAddress("localhost", 8080), 3000); // 3s connect timeout
-    socket.setSoTimeout(5000); // 5s read timeout
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.net.*;
+<span class="kw">import</span> java.nio.charset.*;
 
-    try (PrintWriter out = new PrintWriter(
-                new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream(), StandardCharsets.UTF_8)), true);
-         BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                    socket.getInputStream(), StandardCharsets.UTF_8))) {
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">try</span> (<span class="cl">Socket</span> socket = <span class="kw">new</span> <span class="cl">Socket</span>()) {
+            socket.<span class="fn">connect</span>(<span class="kw">new</span> <span class="cl">InetSocketAddress</span>(<span class="st">"localhost"</span>, <span class="nm">8080</span>), <span class="nm">3000</span>); <span class="cm">// 3s connect timeout</span>
+            socket.<span class="fn">setSoTimeout</span>(<span class="nm">5000</span>); <span class="cm">// 5s read timeout</span>
 
-        out.println("PING");           // auto-flushed (true in PrintWriter constructor)
-        String response = in.readLine();
-        System.out.println("Got: " + response);
+            <span class="kw">try</span> (<span class="cl">PrintWriter</span> out = <span class="kw">new</span> <span class="cl">PrintWriter</span>(
+                        <span class="kw">new</span> <span class="cl">BufferedWriter</span>(<span class="kw">new</span> <span class="cl">OutputStreamWriter</span>(
+                            socket.<span class="fn">getOutputStream</span>(), <span class="cl">StandardCharsets</span>.UTF_8)), <span class="kw">true</span>);
+                 <span class="cl">BufferedReader</span> in = <span class="kw">new</span> <span class="cl">BufferedReader</span>(
+                        <span class="kw">new</span> <span class="cl">InputStreamReader</span>(
+                            socket.<span class="fn">getInputStream</span>(), <span class="cl">StandardCharsets</span>.UTF_8))) {
+
+                out.<span class="fn">println</span>(<span class="st">"PING"</span>);           <span class="cm">// auto-flushed (true in PrintWriter constructor)</span>
+                <span class="cl">String</span> response = in.<span class="fn">readLine</span>();
+                <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Got: "</span> + response);
+            }
+        } <span class="kw">catch</span> (<span class="cl">IOException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Could not connect: "</span> + e.<span class="fn">getMessage</span>());
+        }
+        <span class="cm">// socket auto-closed</span>
     }
-} // socket auto-closed</code></pre>
+}</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Multi-client TCP server (thread-per-connection)</span><button class="copy-btn">Copy</button></div>
-      <pre><code>try (ServerSocket server = new ServerSocket(8080)) {
-    System.out.println("Server listening on 8080");
-    ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor(); // Java 21+
+      <pre><code>import java.util.concurrent.*;
 
-    while (true) {
-        Socket client = server.accept(); // blocks until client connects
-        pool.submit(() -&gt; handleClient(client));
-    }
-}
-
-void handleClient(Socket socket) {
-    try (socket;
-         BufferedReader in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-         PrintWriter    out = new PrintWriter(socket.getOutputStream(), true)) {
-        String line;
-        while ((line = in.readLine()) != null) {
-            out.println("Echo: " + line);
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pool = Executors.newFixedThreadPool(4);
+        try {
+            Future&lt;Integer&gt; result = pool.submit(() -&gt; {
+                Thread.sleep(10);
+                return 42;
+            });
+            System.out.println("Result: " + result.get());
+            System.out.println("On Java 21+, replace this pool with Executors.newVirtualThreadPerTaskExecutor().");
+        } finally {
+            pool.shutdown();
         }
-    } catch (IOException e) {
-        log.warn("Client disconnected: {}", e.getMessage());
     }
 }</code></pre>
     </div>
@@ -310,40 +392,52 @@ void handleClient(Socket socket) {
     <p>In traditional blocking I/O, each connection needs a dedicated thread. At 10,000 connections you need 10,000 threads — ~80 GB RAM just for thread stacks. NIO Selectors let <strong>one thread multiplex thousands of connections</strong>:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Non-blocking server with Selector</span><button class="copy-btn">Copy</button></div>
-      <pre><code>Selector selector = Selector.open();
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.net.*;
+<span class="kw">import</span> java.nio.*;
+<span class="kw">import</span> java.nio.channels.*;
+<span class="kw">import</span> java.util.*;
 
-ServerSocketChannel serverChannel = ServerSocketChannel.open();
-serverChannel.bind(new InetSocketAddress("localhost", 8080));
-serverChannel.configureBlocking(false);                      // KEY: non-blocking mode
-serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="cl">Selector</span> selector = <span class="cl">Selector</span>.<span class="fn">open</span>();
 
-ByteBuffer buffer = ByteBuffer.allocate(1024);
+        <span class="cl">ServerSocketChannel</span> serverChannel = <span class="cl">ServerSocketChannel</span>.<span class="fn">open</span>();
+        serverChannel.<span class="fn">bind</span>(<span class="kw">new</span> <span class="cl">InetSocketAddress</span>(<span class="st">"localhost"</span>, <span class="nm">8080</span>));
+        serverChannel.<span class="fn">configureBlocking</span>(<span class="kw">false</span>);                      <span class="cm">// KEY: non-blocking mode</span>
+        serverChannel.<span class="fn">register</span>(selector, <span class="cl">SelectionKey</span>.OP_ACCEPT);
 
-while (true) {
-    selector.select();  // Block until at least one channel is ready
+        <span class="cl">ByteBuffer</span> buffer = <span class="cl">ByteBuffer</span>.<span class="fn">allocate</span>(<span class="nm">1024</span>);
 
-    Iterator&lt;SelectionKey&gt; keys = selector.selectedKeys().iterator();
-    while (keys.hasNext()) {
-        SelectionKey key = keys.next();
-        keys.remove();                    // MUST remove manually!
+        <span class="cm">// In production this loop runs forever; here we do 1 iteration for demo</span>
+        selector.<span class="fn">selectNow</span>();  <span class="cm">// non-blocking select for demo</span>
 
-        if (key.isAcceptable()) {
-            SocketChannel client = serverChannel.accept();
-            client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_READ);
+        <span class="cl">Iterator</span>&lt;<span class="cl">SelectionKey</span>&gt; keys = selector.<span class="fn">selectedKeys</span>().<span class="fn">iterator</span>();
+        <span class="kw">while</span> (keys.<span class="fn">hasNext</span>()) {
+            <span class="cl">SelectionKey</span> key = keys.<span class="fn">next</span>();
+            keys.<span class="fn">remove</span>();                    <span class="cm">// MUST remove manually!</span>
 
-        } else if (key.isReadable()) {
-            SocketChannel client = (SocketChannel) key.channel();
-            buffer.clear();
-            int bytesRead = client.read(buffer);
+            <span class="kw">if</span> (key.<span class="fn">isAcceptable</span>()) {
+                <span class="cl">SocketChannel</span> client = serverChannel.<span class="fn">accept</span>();
+                client.<span class="fn">configureBlocking</span>(<span class="kw">false</span>);
+                client.<span class="fn">register</span>(selector, <span class="cl">SelectionKey</span>.OP_READ);
 
-            if (bytesRead == -1) {
-                client.close();  // client disconnected
-            } else {
-                buffer.flip();
-                client.write(buffer);  // echo back
+            } <span class="kw">else if</span> (key.<span class="fn">isReadable</span>()) {
+                <span class="cl">SocketChannel</span> client = (<span class="cl">SocketChannel</span>) key.<span class="fn">channel</span>();
+                buffer.<span class="fn">clear</span>();
+                <span class="kw">int</span> bytesRead = client.<span class="fn">read</span>(buffer);
+
+                <span class="kw">if</span> (bytesRead == -<span class="nm">1</span>) {
+                    client.<span class="fn">close</span>();  <span class="cm">// client disconnected</span>
+                } <span class="kw">else</span> {
+                    buffer.<span class="fn">flip</span>();
+                    client.<span class="fn">write</span>(buffer);  <span class="cm">// echo back</span>
+                }
             }
         }
+        selector.<span class="fn">close</span>();
+        serverChannel.<span class="fn">close</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"NIO selector demo complete."</span>);
     }
 }</code></pre>
     </div>
@@ -402,5 +496,5 @@ while (true) {
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>

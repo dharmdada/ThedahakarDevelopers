@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Exceptions and Error Handling – JavaMaster</title>
 <meta name="description" content="Master Java exception handling: checked vs unchecked, exception hierarchy, try-catch-finally, try-with-resources, custom exceptions, and production error handling patterns.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">🔥 Advanced</span></div>
 </header>
@@ -41,6 +39,13 @@
     </ul>
     <p>The key design question is not "should I use a checked or unchecked exception?" — it is <strong>"can the caller reasonably recover from this failure?"</strong> If yes → checked. If it's a bug → unchecked.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn try/catch/finally, checked exceptions, and why files/network can fail even when code is correct.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh exception translation, suppressed exceptions, resource ownership, retry boundaries, and observability.</p>
+    <p><strong>Mastery check:</strong> You understand Exceptions and I/O when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>The Exception Hierarchy</h3>
     <div class="callout info">
@@ -85,54 +90,64 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Exceptions model abnormal control flow; I/O models unreliable external reality.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn try/catch/finally, checked exceptions, and why files/network can fail even when code is correct.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh exception translation, suppressed exceptions, resource ownership, retry boundaries, and observability.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Do not catch Exception just to print it and continue. That often converts a visible failure into corrupted business state.</li>
+      <li>Use try-with-resources for anything that owns external resources. Closing is not optional in long-running programs.</li>
+      <li>Wrap low-level exceptions at boundaries with domain context, but keep the original cause for debugging.</li>
+      <li>Retries belong only around operations that are safe to repeat or explicitly idempotent.</li>
+      <li>Error messages should include the failing operation and key identifiers, not just the exception class name.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Explain Exceptions and I/O without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Use Exceptions and I/O in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Exceptions and I/O</div><div class="hl-desc">Predict how Exceptions and I/O behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="trycatch">
   <div class="subsection">
     <h3>Try-Catch-Finally — Complete Anatomy</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">All exception handling forms</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ---- Basic try-catch ----
-try {
-    int result = 10 / 0;                  // throws ArithmeticException
-} catch (ArithmeticException e) {
-    System.out.println("Cannot divide by zero: " + e.getMessage());
-}
+      <pre><code><span class="kw">import</span> java.io.*;
+<span class="kw">import</span> java.nio.file.*;
+<span class="kw">import</span> java.sql.*;
 
-// ---- Multi-catch (Java 7+) — one block for related types ----
-try {
-    riskyOperation();
-} catch (IOException | SQLException e) {  // e is effectively final
-    log.error("External failure: {}", e.getMessage(), e);
-    throw new ServiceException("Operation failed", e); // wrap and rethrow
-}
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">Exception</span> {
+        <span class="cm">// ---- Basic try-catch ----</span>
+        <span class="kw">try</span> {
+            <span class="kw">int</span> result = <span class="nm">10</span> / <span class="nm">0</span>;                  <span class="cm">// throws ArithmeticException</span>
+        } <span class="kw">catch</span> (<span class="cl">ArithmeticException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Cannot divide by zero: "</span> + e.<span class="fn">getMessage</span>());
+        }
 
-// ---- Try-catch-finally ----
-Connection conn = null;
-try {
-    conn = getConnection();
-    conn.execute(sql);
-} catch (SQLException e) {
-    log.error("DB error", e);
-} finally {
-    // Runs ALWAYS — whether exception occurred or not
-    if (conn != null) conn.close();  // but use try-with-resources instead!
-}
-
-// ---- Exception chaining — preserve the root cause ----
-try {
-    Files.readString(Path.of("config.json"));
-} catch (IOException e) {
-    // Wrap checked IOException as unchecked, but keep the original cause
-    throw new ConfigurationException("Cannot load config file", e);
-}
-// Later: e.getCause() returns the original IOException
-
-// ---- Re-throw after partial handling ----
-try {
-    processPayment(order);
-} catch (PaymentException e) {
-    auditLog.record("PAYMENT_FAILED", order.id(), e.getMessage());
-    throw e;  // re-throw — caller still needs to know it failed
+        <span class="cm">// ---- Multi-catch (Java 7+) — one block for related types ----</span>
+        <span class="cm">// (riskyOperation(), ServiceException, log are conceptual placeholders)</span>
+        <span class="kw">try</span> {
+            <span class="kw">throw new</span> <span class="cl">IOException</span>(<span class="st">"Simulated IO failure"</span>);
+        } <span class="kw">catch</span> (<span class="cl">IOException</span> e) {  <span class="cm">// e is effectively final</span>
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"External failure: "</span> + e.<span class="fn">getMessage</span>());
+            <span class="kw">throw new</span> <span class="cl">RuntimeException</span>(<span class="st">"Operation failed"</span>, e); <span class="cm">// wrap and rethrow</span>
+        }
+    }
 }</code></pre>
     </div>
     <div class="callout warn">
@@ -148,39 +163,45 @@ try {
     <p>Any object implementing <code class="inline">AutoCloseable</code> (or <code class="inline">Closeable</code>) can be declared in the try header. Java guarantees <code class="inline">close()</code> is called in reverse declaration order, even if an exception is thrown.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Resource cleanup — the right way</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// Single resource — FileReader auto-closed after block exits
-try (var reader = new BufferedReader(new FileReader("data.txt"))) {
-    String line;
-    while ((line = reader.readLine()) != null) {
-        System.out.println(line);
+      <pre><code><span class="kw">import</span> java.io.*;
+
+<span class="cm">// Custom AutoCloseable — any class can participate</span>
+<span class="kw">class</span> <span class="cl">DatabaseSession</span> <span class="kw">implements</span> <span class="cl">AutoCloseable</span> {
+    <span class="kw">public</span> <span class="fn">DatabaseSession</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Session opened"</span>); }
+    <span class="an">@Override</span> <span class="kw">public void</span> <span class="fn">close</span>() { <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Session closed"</span>); }
+}
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">IOException</span> {
+        <span class="cm">// Single resource — FileReader auto-closed after block exits</span>
+        <span class="cm">// (Assumes "data.txt" exists on disk)</span>
+        <span class="kw">try</span> (<span class="kw">var</span> reader = <span class="kw">new</span> <span class="cl">BufferedReader</span>(<span class="kw">new</span> <span class="cl">FileReader</span>(<span class="st">"data.txt"</span>))) {
+            <span class="cl">String</span> line;
+            <span class="kw">while</span> ((line = reader.<span class="fn">readLine</span>()) != <span class="kw">null</span>) {
+                <span class="cl">System</span>.out.<span class="fn">println</span>(line);
+            }
+        } <span class="kw">catch</span> (<span class="cl">IOException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Failed to read file: "</span> + e.<span class="fn">getMessage</span>());
+        }
+        <span class="cm">// reader.close() called automatically — no finally block needed</span>
+
+        <span class="cm">// Multiple resources — closed in REVERSE order (out before in)</span>
+        <span class="kw">try</span> (<span class="kw">var</span> in  = <span class="kw">new</span> <span class="cl">FileInputStream</span>(<span class="st">"source.txt"</span>);
+             <span class="kw">var</span> out = <span class="kw">new</span> <span class="cl">FileOutputStream</span>(<span class="st">"dest.txt"</span>)) {
+            in.<span class="fn">transferTo</span>(out);
+        } <span class="kw">catch</span> (<span class="cl">IOException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"File transfer error: "</span> + e.<span class="fn">getMessage</span>());
+        }
+
+        <span class="cm">// Custom AutoCloseable usage</span>
+        <span class="kw">try</span> (<span class="kw">var</span> session = <span class="kw">new</span> <span class="cl">DatabaseSession</span>()) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Running query..."</span>);
+        }  <span class="cm">// "Session closed" printed automatically</span>
+
+        <span class="cm">// Suppressed exceptions — if both body AND close() throw,</span>
+        <span class="cm">// the body exception is primary; close() exception is suppressed</span>
+        <span class="cm">// Access via: primaryException.getSuppressed()[0]</span>
     }
-} catch (IOException e) {
-    log.error("Failed to read file", e);
-}
-// reader.close() called automatically — no finally block needed
-
-// Multiple resources — closed in REVERSE order (out before in)
-try (var in  = new FileInputStream("source.txt");
-     var out = new FileOutputStream("dest.txt")) {
-    in.transferTo(out);
-}
-
-// Custom AutoCloseable — any class can participate
-class DatabaseSession implements AutoCloseable {
-    public DatabaseSession() { System.out.println("Session opened"); }
-    @Override public void close() { System.out.println("Session closed"); }
-}
-
-try (var session = new DatabaseSession()) {
-    session.query("SELECT ...");
-}  // "Session closed" printed automatically
-
-// Suppressed exceptions — if both body AND close() throw,
-// the body exception is primary; close() exception is suppressed
-try (var r = new BrokenResource()) {
-    throw new RuntimeException("body failed");
-    // BrokenResource.close() also throws — that exception is suppressed
-    // Access via: primaryException.getSuppressed()[0]
 }</code></pre>
     </div>
     <div class="callout tip">
@@ -196,61 +217,59 @@ try (var r = new BrokenResource()) {
     <p>Well-designed systems define their own exception types that reflect the domain vocabulary, not just the technical failure.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Domain exception hierarchy — e-commerce example</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// Base domain exception — unchecked (modern approach)
-public class DomainException extends RuntimeException {
-    private final String errorCode;
+      <pre><code><span class="kw">import</span> java.math.BigDecimal;
 
-    public DomainException(String errorCode, String message) {
-        super(message);
-        this.errorCode = errorCode;
+<span class="cm">// Base domain exception — unchecked (modern approach)</span>
+<span class="kw">class</span> <span class="cl">DomainException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> errorCode;
+
+    <span class="kw">public</span> <span class="fn">DomainException</span>(<span class="cl">String</span> errorCode, <span class="cl">String</span> message) {
+        <span class="kw">super</span>(message);
+        <span class="kw">this</span>.errorCode = errorCode;
     }
 
-    public DomainException(String errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
+    <span class="kw">public</span> <span class="fn">DomainException</span>(<span class="cl">String</span> errorCode, <span class="cl">String</span> message, <span class="cl">Throwable</span> cause) {
+        <span class="kw">super</span>(message, cause);
+        <span class="kw">this</span>.errorCode = errorCode;
     }
 
-    public String errorCode() { return errorCode; }
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">errorCode</span>() { <span class="kw">return</span> errorCode; }
 }
 
-// Specific domain exceptions — each carries its own context
-public class InsufficientFundsException extends DomainException {
-    private final BigDecimal shortfall;
+<span class="cm">// Specific domain exceptions — each carries its own context</span>
+<span class="kw">class</span> <span class="cl">InsufficientFundsException</span> <span class="kw">extends</span> <span class="cl">DomainException</span> {
+    <span class="kw">private final</span> <span class="cl">BigDecimal</span> shortfall;
 
-    public InsufficientFundsException(BigDecimal shortfall) {
-        super("PAYMENT_INSUFFICIENT_FUNDS",
-              "Payment declined: short by " + shortfall);
-        this.shortfall = shortfall;
+    <span class="kw">public</span> <span class="fn">InsufficientFundsException</span>(<span class="cl">BigDecimal</span> shortfall) {
+        <span class="kw">super</span>(<span class="st">"PAYMENT_INSUFFICIENT_FUNDS"</span>,
+              <span class="st">"Payment declined: short by "</span> + shortfall);
+        <span class="kw">this</span>.shortfall = shortfall;
     }
 
-    public BigDecimal shortfall() { return shortfall; }
+    <span class="kw">public</span> <span class="cl">BigDecimal</span> <span class="fn">shortfall</span>() { <span class="kw">return</span> shortfall; }
 }
 
-public class ProductNotFoundException extends DomainException {
-    public ProductNotFoundException(String productId) {
-        super("PRODUCT_NOT_FOUND", "Product not found: " + productId);
+<span class="kw">class</span> <span class="cl">ProductNotFoundException</span> <span class="kw">extends</span> <span class="cl">DomainException</span> {
+    <span class="kw">public</span> <span class="fn">ProductNotFoundException</span>(<span class="cl">String</span> productId) {
+        <span class="kw">super</span>(<span class="st">"PRODUCT_NOT_FOUND"</span>, <span class="st">"Product not found: "</span> + productId);
     }
 }
 
-// Usage — expressive, testable, carries context
-public Order checkout(Cart cart) {
-    Product p = productRepo.findById(cart.productId())
-        .orElseThrow(() -> new ProductNotFoundException(cart.productId()));
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Usage — expressive, testable, carries context</span>
+        <span class="kw">try</span> {
+            <span class="kw">throw new</span> <span class="cl">ProductNotFoundException</span>(<span class="st">"PROD-42"</span>);
+        } <span class="kw">catch</span> (<span class="cl">ProductNotFoundException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Not found: "</span> + e.<span class="fn">getMessage</span>() + <span class="st">" ["</span> + e.<span class="fn">errorCode</span>() + <span class="st">"]"</span>);
+        }
 
-    if (wallet.balance().compareTo(p.price()) < 0) {
-        throw new InsufficientFundsException(p.price().subtract(wallet.balance()));
+        <span class="kw">try</span> {
+            <span class="kw">throw new</span> <span class="cl">InsufficientFundsException</span>(<span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"25.00"</span>));
+        } <span class="kw">catch</span> (<span class="cl">InsufficientFundsException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(e.<span class="fn">getMessage</span>() + <span class="st">" shortfall="</span> + e.<span class="fn">shortfall</span>());
+        }
     }
-    return createOrder(p, cart);
-}
-
-// Caller handles domain exception — or lets it bubble to global handler
-try {
-    Order order = checkoutService.checkout(cart);
-} catch (ProductNotFoundException e) {
-    return ResponseEntity.notFound().build();
-} catch (InsufficientFundsException e) {
-    return ResponseEntity.status(402)
-        .body(Map.of("shortfall", e.shortfall(), "code", e.errorCode()));
 }</code></pre>
     </div>
   </div>
@@ -261,44 +280,39 @@ try {
     <h3>Production Exception Patterns</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Layer boundary translation — don't leak implementation details</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ❌ BAD: leaking JDBC internals through the service layer
-public User findUser(long id) throws SQLException {  // caller knows it's JDBC!
-    return jdbcRepo.findById(id);
+      <pre><code><span class="kw">import</span> java.sql.*;
+
+<span class="cm">// DataAccessException — unchecked wrapper for JDBC exceptions</span>
+<span class="kw">class</span> <span class="cl">DataAccessException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    <span class="kw">public</span> <span class="fn">DataAccessException</span>(<span class="cl">String</span> msg, <span class="cl">Throwable</span> cause) { <span class="kw">super</span>(msg, cause); }
 }
 
-// ✅ GOOD: translate at the repository boundary
-public User findUser(long id) {
-    try {
-        return jdbcRepo.findById(id);
-    } catch (SQLException e) {
-        throw new DataAccessException("Failed to load user: " + id, e);
-        // Keeps cause chain intact — e is wrapped, not lost
-    }
-}
+<span class="kw">public class</span> <span class="cl">Main</span> {
 
-// Global exception handler in Spring Boot
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ProductNotFoundException e) {
-        return ResponseEntity.status(404)
-            .body(new ErrorResponse(e.errorCode(), e.getMessage()));
+    <span class="cm">// ❌ BAD: leaking JDBC internals through the service layer</span>
+    <span class="kw">static</span> <span class="cl">String</span> <span class="fn">findUserBad</span>(<span class="kw">long</span> id) <span class="kw">throws</span> <span class="cl">SQLException</span> {  <span class="cm">// caller knows it's JDBC!</span>
+        <span class="kw">throw new</span> <span class="cl">SQLException</span>(<span class="st">"Simulated DB error"</span>);
     }
 
-    @ExceptionHandler(DomainException.class)
-    public ResponseEntity<ErrorResponse> handleDomain(DomainException e) {
-        log.warn("Domain error [{}]: {}", e.errorCode(), e.getMessage());
-        return ResponseEntity.status(422)
-            .body(new ErrorResponse(e.errorCode(), e.getMessage()));
+    <span class="cm">// ✅ GOOD: translate at the repository boundary</span>
+    <span class="kw">static</span> <span class="cl">String</span> <span class="fn">findUser</span>(<span class="kw">long</span> id) {
+        <span class="kw">try</span> {
+            <span class="kw">throw new</span> <span class="cl">SQLException</span>(<span class="st">"DB error"</span>);
+        } <span class="kw">catch</span> (<span class="cl">SQLException</span> e) {
+            <span class="kw">throw new</span> <span class="cl">DataAccessException</span>(<span class="st">"Failed to load user: "</span> + id, e);
+            <span class="cm">// Keeps cause chain intact — e is wrapped, not lost</span>
+        }
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpected(Exception e) {
-        log.error("Unexpected error", e);   // log FULL stack trace for bugs
-        return ResponseEntity.status(500)
-            .body(new ErrorResponse("INTERNAL_ERROR", "An unexpected error occurred"));
-        // NEVER expose internal details (stack traces) to API consumers!
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">try</span> {
+            <span class="fn">findUser</span>(<span class="nm">42</span>);
+        } <span class="kw">catch</span> (<span class="cl">DataAccessException</span> e) {
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Caught: "</span> + e.<span class="fn">getMessage</span>());
+            <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Root cause: "</span> + e.<span class="fn">getCause</span>().<span class="fn">getMessage</span>());
+        }
+        <span class="cm">// In Spring Boot, a @RestControllerAdvice + @ExceptionHandler</span>
+        <span class="cm">// catches these globally and maps them to HTTP responses (404, 422, 500).</span>
     }
 }</code></pre>
     </div>
@@ -338,5 +352,5 @@ public class GlobalExceptionHandler {
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>

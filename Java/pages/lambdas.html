@@ -43,6 +43,13 @@
     <p>The type of a lambda comes from context. The compiler looks at the target functional interface and checks that the lambda has compatible parameters and return type. This is why the same lambda shape can satisfy different interfaces.</p>
     <p>Method references are not a separate feature conceptually; they are compact lambdas that call an existing method. Use them when they read naturally, and use explicit lambdas when parameter names improve clarity.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should read a lambda as a tiny method without a name.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh captured variables, effectively-final rules, method references, functional interfaces, and debugging tradeoffs.</p>
+    <p><strong>Mastery check:</strong> You understand Lambdas when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Lambdas provide a concise way to implement Single Abstract Method (SAM) interfaces.</li>
@@ -62,6 +69,36 @@
       <li>You understand what 'effectively final' means.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Lambdas are behavior values; use them to pass intent, not to hide complex workflows inline.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should read a lambda as a tiny method without a name.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh captured variables, effectively-final rules, method references, functional interfaces, and debugging tradeoffs.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>A lambda captures variables, not arbitrary changing local state. The effectively-final rule prevents many closure bugs.</li>
+      <li>If a lambda is more than a few lines, naming it as a method often improves stack traces and readability.</li>
+      <li>Method references are not always clearer. Use them when the method name communicates the transformation better than the lambda body.</li>
+      <li>Checked exceptions do not fit smoothly into standard functional interfaces; design exception boundaries deliberately.</li>
+      <li>Lambdas can allocate objects depending on capture and runtime behavior. Usually it is fine, but hot paths deserve measurement.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Lambdas</div><div class="hl-desc">Explain Lambdas without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Lambdas</div><div class="hl-desc">Use Lambdas in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Lambdas</div><div class="hl-desc">Predict how Lambdas behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="funcinterfaces">
   <div class="subsection">
@@ -69,26 +106,50 @@
     <p>Before Java 8, if you wanted to pass a block of code into a method (like passing a click-handler to a button), you had to create a massive, clunky "Anonymous Inner Class". It was terribly verbose.</p>
     <div class="code-block" style="margin-bottom: 20px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Before Java 8 (Anonymous Inner Class)</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// Imagine a button that needs to know what to do when clicked
-button.addActionListener(new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("Button was clicked!");
+      <pre><code><span class="kw">import</span> <span class="cl">java.awt.event.ActionListener</span>;
+<span class="kw">import</span> <span class="cl">java.awt.event.ActionEvent</span>;
+<span class="kw">import</span> <span class="cl">javax.swing.JButton</span>;
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">JButton</span> button = <span class="kw">new</span> <span class="cl">JButton</span>(<span class="st">"Click me"</span>);
+        <span class="cm">// Imagine a button that needs to know what to do when clicked</span>
+        button.<span class="fn">addActionListener</span>(<span class="kw">new</span> <span class="cl">ActionListener</span>() {
+            <span class="an">@Override</span>
+            <span class="kw">public void</span> <span class="fn">actionPerformed</span>(<span class="cl">ActionEvent</span> e) {
+                <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Button was clicked!"</span>);
+            }
+        });
     }
-});</code></pre>
+}</code></pre>
     </div>
     <div class="code-block" style="margin-bottom: 20px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Java 8+ (Lambda Expression)</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// The exact same logic, using a Lambda
-button.addActionListener(e -> System.out.println("Button was clicked!"));</code></pre>
+      <pre><code><span class="kw">import</span> <span class="cl">java.awt.event.ActionEvent</span>;
+<span class="kw">import</span> <span class="cl">javax.swing.JButton</span>;
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">JButton</span> button = <span class="kw">new</span> <span class="cl">JButton</span>(<span class="st">"Click me"</span>);
+        <span class="cm">// The exact same logic, using a Lambda</span>
+        button.<span class="fn">addActionListener</span>(e -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Button was clicked!"</span>));
+    }
+}</code></pre>
     </div>
     
-    <p>To make this work, Java introduced <strong>Functional Interfaces</strong>. The rule is incredibly simple: A Functional Interface is any interface that has <strong>exactly one abstract method</strong> (known as the SAM rule - Single Abstract Method). Because `ActionListener` only has one method (`actionPerformed`), the compiler can mathematically guarantee that the lambda `e -> ...` is implementing that exact method.</p>
+    <p>To make this work, Java introduced <strong>Functional Interfaces</strong>. The rule is incredibly simple: A Functional Interface is any interface that has <strong>exactly one abstract method</strong> (known as the SAM rule - Single Abstract Method). Because `ActionListener` only has one method (`actionPerformed`), the compiler can mathematically guarantee that the lambda `e -&gt; ...` is implementing that exact method.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Custom Functional Interface</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>@FunctionalInterface  // Optional but recommended — compiler enforces the rule
-interface Transformer&lt;T, R&gt; {
-    R transform(T input);
+      <pre><code><span class="an">@FunctionalInterface</span>  <span class="cm">// Optional but recommended — compiler enforces the rule</span>
+<span class="kw">interface</span> <span class="cl">Transformer</span>&lt;T, R&gt; {
+    R <span class="fn">transform</span>(T input);
+}
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">Transformer</span>&lt;<span class="cl">String</span>, <span class="cl">Integer</span>&gt; lengthOf = s -&gt; s.<span class="fn">length</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(lengthOf.<span class="fn">transform</span>(<span class="st">"Hello"</span>)); <span class="cm">// 5</span>
+    }
 }</code></pre>
     </div>
     <h4>The Big Four: Built-in Functional Interfaces</h4>
@@ -124,30 +185,38 @@ interface Transformer&lt;T, R&gt; {
     <p>The syntax <code class="inline">(parameters) -&gt; body</code> is just syntactic sugar. Behind the scenes, the JVM takes your lambda and automatically creates an instance of the target Functional Interface.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Lambda Syntax</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Full syntax:         (parameters) -&gt; { statements; }</span>
-<span class="cm">// Single expression:   (parameters) -&gt; expression</span>
-<span class="cm">// Single param:        param -&gt; expression</span>
-<span class="cm">// No params:           () -&gt; expression</span>
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.function.Predicate</span>;
+<span class="kw">import</span> <span class="cl">java.util.function.Function</span>;
 
-<span class="cm">// Examples with Predicate&lt;String&gt;</span>
-<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isEmpty = s -&gt; s.<span class="fn">isEmpty</span>();
-<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isLong = s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">10</span>;
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Full syntax:         (parameters) -&gt; { statements; }</span>
+        <span class="cm">// Single expression:   (parameters) -&gt; expression</span>
+        <span class="cm">// Single param:        param -&gt; expression</span>
+        <span class="cm">// No params:           () -&gt; expression</span>
 
-<span class="cm">// Chaining predicates</span>
-<span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isShortAndNotEmpty = isEmpty.<span class="fn">negate</span>().<span class="fn">and</span>(s -&gt; s.<span class="fn">length</span>() &lt; <span class="nm">5</span>);
+        <span class="cm">// Examples with Predicate&lt;String&gt;</span>
+        <span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isEmpty = s -&gt; s.<span class="fn">isEmpty</span>();
+        <span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isLong = s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">10</span>;
 
-<span class="cm">// Function composition</span>
-<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; trim = <span class="cl">String</span>::trim;
-<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; upper = <span class="cl">String</span>::toUpperCase;
-<span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; pipeline = trim.<span class="fn">andThen</span>(upper);
-pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>); <span class="cm">// "HELLO"</span>
+        <span class="cm">// Chaining predicates</span>
+        <span class="cl">Predicate</span>&lt;<span class="cl">String</span>&gt; isShortAndNotEmpty = isEmpty.<span class="fn">negate</span>().<span class="fn">and</span>(s -&gt; s.<span class="fn">length</span>() &lt; <span class="nm">5</span>);
 
-<span class="cm">// Multi-line lambda body</span>
-<span class="cl">Function</span>&lt;<span class="cl">Integer</span>, <span class="cl">String</span>&gt; classify = n -&gt; {
-    <span class="kw">if</span> (n &lt; <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"negative"</span>;
-    <span class="kw">if</span> (n == <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"zero"</span>;
-    <span class="kw">return</span> <span class="st">"positive"</span>;
-};</code></pre>
+        <span class="cm">// Function composition</span>
+        <span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; trim = <span class="cl">String</span>::trim;
+        <span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; upper = <span class="cl">String</span>::toUpperCase;
+        <span class="cl">Function</span>&lt;<span class="cl">String</span>, <span class="cl">String</span>&gt; pipeline = trim.<span class="fn">andThen</span>(upper);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>)); <span class="cm">// "HELLO"</span>
+
+        <span class="cm">// Multi-line lambda body</span>
+        <span class="cl">Function</span>&lt;<span class="cl">Integer</span>, <span class="cl">String</span>&gt; classify = n -&gt; {
+            <span class="kw">if</span> (n &lt; <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"negative"</span>;
+            <span class="kw">if</span> (n == <span class="nm">0</span>) <span class="kw">return</span> <span class="st">"zero"</span>;
+            <span class="kw">return</span> <span class="st">"positive"</span>;
+        };
+        <span class="cl">System</span>.out.<span class="fn">println</span>(classify.<span class="fn">apply</span>(<span class="nm">42</span>));
+    }
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">⚠️</span>
@@ -177,23 +246,32 @@ pipeline.<span class="fn">apply</span>(<span class="st">"  hello  "</span>); <sp
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Method References in Action</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.function.Supplier</span>;
 
-<span class="cm">// Instead of: names.forEach(n -&gt; System.out.println(n))</span>
-names.<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; names = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>);
 
-<span class="cm">// Instead of: names.stream().map(s -&gt; s.toUpperCase())</span>
-names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase).<span class="fn">toList</span>();
+        <span class="cm">// Instead of: names.forEach(n -&gt; System.out.println(n))</span>
+        names.<span class="fn">forEach</span>(<span class="cl">System</span>.out::println);
 
-<span class="cm">// Constructor reference</span>
-<span class="cl">Supplier</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; factory = <span class="cl">ArrayList</span>::<span class="kw">new</span>;
-<span class="cl">List</span>&lt;<span class="cl">String</span>&gt; newList = factory.<span class="fn">get</span>();
+        <span class="cm">// Instead of: names.stream().map(s -&gt; s.toUpperCase())</span>
+        names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase).<span class="fn">toList</span>();
 
-<span class="cm">// Parse strings to integers</span>
-<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>)
-    .<span class="fn">stream</span>()
-    .<span class="fn">map</span>(<span class="cl">Integer</span>::parseInt)
-    .<span class="fn">toList</span>();</code></pre>
+        <span class="cm">// Constructor reference</span>
+        <span class="cl">Supplier</span>&lt;<span class="cl">List</span>&lt;<span class="cl">String</span>&gt;&gt; factory = <span class="cl">ArrayList</span>::<span class="kw">new</span>;
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; newList = factory.<span class="fn">get</span>();
+
+        <span class="cm">// Parse strings to integers</span>
+        <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>)
+            .<span class="fn">stream</span>()
+            .<span class="fn">map</span>(<span class="cl">Integer</span>::parseInt)
+            .<span class="fn">toList</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(nums);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -205,29 +283,38 @@ names.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="
     <p><code class="inline">Optional</code> is a box. Instead of returning a <code class="inline">User</code> (which might secretly be null), your method returns an <code class="inline">Optional&lt;User&gt;</code>. This explicitly tells the developer: <em>"Hey, I might not have a User for you. You are forced to deal with the possibility that this box is empty before you can open it."</em></p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Optional Usage</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Creating Optionals</span>
-<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; full = <span class="cl">Optional</span>.<span class="fn">of</span>(<span class="st">"Hello"</span>);       <span class="cm">// Throws if null!</span>
-<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; maybe = <span class="cl">Optional</span>.<span class="fn">ofNullable</span>(<span class="kw">null</span>); <span class="cm">// Safe for null</span>
-<span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; empty = <span class="cl">Optional</span>.<span class="fn">empty</span>();
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Optional</span>;
 
-<span class="cm">// ❌ WRONG: defeats the purpose</span>
-<span class="cm">// if (opt.isPresent()) { return opt.get(); }</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">static</span> <span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; <span class="fn">findByName</span>(<span class="cl">String</span> s) { <span class="kw">return</span> <span class="cl">Optional</span>.<span class="fn">of</span>(s); }
+    <span class="kw">static</span> <span class="cl">String</span> <span class="fn">computeDefault</span>() { <span class="kw">return</span> <span class="st">"default"</span>; }
 
-<span class="cm">// ✅ RIGHT: functional style</span>
-maybe.<span class="fn">orElse</span>(<span class="st">"default"</span>);                 <span class="cm">// value or default</span>
-maybe.<span class="fn">orElseGet</span>(() -&gt; <span class="fn">computeDefault</span>()); <span class="cm">// lazy default</span>
-maybe.<span class="fn">orElseThrow</span>();                     <span class="cm">// throw NoSuchElementException</span>
-maybe.<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="cl">RuntimeException</span>(<span class="st">"Not found"</span>));
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Creating Optionals</span>
+        <span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; full = <span class="cl">Optional</span>.<span class="fn">of</span>(<span class="st">"Hello"</span>);       <span class="cm">// Throws if null!</span>
+        <span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; maybe = <span class="cl">Optional</span>.<span class="fn">ofNullable</span>(<span class="kw">null</span>); <span class="cm">// Safe for null</span>
+        <span class="cl">Optional</span>&lt;<span class="cl">String</span>&gt; empty = <span class="cl">Optional</span>.<span class="fn">empty</span>();
 
-<span class="cm">// Transform / chain</span>
-maybe.<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase);           <span class="cm">// Optional&lt;String&gt;</span>
-maybe.<span class="fn">filter</span>(s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">3</span>);       <span class="cm">// Optional&lt;String&gt; or empty</span>
-maybe.<span class="fn">flatMap</span>(<span class="kw">this</span>::<span class="fn">findByName</span>);          <span class="cm">// Unwraps nested Optionals</span>
-maybe.<span class="fn">ifPresent</span>(<span class="cl">System</span>.out::println);     <span class="cm">// Only runs if present</span>
-maybe.<span class="fn">ifPresentOrElse</span>(
-    <span class="cl">System</span>.out::println,                   <span class="cm">// If present</span>
-    () -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Empty!"</span>)    <span class="cm">// If empty</span>
-);</code></pre>
+        <span class="cm">// ❌ WRONG: defeats the purpose</span>
+        <span class="cm">// if (opt.isPresent()) { return opt.get(); }</span>
+
+        <span class="cm">// ✅ RIGHT: functional style</span>
+        maybe.<span class="fn">orElse</span>(<span class="st">"default"</span>);                 <span class="cm">// value or default</span>
+        maybe.<span class="fn">orElseGet</span>(() -&gt; <span class="fn">computeDefault</span>()); <span class="cm">// lazy default</span>
+        maybe.<span class="fn">orElseThrow</span>();                     <span class="cm">// throw NoSuchElementException</span>
+        <span class="cm">// maybe.orElseThrow(() -&gt; new RuntimeException("Not found"));</span>
+
+        <span class="cm">// Transform / chain</span>
+        maybe.<span class="fn">map</span>(<span class="cl">String</span>::toUpperCase);           <span class="cm">// Optional&lt;String&gt;</span>
+        maybe.<span class="fn">filter</span>(s -&gt; s.<span class="fn">length</span>() &gt; <span class="nm">3</span>);       <span class="cm">// Optional&lt;String&gt; or empty</span>
+        maybe.<span class="fn">flatMap</span>(<span class="cl">Main</span>::<span class="fn">findByName</span>);          <span class="cm">// Unwraps nested Optionals</span>
+        maybe.<span class="fn">ifPresent</span>(<span class="cl">System</span>.out::println);     <span class="cm">// Only runs if present</span>
+        maybe.<span class="fn">ifPresentOrElse</span>(
+            <span class="cl">System</span>.out::println,                   <span class="cm">// If present</span>
+            () -&gt; <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Empty!"</span>)    <span class="cm">// If empty</span>
+        );
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">💡</span>

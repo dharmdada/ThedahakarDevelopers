@@ -43,6 +43,13 @@
     <p>New syntax should make code clearer, not trendy. A record is excellent for transparent immutable data but wrong for entities with complex identity and lifecycle. var is useful when the right side is obvious but harmful when it hides important type information.</p>
     <p>The best way to adopt modern Java is incrementally: use features where they remove noise while preserving explicit meaning.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn records, switch expressions, text blocks, pattern matching, sealed classes, and virtual threads gradually.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh compatibility, preview features, migration strategy, bytecode targets, and when new syntax changes design.</p>
+    <p><strong>Mastery check:</strong> You understand Modern Java Features when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Java has evolved rapidly since Java 8. Keep up with LTS releases (11, 17, 21).</li>
@@ -62,6 +69,36 @@
       <li>You understand the basic concept of Virtual Threads (Java 21).</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Modern Java reduces ceremony when used to make intent and domain constraints clearer.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn records, switch expressions, text blocks, pattern matching, sealed classes, and virtual threads gradually.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh compatibility, preview features, migration strategy, bytecode targets, and when new syntax changes design.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Records are not just shorter POJOs; they declare that the object is transparent data with value-based behavior.</li>
+      <li>Sealed classes make closed hierarchies explicit and pair well with exhaustive switch logic.</li>
+      <li>Text blocks improve readability but still preserve characters; indentation and trailing spaces can matter.</li>
+      <li>Pattern matching is strongest when it removes unsafe casts and keeps type checks near the use of the narrowed value.</li>
+      <li>Adopt new language features when they reduce accidental complexity, not because the codebase needs novelty.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Explain Modern Java Features without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Use Modern Java Features in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Modern Java Featur</div><div class="hl-desc">Predict how Modern Java Features behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="var">
   <div class="subsection">
@@ -70,16 +107,21 @@
     <p>Java 10 introduced <code class="inline">var</code>. It acts like a detective. When you write <code class="inline">var name = "Alice"</code>, the compiler looks at the right side of the equals sign, deduces that "Alice" is a String, and automatically locks the variable to the <code class="inline">String</code> type. This is <strong>not</strong> dynamic typing (like JavaScript); the variable is strictly typed at compile-time, it just saves you the keystrokes of writing it out.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Old way</span>
-<span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt; map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+      <pre><code>import java.util.*;
 
-<span class="cm">// Modern way</span>
-<span class="kw">var</span> map = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;<span class="cl">String</span>, <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt;&gt;();
-<span class="kw">var</span> name = <span class="st">"Alice"</span>; <span class="cm">// Inferred as String</span>
+public class Main {
+    public static void main(String[] args) {
+        Map&lt;String, List&lt;Integer&gt;&gt; oldWay = new HashMap&lt;&gt;();
+        oldWay.put("scores", List.of(90, 95));
 
-<span class="cm">// Works in loops</span>
-<span class="kw">for</span> (<span class="kw">var</span> entry : map.<span class="fn">entrySet</span>()) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(entry.<span class="fn">getKey</span>());
+        var modernWay = new HashMap&lt;String, List&lt;Integer&gt;&gt;();
+        modernWay.put("scores", List.of(80, 85));
+        var name = "Alice";
+
+        for (var entry : modernWay.entrySet()) {
+            System.out.println(name + " -&gt; " + entry.getKey() + " " + entry.getValue());
+        }
+    }
 }</code></pre>
     </div>
     <div class="callout warn">
@@ -96,21 +138,26 @@
     <p><strong>Text Blocks</strong> (<code class="inline">"""</code>) give you a clean canvas. Anything you type between the triple quotes is preserved exactly as-is, including newlines and indents, making your code infinitely more readable.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Automatically handles indentation and newlines</span>
-<span class="cl">String</span> json = <span class="st">"""
-    {
-        "name": "Alice",
-        "age": 25,
-        "skills": ["Java", "SQL"]
-    }
-    """</span>;
+      <pre><code>public class Main {
+    public static void main(String[] args) {
+        String json = """
+            {
+                "name": "Alice",
+                "age": 25,
+                "skills": ["Java", "SQL"]
+            }
+            """;
 
-<span class="cm">// Using String.formatted with text blocks</span>
-<span class="cl">String</span> query = <span class="st">"""
-    SELECT * FROM users
-    WHERE age &gt; %d
-    AND status = '%s'
-    """</span>.<span class="fn">formatted</span>(<span class="nm">18</span>, <span class="st">"ACTIVE"</span>);</code></pre>
+        String query = """
+            SELECT * FROM users
+            WHERE age &gt; %d
+            AND status = '%s'
+            """.formatted(18, "ACTIVE");
+
+        System.out.println(json);
+        System.out.println(query);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -122,22 +169,19 @@
     <p><strong>Pattern Matching</strong> combines the check and the cast. It's like a bouncer at a club checking your ID: "Are you over 21? Yes? Here is your VIP wristband (the new variable <code class="inline">s</code>)." You can immediately start using <code class="inline">s</code> without any casting boilerplate.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Pattern Matching for instanceof</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cl">Object</span> obj = <span class="st">"Hello Java"</span>;
+      <pre><code>public class Main {
+    public static void main(String[] args) {
+        Object obj = "Hello Java";
 
-<span class="cm">// Old way</span>
-<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span>) {
-    <span class="cl">String</span> s = (<span class="cl">String</span>) obj; <span class="cm">// Ugly cast</span>
-    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">length</span>());
-}
+        if (obj instanceof String) {
+            String s = (String) obj;
+            System.out.println(s.length());
+        }
 
-<span class="cm">// Modern way</span>
-<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(s.<span class="fn">length</span>()); <span class="cm">// s is automatically cast!</span>
-}
-
-<span class="cm">// Can be combined with other conditions</span>
-<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="cl">String</span> s &amp;&amp; s.<span class="fn">length</span>() &gt; <span class="nm">5</span>) {
-    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Long string: "</span> + s);
+        if (obj instanceof String s &amp;&amp; s.length() &gt; 5) {
+            System.out.println("Long string: " + s);
+        }
+    }
 }</code></pre>
     </div>
   </div>
@@ -150,27 +194,34 @@
     <p>Java 14 introduced <strong>Switch Expressions</strong>. Think of it like a vending machine: you drop in a coin (the input), and it instantly shoots out a soda (the return value). It uses the arrow syntax (<code class="inline">-&gt;</code>) which guarantees no fall-through bugs. Furthermore, Java 21 allows you to switch over <em>Object Types</em> instead of just constants!</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Modern Switch</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Switch Expression (Returns a value, no fall-through, no breaks needed)</span>
-<span class="cl">String</span> type = <span class="kw">switch</span> (day) {
-    <span class="kw">case</span> MONDAY, FRIDAY, SUNDAY -&gt; <span class="st">"Fun"</span>;
-    <span class="kw">case</span> TUESDAY                -&gt; <span class="st">"Boring"</span>;
-    <span class="kw">default</span>                     -&gt; {
-        <span class="cm">// Multi-line blocks use 'yield' instead of return</span>
-        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Calculating..."</span>);
-        <span class="kw">yield</span> <span class="st">"Unknown"</span>;
-    }
-};
+      <pre><code>enum Day { MONDAY, TUESDAY, WEDNESDAY, FRIDAY, SUNDAY }
 
-<span class="cm">// Pattern Matching for Switch (Switching on Types)</span>
-<span class="kw">static</span> <span class="cl">String</span> <span class="fn">formatter</span>(<span class="cl">Object</span> obj) {
-    <span class="kw">return switch</span> (obj) {
-        <span class="kw">case</span> <span class="cl">Integer</span> i -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"int %d"</span>, i);
-        <span class="kw">case</span> <span class="cl">Long</span> l    -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"long %d"</span>, l);
-        <span class="kw">case</span> <span class="cl">Double</span> d  -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"double %f"</span>, d);
-        <span class="kw">case</span> <span class="cl">String</span> s  -&gt; <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"String %s"</span>, s);
-        <span class="kw">case null</span>      -&gt; <span class="st">"Null value"</span>; <span class="cm">// Nulls handled directly!</span>
-        <span class="kw">default</span>        -&gt; obj.<span class="fn">toString</span>();
-    };
+public class Main {
+    static String formatter(Object obj) {
+        return switch (obj) {
+            case Integer i -&gt; String.format("int %d", i);
+            case Long l -&gt; String.format("long %d", l);
+            case Double d -&gt; String.format("double %f", d);
+            case String s -&gt; String.format("String %s", s);
+            case null -&gt; "Null value";
+            default -&gt; obj.toString();
+        };
+    }
+
+    public static void main(String[] args) {
+        Day day = Day.MONDAY;
+        String type = switch (day) {
+            case MONDAY, FRIDAY, SUNDAY -&gt; "Fun";
+            case TUESDAY -&gt; "Boring";
+            default -&gt; {
+                System.out.println("Calculating...");
+                yield "Unknown";
+            }
+        };
+
+        System.out.println(type);
+        System.out.println(formatter(42));
+    }
 }</code></pre>
     </div>
   </div>
@@ -183,18 +234,28 @@
     <p>Java 15 introduced <strong>Sealed Classes</strong>. It allows an interface or class to declare exactly who is allowed to inherit from it. It's an architectural guest list.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Sealed Interface</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Only these 3 specific classes are allowed to implement this interface</span>
-<span class="kw">public sealed interface</span> <span class="cl">PaymentMethod</span> 
-    <span class="kw">permits</span> <span class="cl">CreditCard</span>, <span class="cl">PayPal</span>, <span class="cl">Cash</span> {
-    
-    <span class="kw">void</span> <span class="fn">process</span>();
+      <pre><code>sealed interface PaymentMethod permits CreditCard, PayPal, Cash {
+    void process();
 }
 
-<span class="cm">// Allowed</span>
-<span class="kw">public final class</span> <span class="cl">CreditCard</span> <span class="kw">implements</span> <span class="cl">PaymentMethod</span> { ... }
+final class CreditCard implements PaymentMethod {
+    public void process() { System.out.println("Processing card"); }
+}
 
-<span class="cm">// Compile Error! Bitcoin is not on the 'permits' guest list.</span>
-<span class="kw">public final class</span> <span class="cl">Bitcoin</span> <span class="kw">implements</span> <span class="cl">PaymentMethod</span> { ... }</code></pre>
+final class PayPal implements PaymentMethod {
+    public void process() { System.out.println("Processing PayPal"); }
+}
+
+final class Cash implements PaymentMethod {
+    public void process() { System.out.println("Processing cash"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        PaymentMethod method = new CreditCard();
+        method.process();
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">💡</span>

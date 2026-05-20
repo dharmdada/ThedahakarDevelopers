@@ -1,7 +1,35 @@
+// PROGRESS TRACKING STATE
+const PROGRESS_KEY = 'javamaster_progress';
+function getProgress() {
+  const data = localStorage.getItem(PROGRESS_KEY);
+  return data ? JSON.parse(data) : { completed: [], quizzes: {} };
+}
+function saveProgress(progress) {
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+}
+function isLessonCompleted(file) {
+  const progress = getProgress();
+  return progress.completed.includes(file);
+}
+function toggleLessonCompleted(file) {
+  const progress = getProgress();
+  const index = progress.completed.indexOf(file);
+  let status = false;
+  if (index > -1) {
+    progress.completed.splice(index, 1);
+  } else {
+    progress.completed.push(file);
+    status = true;
+  }
+  saveProgress(progress);
+  return status;
+}
+
 // SIDEBAR GENERATION
 const isSubPage = window.location.pathname.includes('/pages/');
 const basePath = isSubPage ? '../' : './';
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
 
 function renderSidebar() {
   const sidebar = document.getElementById('sidebar');
@@ -73,36 +101,47 @@ function renderSidebar() {
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-header ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html', 'jdbc.html'])}">
+        <div class="nav-group-header ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html'])}">
           <span>Advanced</span><span class="chevron">▶</span>
         </div>
-        <div class="nav-group-children ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html', 'jdbc.html'])}">
+        <div class="nav-group-children ${isGroupOpen(['advanced.html', 'exceptions-io.html', 'java-io-streams.html', 'io-network.html', 'concurrency.html', 'datetime.html', 'reflection.html', 'jvm-internals.html', 'modern-features.html'])}">
           <a class="nav-item ${isActive('advanced.html')}" href="${basePath}advanced.html"><span class="dot"></span>Overview</a>
-          <a class="nav-item ${isActive('exceptions-io.html')}" href="${basePath}pages/exceptions-io.html"><span class="dot"></span>Exceptions</a>
-          <a class="nav-item ${isActive('java-io-streams.html')}" href="${basePath}pages/java-io-streams.html"><span class="dot"></span>I/O Streams</a>
+          <a class="nav-item ${isActive('exceptions-io.html')}" href="${basePath}pages/exceptions-io.html"><span class="dot"></span>Exceptions & Errors</a>
+          <a class="nav-item ${isActive('java-io-streams.html')}" href="${basePath}pages/java-io-streams.html"><span class="dot"></span>Java I/O Streams</a>
           <a class="nav-item ${isActive('io-network.html')}" href="${basePath}pages/io-network.html"><span class="dot"></span>File I/O & Networking</a>
           <a class="nav-item ${isActive('datetime.html')}" href="${basePath}pages/datetime.html"><span class="dot"></span>Date & Time API</a>
           <a class="nav-item ${isActive('concurrency.html')}" href="${basePath}pages/concurrency.html"><span class="dot"></span>Concurrency</a>
           <a class="nav-item ${isActive('reflection.html')}" href="${basePath}pages/reflection.html"><span class="dot"></span>Reflection & Annotations</a>
           <a class="nav-item ${isActive('jvm-internals.html')}" href="${basePath}pages/jvm-internals.html"><span class="dot"></span>JVM Internals</a>
           <a class="nav-item ${isActive('modern-features.html')}" href="${basePath}pages/modern-features.html"><span class="dot"></span>Modern Features</a>
-          <a class="nav-item ${isActive('jdbc.html')}" href="${basePath}pages/jdbc.html"><span class="dot"></span>JDBC & SQL</a>
         </div>
       </div>
 
       <div class="nav-group">
-        <div class="nav-group-header ${isGroupOpen(['testing.html', 'build-tools.html', 'design-patterns.html', 'java-project-structure.html'])}">
+        <div class="nav-group-header ${isGroupOpen(['java-project-structure.html', 'build-tools.html', 'testing.html', 'jdbc.html', 'design-patterns.html'])}">
           <span>Professional</span><span class="chevron">▶</span>
         </div>
-        <div class="nav-group-children ${isGroupOpen(['testing.html', 'build-tools.html', 'design-patterns.html', 'java-project-structure.html'])}">
+        <div class="nav-group-children ${isGroupOpen(['java-project-structure.html', 'build-tools.html', 'testing.html', 'jdbc.html', 'design-patterns.html'])}">
           <a class="nav-item ${isActive('java-project-structure.html')}" href="${basePath}pages/java-project-structure.html"><span class="dot"></span>Project Structure</a>
           <a class="nav-item ${isActive('build-tools.html')}" href="${basePath}pages/build-tools.html"><span class="dot"></span>Maven & Gradle</a>
           <a class="nav-item ${isActive('testing.html')}" href="${basePath}pages/testing.html"><span class="dot"></span>Testing</a>
+          <a class="nav-item ${isActive('jdbc.html')}" href="${basePath}pages/jdbc.html"><span class="dot"></span>JDBC & SQL</a>
           <a class="nav-item ${isActive('design-patterns.html')}" href="${basePath}pages/design-patterns.html"><span class="dot"></span>Patterns & SOLID</a>
         </div>
       </div>
     </div>
   `;
+  
+  const progress = getProgress();
+  sidebar.querySelectorAll('.nav-item').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href) {
+      const filename = href.split('/').pop();
+      if (filename && filename !== 'index.html' && progress.completed.includes(filename)) {
+        link.classList.add('completed');
+      }
+    }
+  });
 }
 renderSidebar();
 
@@ -167,6 +206,111 @@ function renderCoursePager() {
   footer.insertAdjacentHTML('beforebegin', `<nav class="course-pager" aria-label="Course navigation">${prevHtml}${nextHtml}</nav>`);
 }
 renderCoursePager();
+
+// COMPLETION BUTTON INJECTION
+function renderCompletionButton() {
+  const contentArea = document.querySelector('.content-area');
+  if (!contentArea || currentPage === 'index.html' || currentPage === '') return;
+
+  const isCompleted = isLessonCompleted(currentPage);
+  
+  const completionHtml = `
+    <div class="completion-zone animate-fade">
+      <button id="complete-btn" class="btn ${isCompleted ? 'completed' : 'btn-secondary'}">
+        <span class="btn-icon">${isCompleted ? '✓' : '○'}</span>
+        <span class="btn-text">${isCompleted ? 'Lesson Completed' : 'Mark as Completed'}</span>
+      </button>
+    </div>
+  `;
+
+  const pager = document.querySelector('.course-pager');
+  if (pager) {
+    pager.insertAdjacentHTML('beforebegin', completionHtml);
+  } else {
+    contentArea.insertAdjacentHTML('beforeend', completionHtml);
+  }
+
+  const btn = document.getElementById('complete-btn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const currentlyCompleted = toggleLessonCompleted(currentPage);
+      btn.classList.toggle('completed', currentlyCompleted);
+      btn.classList.toggle('btn-secondary', !currentlyCompleted);
+      
+      const icon = btn.querySelector('.btn-icon');
+      const text = btn.querySelector('.btn-text');
+      if (icon) icon.textContent = currentlyCompleted ? '✓' : '○';
+      if (text) text.textContent = currentlyCompleted ? 'Lesson Completed' : 'Mark as Completed';
+
+      renderSidebar();
+    });
+  }
+}
+renderCompletionButton();
+
+// HOMEPAGE PROGRESS CARD
+function getFirstUncompletedPage() {
+  const progress = getProgress();
+  const lesson = coursePages.find(page => {
+    if (page.file === 'index.html') return false;
+    return !progress.completed.includes(page.file);
+  });
+  return lesson || null;
+}
+
+function renderHomepageProgress() {
+  if (currentPage !== 'index.html' && currentPage !== '') return;
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+
+  const progress = getProgress();
+  const totalLessons = coursePages.filter(p => p.file !== 'index.html').length;
+  const completedCount = progress.completed.length;
+  const percentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+  const nextLesson = getFirstUncompletedPage();
+  const resumeBtnHtml = nextLesson 
+    ? `<a href="${basePath + nextLesson.path}" class="btn btn-primary pd-resume">Resume: ${nextLesson.title}</a>`
+    : `<button class="btn btn-primary pd-resume" onclick="resetAllProgress()">Course Complete! Restart</button>`;
+
+  const dashboardHtml = `
+    <div class="progress-dashboard glass animate-fade">
+      <div class="pd-info">
+        <div class="pd-text-group">
+          <div class="pd-label">YOUR PROGRESS</div>
+          <div class="pd-stats">${completedCount} of ${totalLessons} Lessons Completed</div>
+        </div>
+        <div class="pd-percentage-circle">
+          <svg class="progress-ring" width="60" height="60">
+            <circle class="progress-ring__background" stroke="var(--border)" stroke-width="4" fill="transparent" r="24" cx="30" cy="30"/>
+            <circle class="progress-ring__circle" stroke="var(--primary)" stroke-width="4" fill="transparent" r="24" cx="30" cy="30"
+              style="stroke-dasharray: 150.79; stroke-dashoffset: ${150.79 - (150.79 * percentage / 100)};"
+            />
+          </svg>
+          <div class="pd-percentage-text">${percentage}%</div>
+        </div>
+      </div>
+      <div class="pd-action">
+        ${resumeBtnHtml}
+      </div>
+    </div>
+  `;
+
+  const heroBtns = hero.querySelector('.hero-btns');
+  if (heroBtns) {
+    heroBtns.insertAdjacentHTML('beforebegin', dashboardHtml);
+  }
+}
+
+window.resetAllProgress = function() {
+  if (confirm("Are you sure you want to reset all your progress?")) {
+    saveProgress({ completed: [], quizzes: {} });
+    window.location.reload();
+  }
+};
+
+renderHomepageProgress();
+
 
 // SIDEBAR TOGGLE
 const sidebar = document.getElementById('sidebar');
@@ -263,8 +407,6 @@ document.querySelectorAll('.tabs').forEach(tabsEl => {
   if (btns[0]) btns[0].click();
 });
 
-// GLOBAL SEARCH & RUN CODE
-
 // Inject Run Code button into code blocks
 document.querySelectorAll('.code-header').forEach(header => {
   const runBtn = document.createElement('a');
@@ -326,21 +468,63 @@ if (searchInput && searchResults) {
       return; 
     }
     
-    searchResults.innerHTML = matches.map(m =>
-      `<a class="sr-item" href="${m.link}" style="display:block;text-decoration:none;">
+    searchResults.innerHTML = matches.map((m, idx) =>
+      `<a class="sr-item" href="${m.link}" data-index="${idx}" style="display:block;text-decoration:none;">
         <div class="sr-item-title">${m.title}</div>
         <div class="sr-item-cat">${m.category}</div>
       </a>`
     ).join('');
     searchResults.classList.add('show');
+    activeSearchIndex = -1;
   });
 
   document.addEventListener('click', e => {
     if (!e.target.closest('#search-wrap')) searchResults.classList.remove('show');
   });
 
+  let activeSearchIndex = -1;
+
+  function updateSearchHighlight(items) {
+    items.forEach((item, idx) => {
+      if (idx === activeSearchIndex) {
+        item.classList.add('selected');
+        item.scrollIntoView({ block: 'nearest' });
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+  }
+
   searchInput.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { searchResults.classList.remove('show'); searchInput.blur(); }
+    const items = searchResults.querySelectorAll('.sr-item');
+    if (e.key === 'Escape') {
+      searchResults.classList.remove('show');
+      searchInput.blur();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!items.length) return;
+      activeSearchIndex = (activeSearchIndex + 1) % items.length;
+      updateSearchHighlight(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!items.length) return;
+      activeSearchIndex = (activeSearchIndex - 1 + items.length) % items.length;
+      updateSearchHighlight(items);
+    } else if (e.key === 'Enter') {
+      if (activeSearchIndex > -1 && items[activeSearchIndex]) {
+        e.preventDefault();
+        items[activeSearchIndex].click();
+      }
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== searchInput && 
+        document.activeElement.tagName !== 'INPUT' && 
+        document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      searchInput.focus();
+    }
   });
 }
 
@@ -719,6 +903,48 @@ document.head.appendChild(quizScript);
 
 })();
 
+// FLOATING TABLE OF CONTENTS
+function generateTOC() {
+  const contentArea = document.querySelector('.content-area');
+  if (!contentArea || currentPage === 'index.html' || currentPage === '') return;
 
+  const headings = Array.from(contentArea.querySelectorAll('.subsection h3'));
+  if (headings.length < 2) return;
 
+  const tocContainer = document.createElement('div');
+  tocContainer.id = 'floating-toc';
+  tocContainer.className = 'glass animate-fade';
+  
+  let linksHtml = '';
+  headings.forEach((heading, idx) => {
+    const id = heading.id || `toc-h3-${idx}`;
+    heading.id = id;
+    linksHtml += `<a class="toc-link" href="#${id}">${heading.textContent.replace('✓', '').trim()}</a>`;
+  });
 
+  tocContainer.innerHTML = `
+    <div class="toc-title">On This Page</div>
+    <div class="toc-links">${linksHtml}</div>
+  `;
+
+  document.body.appendChild(tocContainer);
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-10% 0px -70% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.toc-link').forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`);
+        });
+      }
+    });
+  }, observerOptions);
+
+  headings.forEach(heading => observer.observe(heading));
+}
+generateTOC();

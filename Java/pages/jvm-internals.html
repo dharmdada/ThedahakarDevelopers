@@ -43,6 +43,13 @@
     <p>Heap memory stores objects. Stack frames store method calls, local variables, and references. Garbage collection frees objects that are no longer reachable from live roots, but any object still reachable is considered alive even if your application no longer logically needs it.</p>
     <p>JIT compilation means Java performance changes over time. Frequently executed code can be optimized aggressively after the JVM observes runtime behavior. This is why microbenchmarking Java requires special care.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn that Java code runs as bytecode inside a managed virtual machine.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh heap generations, stack frames, metaspace, JIT tiers, safepoints, GC pauses, and profiling traps.</p>
+    <p><strong>Mastery check:</strong> You understand JVM Internals when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>The JVM acts as an abstraction layer between Java bytecode and the underlying operating system.</li>
@@ -62,6 +69,36 @@
       <li>You know what a ClassLoader does.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>The JVM is an adaptive runtime with memory, class loading, bytecode verification, JIT, and GC.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn that Java code runs as bytecode inside a managed virtual machine.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh heap generations, stack frames, metaspace, JIT tiers, safepoints, GC pauses, and profiling traps.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Microbenchmarks lie easily because JIT warmup, dead-code elimination, constant folding, and escape analysis change what actually runs.</li>
+      <li>A memory leak in Java usually means reachable objects are retained accidentally, not that memory was never freed manually.</li>
+      <li>GC tuning should follow evidence from logs and metrics, not folklore. Defaults are strong for many workloads.</li>
+      <li>Class loading problems often appear as NoClassDefFoundError, ClassNotFoundException, or version conflicts caused by dependency graphs.</li>
+      <li>Understanding stack versus heap makes recursion, allocation, thread dumps, and OutOfMemoryError diagnostics far clearer.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">JVM Internals</div><div class="hl-desc">Explain JVM Internals without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">JVM Internals</div><div class="hl-desc">Use JVM Internals in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">JVM Internals</div><div class="hl-desc">Predict how JVM Internals behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="architecture">
   <div class="subsection">
@@ -92,10 +129,16 @@
     </ul>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Memory Allocation Example</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public void</span> <span class="fn">doSomething</span>() {
-    <span class="kw">int</span> x = <span class="nm">10</span>;                 <span class="cm">// Primitive: Stored on the Stack</span>
-    <span class="cl">String</span> name = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"A"</span>); <span class="cm">// Object: Stored on the Heap. Reference 'name' is on the Stack.</span>
-} <span class="cm">// Method ends: Stack frame is popped, 'x' and 'name' reference destroyed. Object "A" becomes eligible for GC.</span></code></pre>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="fn">doSomething</span>();
+    }
+
+    <span class="kw">public static void</span> <span class="fn">doSomething</span>() {
+        <span class="kw">int</span> x = <span class="nm">10</span>;                 <span class="cm">// Primitive: Stored on the Stack</span>
+        <span class="cl">String</span> name = <span class="kw">new</span> <span class="cl">String</span>(<span class="st">"A"</span>); <span class="cm">// Object: Stored on the Heap. Reference 'name' is on the Stack.</span>
+    } <span class="cm">// Method ends: Stack frame is popped, 'x' and 'name' reference destroyed. Object "A" becomes eligible for GC.</span>
+}</code></pre>
     </div>
     <div class="highlight-row">
       <div class="hl-box"><div class="hl-label">Stack Memory</div><div class="hl-value">Thread-Local</div><div class="hl-desc">Stores local variables, method calls, references. Extremely fast, very small. Cleared when method ends.</div></div>
@@ -142,13 +185,24 @@
     <p>One of the JIT's smartest optimizations is <strong>Escape Analysis</strong>. We learned earlier that Objects are ALWAYS created on the Heap. This is actually a lie. If the JIT Compiler can prove that an object you created inside a method never "escapes" that method (it's never returned, never passed to another thread, never assigned to a field), it will completely skip the Heap and allocate the object directly on the <strong>Stack</strong>. This means no Garbage Collection overhead!</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Escape Analysis</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public void</span> <span class="fn">processData</span>() {
-    <span class="cm">// Point object is created, but never leaves this method.</span>
-    <span class="cm">// It does not "escape".</span>
-    <span class="cl">Point</span> p = <span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">10</span>, <span class="nm">20</span>); 
-    <span class="kw">int</span> result = p.x + p.y;
-    <span class="cl">System</span>.out.<span class="fn">println</span>(result);
-} <span class="cm">// The JIT will optimize this to never use the Heap!</span></code></pre>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="fn">processData</span>();
+    }
+
+    <span class="kw">static class</span> <span class="cl">Point</span> {
+        <span class="kw">int</span> x, y;
+        <span class="cl">Point</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) { <span class="kw">this</span>.x = x; <span class="kw">this</span>.y = y; }
+    }
+
+    <span class="kw">public static void</span> <span class="fn">processData</span>() {
+        <span class="cm">// Point object is created, but never leaves this method.</span>
+        <span class="cm">// It does not "escape".</span>
+        <span class="cl">Point</span> p = <span class="kw">new</span> <span class="cl">Point</span>(<span class="nm">10</span>, <span class="nm">20</span>);
+        <span class="kw">int</span> result = p.x + p.y;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(result);
+    } <span class="cm">// The JIT will optimize this to never use the Heap!</span>
+}</code></pre>
     </div>
   </div>
 </div>
@@ -159,15 +213,31 @@
     <p>Even with GC, you can have memory leaks if you maintain references to objects you no longer need.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Common Memory Leak</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">Cache</span> {
-    <span class="cm">// Static map holds references forever!</span>
-    <span class="kw">private static final</span> <span class="cl">Map</span>&lt;<span class="cl">String</span>, <span class="cl">Object</span>&gt; cache = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
+      <pre><code>import java.util.*;
 
-    <span class="kw">public static void</span> <span class="fn">add</span>(<span class="cl">String</span> key, <span class="cl">Object</span> val) {
-        cache.<span class="fn">put</span>(key, val); 
+class Cache {
+    private static final Map&lt;String, Object&gt; cache = new HashMap&lt;&gt;();
+
+    public static void add(String key, Object value) {
+        cache.put(key, value);
     }
-    <span class="cm">// Objects in this map will NEVER be garbage collected</span>
-    <span class="cm">// unless explicitly removed, causing OutOfMemoryError.</span>
+
+    public static void remove(String key) {
+        cache.remove(key);
+    }
+
+    public static int size() {
+        return cache.size();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Cache.add("user:1", new byte[1024]);
+        System.out.println("Cache size before cleanup: " + Cache.size());
+        Cache.remove("user:1");
+        System.out.println("Cache size after cleanup: " + Cache.size());
+    }
 }</code></pre>
     </div>
     <div class="callout tip">

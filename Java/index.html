@@ -1,27 +1,27 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<html lang="en"><head></head><body>﻿
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JavaMaster - Complete Java Tutorial</title>
-<meta name="description" content="Complete Java tutorial roadmap: fundamentals, OOP, functional programming, collections, advanced internals, testing, build tools, JDBC, and architecture."/>
-<link rel="stylesheet" href="style.css"/>
-</head>
-<body>
+<meta name="description" content="Complete Java tutorial roadmap: fundamentals, OOP, functional programming, collections, advanced internals, testing, build tools, JDBC, and architecture.">
+<link rel="stylesheet" href="style.css">
+
+
 
 <div id="progress-bar"><div id="progress-fill"></div></div>
 
 <header id="topbar">
   <button id="menu-btn" aria-label="Toggle menu">
-    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
   </button>
   <a class="logo" href="index.html">
     <div class="logo-icon">J</div>
     <span class="logo-text">Java<span>Master</span></span>
   </a>
   <div id="search-wrap">
-    <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="search" type="text" placeholder="Search topics, APIs, concepts" autocomplete="off"/>
+    <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input id="search" type="text" placeholder="Search topics, APIs, concepts" autocomplete="off">
     <div id="search-results"></div>
   </div>
   <div class="topbar-right">
@@ -35,7 +35,7 @@
 
 <section class="hero">
   <div class="hero-tag">Single curriculum from beginner to production Java</div>
-  <h1>Learn <span>Java</span><br/>the way teams build software</h1>
+  <h1>Learn <span>Java</span><br>the way teams build software</h1>
   <p>From language syntax to architecture, testing, build tooling, and JDBC. Structured to make you job-ready, not just interview-ready.</p>
   <div class="hero-btns">
     <a class="btn btn-primary" href="basics.html">Start from Basics</a>
@@ -105,6 +105,13 @@
     <p>The correct learning order is fundamentals first, then object design, then collections and functional transformations, then advanced runtime topics, then professional engineering practices. Skipping the early layers usually produces fragile code because the developer can use a framework but cannot reason about what the language is doing underneath.</p>
     <p>When studying, always ask three questions: what problem does this feature solve, what tradeoff does it introduce, and where does it fail in real projects. That habit converts tutorial reading into engineering judgment.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should treat the site as a guided path: install, write, run, debug, then connect topics gradually.</p>
+    <p><strong>If you are revising:</strong> Experts should use the roadmap to audit weak spots: memory model, generics variance, stream semantics, class loading, testing discipline, and build reproducibility.</p>
+    <p><strong>Mastery check:</strong> You understand Java Master Course when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -133,6 +140,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>See Java as an engineering platform, not only a syntax language.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should treat the site as a guided path: install, write, run, debug, then connect topics gradually.</p>
+    <p><strong>Expert refresh:</strong> Experts should use the roadmap to audit weak spots: memory model, generics variance, stream semantics, class loading, testing discipline, and build reproducibility.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>The fastest Java developers do not memorize APIs first; they build a mental map of source code, bytecode, classpath, heap, stack, threads, and deployment boundaries.</li>
+      <li>A tutorial becomes valuable when every example explains the failure mode: what breaks at compile time, what breaks at runtime, and what silently becomes a maintenance problem.</li>
+      <li>Production Java is mostly about boundaries: module boundaries, transaction boundaries, thread boundaries, object ownership, and dependency boundaries.</li>
+      <li>If a concept cannot be tested in a small program, you probably do not understand it yet; if it cannot be explained without the framework, you are learning the framework, not Java.</li>
+      <li>The best refresh strategy is spiral learning: revisit the same topic after seeing OOP, collections, concurrency, and JVM internals because each pass reveals a different layer.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Java Master Course</div><div class="hl-desc">Explain Java Master Course without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Java Master Course</div><div class="hl-desc">Use Java Master Course in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Java Master Course</div><div class="hl-desc">Predict how Java Master Course behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
   <div class="section" id="roadmap">
     <div class="section-header">
@@ -171,5 +208,6 @@
 
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="script.js"></script>
-</body>
-</html>
+
+
+</body></html>

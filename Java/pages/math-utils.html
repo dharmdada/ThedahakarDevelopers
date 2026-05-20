@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Math &amp; Utilities – JavaMaster</title>
 <meta name="description" content="Master Java Math class, BigDecimal precision, Random, SecureRandom, ThreadLocalRandom, UUID, Objects utility, and numeric edge cases.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">📘 Basics</span></div>
 </header>
@@ -42,6 +40,13 @@
     <p>The golden rule: <strong>never use <code class="inline">double</code> for money</strong>. The representation error is not a bug — it is the designed behavior of IEEE 754. The number 0.1 cannot be stored exactly in binary (just like 1/3 cannot be written exactly in decimal). Over thousands of calculations, these errors compound.</p>
     <p>For randomness, the right class depends on the use case: <code class="inline">ThreadLocalRandom</code> for general concurrent use, <code class="inline">SecureRandom</code> for anything security-sensitive, and <code class="inline">SplittableRandom</code> for parallel computation.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn which utility solves which simple task before writing custom helpers.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh precision, rounding, pseudo-randomness, object helpers, and when utility code becomes domain logic.</p>
+    <p><strong>Mastery check:</strong> You understand Math and Utilities when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list">
@@ -72,115 +77,166 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Utility APIs are small but dangerous when precision, randomness, time, and formatting matter.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn which utility solves which simple task before writing custom helpers.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh precision, rounding, pseudo-randomness, object helpers, and when utility code becomes domain logic.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>Math.random is not for security. Use SecureRandom for tokens, passwords, and anything adversarial.</li>
+      <li>Rounding rules are business rules. Always choose a RoundingMode instead of relying on accidental defaults.</li>
+      <li>Utility classes can become dumping grounds. If behavior belongs to a domain concept, model it there instead of hiding it in Utils.</li>
+      <li>Objects.requireNonNull is more than a null check; it documents which boundary refuses invalid input early.</li>
+      <li>Measure before replacing readable standard-library utilities with custom optimized code.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Explain Math and Utilities without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Use Math and Utilities in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Math and Utilities</div><div class="hl-desc">Predict how Math and Utilities behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="math">
   <div class="subsection">
     <h3>The Math Class — Complete Reference</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">All key Math methods with output</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ---- Basic arithmetic ----
-Math.abs(-42);            // 42        (absolute value)
-Math.abs(Integer.MIN_VALUE); // MIN_VALUE! Overflow trap — use Math.absExact() in Java 15+
-Math.max(10, 20);         // 20
-Math.min(10, 20);         // 10
-Math.signum(-5.0);        // -1.0  (sign: -1, 0, or 1)
+      <pre><code>      public class Main {
+    public static void main(String[] args) {
+        // ---- Basic arithmetic ----
+        Math.abs(-42);            // 42        (absolute value)
+        Math.abs(Integer.MIN_VALUE); // MIN_VALUE! Overflow trap — use Math.absExact() in Java 15+
+        Math.max(10, 20);         // 20
+        Math.min(10, 20);         // 10
+        Math.signum(-5.0);        // -1.0  (sign: -1, 0, or 1)
 
-// ---- Overflow-safe integer math (Java 8+) ----
-Math.addExact(Integer.MAX_VALUE, 1);    // throws ArithmeticException — overflow detected!
-Math.multiplyExact(100_000, 100_000);   // 10_000_000_000L — use long version
-Math.incrementExact(Integer.MAX_VALUE); // throws — safe increment
+        // ---- Overflow-safe integer math (Java 8+) ----
+        try {
+            Math.addExact(Integer.MAX_VALUE, 1);    // throws ArithmeticException — overflow detected!
+        } catch (ArithmeticException e) {}
+        Math.multiplyExact(100_000, 100_000);   // 10_000_000_000L — use long version
+        try {
+            Math.incrementExact(Integer.MAX_VALUE); // throws — safe increment
+        } catch (ArithmeticException e) {}
 
-// ---- Powers and roots ----
-Math.pow(2, 10);          // 1024.0
-Math.sqrt(144);           // 12.0
-Math.cbrt(27);            // 3.0     (cube root)
-Math.log(Math.E);         // 1.0     (natural log)
-Math.log10(1000);         // 3.0
+        // ---- Powers and roots ----
+        Math.pow(2, 10);          // 1024.0
+        Math.sqrt(144);           // 12.0
+        Math.cbrt(27);            // 3.0     (cube root)
+        Math.log(Math.E);         // 1.0     (natural log)
+        Math.log10(1000);         // 3.0
 
-// ---- Rounding (all return double unless noted) ----
-Math.round(3.5);          // 4L   (long — rounds half up)
-Math.round(-3.5);         // -3L  (rounds toward positive infinity)
-Math.floor(3.9);          // 3.0  (always rounds DOWN — toward -∞)
-Math.ceil(3.1);           // 4.0  (always rounds UP — toward +∞)
-Math.rint(3.5);           // 4.0  (rounds to nearest even — banker's rounding)
-Math.rint(2.5);           // 2.0  (2 is even — rounds DOWN!)
+        // ---- Rounding (all return double unless noted) ----
+        Math.round(3.5);          // 4L   (long — rounds half up)
+        Math.round(-3.5);         // -3L  (rounds toward positive infinity)
+        Math.floor(3.9);          // 3.0  (always rounds DOWN — toward -∞)
+        Math.ceil(3.1);           // 4.0  (always rounds UP — toward +∞)
+        Math.rint(3.5);           // 4.0  (rounds to nearest even — banker's rounding)
+        Math.rint(2.5);           // 2.0  (2 is even — rounds DOWN!)
 
-// ---- Trigonometry (input/output in radians) ----
-Math.sin(Math.PI / 2);    // 1.0
-Math.cos(0);              // 1.0
-Math.atan2(1, 1);         // 0.785... (π/4 radians = 45 degrees)
-Math.toRadians(90);       // 1.570... (π/2)
-Math.toDegrees(Math.PI);  // 180.0
+        // ---- Trigonometry (input/output in radians) ----
+        Math.sin(Math.PI / 2);    // 1.0
+        Math.cos(0);              // 1.0
+        Math.atan2(1, 1);         // 0.785... (π/4 radians = 45 degrees)
+        Math.toRadians(90);       // 1.570... (π/2)
+        Math.toDegrees(Math.PI);  // 180.0
 
-// ---- Useful constants ----
-Math.PI;   // 3.141592653589793
-Math.E;    // 2.718281828459045
+        // ---- Useful constants ----
+        System.out.println(Math.PI);   // 3.141592653589793
+        System.out.println(Math.E);    // 2.718281828459045
 
-// ---- Hypotenuse (avoids overflow in a²+b²) ----
-Math.hypot(3, 4);         // 5.0  (√(3²+4²), numerically stable)</code></pre>
-    </div>
+        // ---- Hypotenuse (avoids overflow in a²+b²) ----
+        Math.hypot(3, 4);         // 5.0  (√(3²+4²), numerically stable)
+    }
+}
+    </code></pre></div><code>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
       <div class="callout-body"><strong>Overflow trap:</strong> <code class="inline">Math.abs(Integer.MIN_VALUE)</code> returns <code class="inline">Integer.MIN_VALUE</code> (still negative!) because <code class="inline">|MIN_VALUE|</code> exceeds <code class="inline">MAX_VALUE</code>. Use <code class="inline">Math.absExact()</code> (Java 15+) to throw instead.</div>
     </div>
-  </div>
-</div>
+  </code></div><code>
+</code></div><code>
 
 <div class="section" id="bigdecimal">
   <div class="subsection">
     <h3>BigDecimal: Financial Precision</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">The float trap vs BigDecimal correctness</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ❌ WRONG: float arithmetic for money
-double a = 0.1, b = 0.2;
-System.out.println(a + b);         // 0.30000000000000004 — WRONG!
-System.out.println(a + b == 0.3);  // false — comparing is broken!
+      <pre><code>      <pre><code><span class="kw">import</span> <span class="cl">java.math.BigDecimal</span>;
 
-// ✅ CORRECT: BigDecimal with String constructor
-BigDecimal price    = new BigDecimal("19.99");
-BigDecimal taxRate  = new BigDecimal("0.18"); // 18% GST
-BigDecimal taxAmt   = price.multiply(taxRate);
-BigDecimal total    = price.add(taxAmt);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// ❌ WRONG: float arithmetic for money</span>
+        <span class="kw">double</span> a = <span class="nm">0.1</span>, b = <span class="nm">0.2</span>;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(a + b);         <span class="cm">// 0.30000000000000004 — WRONG!</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(a + b == <span class="nm">0.3</span>);  <span class="cm">// false — comparing is broken!</span>
 
-// ❌ BAD: double constructor — already has float error!
-BigDecimal bad = new BigDecimal(0.1); // = 0.1000000000000000055511...
+        <span class="cm">// ✅ CORRECT: BigDecimal with String constructor</span>
+        <span class="cl">BigDecimal</span> price    = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"19.99"</span>);
+        <span class="cl">BigDecimal</span> taxRate  = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.18"</span>); <span class="cm">// 18% GST</span>
+        <span class="cl">BigDecimal</span> taxAmt   = price.<span class="fn">multiply</span>(taxRate);
+        <span class="cl">BigDecimal</span> total    = price.<span class="fn">add</span>(taxAmt);
 
-// ✅ GOOD: String constructor or valueOf
-BigDecimal good = new BigDecimal("0.1");       // exactly 0.1
-BigDecimal also = BigDecimal.valueOf(0.1);      // also exact (uses canonical string form)</code></pre>
-    </div>
+        <span class="cm">// ❌ BAD: double constructor — already has float error!</span>
+        <span class="cl">BigDecimal</span> bad = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="nm">0.1</span>); <span class="cm">// = 0.1000000000000000055511...</span>
+
+        <span class="cm">// ✅ GOOD: String constructor or valueOf</span>
+        <span class="cl">BigDecimal</span> good = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.1"</span>);       <span class="cm">// exactly 0.1</span>
+        <span class="cl">BigDecimal</span> also = <span class="cl">BigDecimal</span>.<span class="fn">valueOf</span>(<span class="nm">0.1</span>);      <span class="cm">// also exact (uses canonical string form)</span>
+    }
+}</code></pre>
+    </code></pre></div><code>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">BigDecimal arithmetic, rounding, comparison</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>BigDecimal price    = new BigDecimal("10.005");
-BigDecimal quantity = new BigDecimal("3");
+      <pre><code><span class="kw">import</span> <span class="cl">java.math.BigDecimal</span>;
+<span class="kw">import</span> <span class="cl">java.math.RoundingMode</span>;
 
-// Basic operations (all return new BigDecimal — IMMUTABLE)
-BigDecimal total   = price.multiply(quantity);                   // 30.015
-BigDecimal discount= total.subtract(new BigDecimal("1.50"));    // 28.515
-BigDecimal half    = total.divide(new BigDecimal("2"), 2, RoundingMode.HALF_UP); // 15.01
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">BigDecimal</span> price    = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"10.005"</span>);
+        <span class="cl">BigDecimal</span> quantity = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"3"</span>);
 
-// Rounding modes (critical for financial code)
-BigDecimal v = new BigDecimal("2.335");
-v.setScale(2, RoundingMode.HALF_UP);    // 2.34 (commercial rounding)
-v.setScale(2, RoundingMode.HALF_EVEN);  // 2.34 (banker's rounding — less biased)
-v.setScale(2, RoundingMode.DOWN);       // 2.33 (truncate toward zero)
-v.setScale(2, RoundingMode.CEILING);    // 2.34 (toward +∞)
-v.setScale(2, RoundingMode.FLOOR);      // 2.33 (toward -∞)
+        <span class="cm">// Basic operations (all return new BigDecimal — IMMUTABLE)</span>
+        <span class="cl">BigDecimal</span> total   = price.<span class="fn">multiply</span>(quantity);                   <span class="cm">// 30.015</span>
+        <span class="cl">BigDecimal</span> discount= total.<span class="fn">subtract</span>(<span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"1.50"</span>));    <span class="cm">// 28.515</span>
+        <span class="cl">BigDecimal</span> half    = total.<span class="fn">divide</span>(<span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"2"</span>), <span class="nm">2</span>, <span class="cl">RoundingMode</span>.HALF_UP); <span class="cm">// 15.01</span>
 
-// Comparison — NEVER use equals() for value equality!
-BigDecimal a = new BigDecimal("2.0");
-BigDecimal b = new BigDecimal("2.00");
-a.equals(b);        // false! (scale 1 vs scale 2)
-a.compareTo(b);     // 0 ✅ correct numeric equality
-a.compareTo(b) == 0 // true ✅ USE THIS
+        <span class="cm">// Rounding modes (critical for financial code)</span>
+        <span class="cl">BigDecimal</span> v = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"2.335"</span>);
+        v.<span class="fn">setScale</span>(<span class="nm">2</span>, <span class="cl">RoundingMode</span>.HALF_UP);    <span class="cm">// 2.34 (commercial rounding)</span>
+        v.<span class="fn">setScale</span>(<span class="nm">2</span>, <span class="cl">RoundingMode</span>.HALF_EVEN);  <span class="cm">// 2.34 (banker's rounding — less biased)</span>
+        v.<span class="fn">setScale</span>(<span class="nm">2</span>, <span class="cl">RoundingMode</span>.DOWN);       <span class="cm">// 2.33 (truncate toward zero)</span>
+        v.<span class="fn">setScale</span>(<span class="nm">2</span>, <span class="cl">RoundingMode</span>.CEILING);    <span class="cm">// 2.34 (toward +∞)</span>
+        v.<span class="fn">setScale</span>(<span class="nm">2</span>, <span class="cl">RoundingMode</span>.FLOOR);      <span class="cm">// 2.33 (toward -∞)</span>
 
-// Useful constants
-BigDecimal.ZERO;   // 0
-BigDecimal.ONE;    // 1
-BigDecimal.TEN;    // 10</code></pre>
+        <span class="cm">// Comparison — NEVER use equals() for value equality!</span>
+        <span class="cl">BigDecimal</span> a = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"2.0"</span>);
+        <span class="cl">BigDecimal</span> b = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"2.00"</span>);
+        a.<span class="fn">equals</span>(b);        <span class="cm">// false! (scale 1 vs scale 2)</span>
+        a.<span class="fn">compareTo</span>(b);     <span class="cm">// 0 ✅ correct numeric equality</span>
+        <span class="kw">boolean</span> eq = a.<span class="fn">compareTo</span>(b) == <span class="nm">0</span>; <span class="cm">// true ✅ USE THIS
+
+        // Useful constants</span>
+        <span class="cl">BigDecimal</span> zero = <span class="cl">BigDecimal</span>.ZERO;   <span class="cm">// 0</span>
+        <span class="cl">BigDecimal</span> one = <span class="cl">BigDecimal</span>.ONE;    <span class="cm">// 1</span>
+        <span class="cl">BigDecimal</span> ten = <span class="cl">BigDecimal</span>.TEN;    <span class="cm">// 10</span>
+    }
+}</code></pre>
     </div>
-  </div>
-</div>
+  </code></div><code>
+</code></div><code>
 
 <div class="section" id="random">
   <div class="subsection">
@@ -193,31 +249,44 @@ BigDecimal.TEN;    // 10</code></pre>
     </div>
     <div class="code-block" style="margin-top:18px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Complete random usage patterns</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// ---- ThreadLocalRandom (preferred for non-security concurrent use) ----
-int    roll     = ThreadLocalRandom.current().nextInt(1, 7);      // 1..6 inclusive
-long   id       = ThreadLocalRandom.current().nextLong(1_000_000L);
-double fraction = ThreadLocalRandom.current().nextDouble(0.0, 1.0);
-boolean coin    = ThreadLocalRandom.current().nextBoolean();
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.concurrent.ThreadLocalRandom</span>;
+<span class="kw">import</span> <span class="cl">java.util.stream.IntStream</span>;
+<span class="kw">import</span> <span class="cl">java.security.SecureRandom</span>;
+<span class="kw">import</span> <span class="cl">java.security.NoSuchAlgorithmException</span>;
+<span class="kw">import</span> <span class="cl">java.util.HexFormat</span>;
+<span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.Collections</span>;
 
-// Stream of random ints
-IntStream randoms = ThreadLocalRandom.current().ints(5, 1, 100); // 5 values in [1,100)
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) <span class="kw">throws</span> <span class="cl">NoSuchAlgorithmException</span> {
+        <span class="cm">// ---- ThreadLocalRandom (preferred for non-security concurrent use) ----</span>
+        <span class="kw">int</span>    roll     = <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">nextInt</span>(<span class="nm">1</span>, <span class="nm">7</span>);      <span class="cm">// 1..6 inclusive</span>
+        <span class="kw">long</span>   id       = <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">nextLong</span>(<span class="nm">1_000_000L</span>);
+        <span class="kw">double</span> fraction = <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">nextDouble</span>(<span class="nm">0.0</span>, <span class="nm">1.0</span>);
+        <span class="kw">boolean</span> coin    = <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">nextBoolean</span>();
 
-// ---- SecureRandom (for security-sensitive values) ----
-SecureRandom sr    = SecureRandom.getInstanceStrong(); // OS entropy source
-byte[] tokenBytes  = new byte[32];
-sr.nextBytes(tokenBytes);                            // 256-bit cryptographic token
-String hexToken    = HexFormat.of().formatHex(tokenBytes); // Java 17+
+        <span class="cm">// Stream of random ints</span>
+        <span class="cl">IntStream</span> randoms = <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">ints</span>(<span class="nm">5</span>, <span class="nm">1</span>, <span class="nm">100</span>); <span class="cm">// 5 values in [1,100)</span>
 
-// Generating a 6-digit OTP (One Time Password)
-int otp = sr.nextInt(1_000_000); // 0..999999
-String otpStr = String.format("%06d", otp); // zero-padded to 6 digits
+        <span class="cm">// ---- SecureRandom (for security-sensitive values) ----</span>
+        <span class="cl">SecureRandom</span> sr    = <span class="cl">SecureRandom</span>.<span class="fn">getInstanceStrong</span>(); <span class="cm">// OS entropy source</span>
+        <span class="kw">byte</span>[] tokenBytes  = <span class="kw">new</span> <span class="kw">byte</span>[<span class="nm">32</span>];
+        sr.<span class="fn">nextBytes</span>(tokenBytes);                            <span class="cm">// 256-bit cryptographic token</span>
+        <span class="cl">String</span> hexToken    = <span class="cl">HexFormat</span>.<span class="fn">of</span>().<span class="fn">formatHex</span>(tokenBytes); <span class="cm">// Java 17+</span>
 
-// ---- Shuffle a list ----
-List&lt;String&gt; deck = new ArrayList&lt;&gt;(List.of("A", "K", "Q", "J", "10"));
-Collections.shuffle(deck, ThreadLocalRandom.current());
+        <span class="cm">// Generating a 6-digit OTP (One Time Password)</span>
+        <span class="kw">int</span> otp = sr.<span class="fn">nextInt</span>(<span class="nm">1_000_000</span>); <span class="cm">// 0..999999</span>
+        <span class="cl">String</span> otpStr = <span class="cl">String</span>.<span class="fn">format</span>(<span class="st">"%06d"</span>, otp); <span class="cm">// zero-padded to 6 digits</span>
 
-// ---- Random element from list ----
-String drawn = deck.get(ThreadLocalRandom.current().nextInt(deck.size()));</code></pre>
+        <span class="cm">// ---- Shuffle a list ----</span>
+        <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; deck = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;(<span class="cl">List</span>.<span class="fn">of</span>(<span class="st">"A"</span>, <span class="st">"K"</span>, <span class="st">"Q"</span>, <span class="st">"J"</span>, <span class="st">"10"</span>));
+        <span class="cl">Collections</span>.<span class="fn">shuffle</span>(deck, <span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>());
+
+        <span class="cm">// ---- Random element from list ----</span>
+        <span class="cl">String</span> drawn = deck.<span class="fn">get</span>(<span class="cl">ThreadLocalRandom</span>.<span class="fn">current</span>().<span class="fn">nextInt</span>(deck.<span class="fn">size</span>()));
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -227,25 +296,31 @@ String drawn = deck.get(ThreadLocalRandom.current().nextInt(deck.size()));</code
     <h3>UUID — Universally Unique Identifiers</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">UUID generation and parsing</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// Version 4: random UUID (most common)
-UUID id = UUID.randomUUID();
-System.out.println(id); // e.g., 550e8400-e29b-41d4-a716-446655440000
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.UUID</span>;
 
-// As string
-String s = id.toString();  // standard format with dashes
-String compact = s.replace("-", ""); // 32 hex chars, no dashes
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Version 4: random UUID (most common)</span>
+        <span class="cl">UUID</span> id = <span class="cl">UUID</span>.<span class="fn">randomUUID</span>();
+        <span class="cl">System</span>.out.<span class="fn">println</span>(id); <span class="cm">// e.g., 550e8400-e29b-41d4-a716-446655440000</span>
 
-// Parse from string
-UUID parsed = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+        <span class="cm">// As string</span>
+        <span class="cl">String</span> s = id.<span class="fn">toString</span>();  <span class="cm">// standard format with dashes</span>
+        <span class="cl">String</span> compact = s.<span class="fn">replace</span>(<span class="st">"-"</span>, <span class="st">""</span>); <span class="cm">// 32 hex chars, no dashes</span>
 
-// Compare
-UUID a = UUID.randomUUID();
-UUID b = UUID.randomUUID();
-a.equals(b);         // false (different random values)
-a.compareTo(b);      // -1, 0, or 1
+        <span class="cm">// Parse from string</span>
+        <span class="cl">UUID</span> parsed = <span class="cl">UUID</span>.<span class="fn">fromString</span>(<span class="st">"550e8400-e29b-41d4-a716-446655440000"</span>);
 
-// UUID probability of collision:
-// 2^122 possible values. At 1 billion UUIDs/second, expected first collision: 86 years.</code></pre>
+        <span class="cm">// Compare</span>
+        <span class="cl">UUID</span> a = <span class="cl">UUID</span>.<span class="fn">randomUUID</span>();
+        <span class="cl">UUID</span> b = <span class="cl">UUID</span>.<span class="fn">randomUUID</span>();
+        a.<span class="fn">equals</span>(b);         <span class="cm">// false (different random values)</span>
+        a.<span class="fn">compareTo</span>(b);      <span class="cm">// -1, 0, or 1</span>
+
+        <span class="cm">// UUID probability of collision:</span>
+        <span class="cm">// 2^122 possible values. At 1 billion UUIDs/second, expected first collision: 86 years.</span>
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
@@ -259,40 +334,52 @@ a.compareTo(b);      // -1, 0, or 1
     <h3>The Objects Utility Class</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Objects — null safety and equality helpers</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code>// Null guard in constructors — throws NullPointerException with good message
-public class User {
-    private final String name;
-    private final String email;
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Objects</span>;
 
-    public User(String name, String email) {
-        this.name  = Objects.requireNonNull(name,  "name must not be null");
-        this.email = Objects.requireNonNull(email, "email must not be null");
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">User</span> user = <span class="kw">new</span> <span class="cl">User</span>(<span class="st">"Alice"</span>, <span class="st">"alice@example.com"</span>);
+
+        <span class="cm">// requireNonNullElse — default value when null</span>
+        <span class="cl">String</span> displayName = <span class="cl">Objects</span>.<span class="fn">requireNonNullElse</span>(user.nickname(), user.fullName());
+
+        <span class="cm">// Null-safe comparison</span>
+        <span class="cl">Objects</span>.<span class="fn">equals</span>(<span class="kw">null</span>, <span class="kw">null</span>);   <span class="cm">// true  (safe — no NPE!)</span>
+        <span class="cl">Objects</span>.<span class="fn">equals</span>(<span class="st">"a"</span>, <span class="kw">null</span>);    <span class="cm">// false</span>
+        <span class="cl">Objects</span>.<span class="fn">equals</span>(<span class="kw">null</span>, <span class="st">"b"</span>);    <span class="cm">// false</span>
+        <span class="cl">Objects</span>.<span class="fn">equals</span>(<span class="st">"a"</span>, <span class="st">"a"</span>);     <span class="cm">// true</span>
+
+        <span class="cm">// Null-safe hashCode</span>
+        <span class="cl">Objects</span>.<span class="fn">hashCode</span>(<span class="kw">null</span>);       <span class="cm">// 0 (safe)</span>
+        <span class="cl">Objects</span>.<span class="fn">hash</span>(<span class="st">"Alice"</span>, <span class="nm">30</span>, <span class="st">"alice@example.com"</span>); <span class="cm">// combine multiple fields</span>
+
+        <span class="cm">// Null check</span>
+        <span class="cl">Objects</span>.<span class="fn">isNull</span>(<span class="kw">null</span>);         <span class="cm">// true</span>
+        <span class="cl">Objects</span>.<span class="fn">nonNull</span>(<span class="st">"hello"</span>);     <span class="cm">// true  (useful as method reference: filter(Objects::nonNull))</span>
+
+        <span class="cm">// Null-safe toString</span>
+        <span class="cl">Objects</span>.<span class="fn">toString</span>(<span class="kw">null</span>, <span class="st">"N/A"</span>);  <span class="cm">// "N/A"</span>
+
+        <span class="cm">// checkIndex, checkFromToIndex (Java 9+) — bounds checking</span>
+        <span class="cl">Objects</span>.<span class="fn">checkIndex</span>(<span class="nm">5</span>, <span class="nm">10</span>);   <span class="cm">// 5 (valid index into size-10 collection)</span>
+        <span class="kw">try</span> {
+            <span class="cl">Objects</span>.<span class="fn">checkIndex</span>(<span class="nm">10</span>, <span class="nm">10</span>);  <span class="cm">// throws IndexOutOfBoundsException</span>
+        } <span class="kw">catch</span> (<span class="cl">IndexOutOfBoundsException</span> e) {}
     }
-}
 
-// requireNonNullElse — default value when null
-String displayName = Objects.requireNonNullElse(user.nickname(), user.fullName());
+    <span class="kw">public static class</span> <span class="cl">User</span> {
+        <span class="kw">private final</span> <span class="cl">String</span> name;
+        <span class="kw">private final</span> <span class="cl">String</span> email;
 
-// Null-safe comparison
-Objects.equals(null, null);   // true  (safe — no NPE!)
-Objects.equals("a", null);    // false
-Objects.equals(null, "b");    // false
-Objects.equals("a", "a");     // true
+        <span class="kw">public</span> <span class="fn">User</span>(<span class="cl">String</span> name, <span class="cl">String</span> email) {
+            <span class="kw">this</span>.name  = <span class="cl">Objects</span>.<span class="fn">requireNonNull</span>(name,  "name must not be null");
+            <span class="kw">this</span>.email = <span class="cl">Objects</span>.<span class="fn">requireNonNull</span>(email, "email must not be null");
+        }
 
-// Null-safe hashCode
-Objects.hashCode(null);       // 0 (safe)
-Objects.hash("Alice", 30, "alice@example.com"); // combine multiple fields
-
-// Null check
-Objects.isNull(null);         // true
-Objects.nonNull("hello");     // true  (useful as method reference: filter(Objects::nonNull))
-
-// Null-safe toString
-Objects.toString(null, "N/A");  // "N/A"
-
-// checkIndex, checkFromToIndex (Java 9+) — bounds checking
-Objects.checkIndex(5, 10);   // 5 (valid index into size-10 collection)
-Objects.checkIndex(10, 10);  // throws IndexOutOfBoundsException</code></pre>
+        <span class="kw">public</span> <span class="cl">String</span> <span class="fn">nickname</span>() { <span class="kw">return null</span>; }
+        <span class="kw">public</span> <span class="cl">String</span> <span class="fn">fullName</span>() { <span class="kw">return</span> name; }
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -325,10 +412,10 @@ Objects.checkIndex(10, 10);  // throws IndexOutOfBoundsException</code></pre>
   </div>
 </div>
 
-</div>
+</code></code></div><code><code>
 <footer><p>JavaMaster · <a href="../basics.html" style="color:var(--accent);">← Back to Basics</a></p></footer>
-</div>
+</code></code></div><code><code>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</code></code></body></html>

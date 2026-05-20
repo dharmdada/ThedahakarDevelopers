@@ -58,6 +58,13 @@
     <p>Primitive types represent raw values such as numbers, booleans, and characters. Reference types point to objects on the heap. Understanding this difference explains why primitives compare by value, object variables can be null, arrays know their length, and wrappers are needed when a collection requires objects.</p>
     <p>Numeric types deserve special care because overflow, precision, casting, and promotion rules can silently change results. int is usually the default for whole numbers, long for larger counts, BigDecimal for money, and double for scientific or approximate measurement.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn what each primitive can store and when an object reference can be null.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh numeric promotion, boxing costs, char versus Unicode code points, equality behavior, and precision traps.</p>
+    <p><strong>Mastery check:</strong> You understand Data Types when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Principles That Matter</h3>
     <ul class="feature-list"><li>Primitives live on the stack (fast), Objects live on the heap (overhead).</li>
@@ -77,6 +84,36 @@
       <li>You know when to use Integer vs int.</li></ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Types are constraints that protect meaning, range, precision, identity, and operations.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn what each primitive can store and when an object reference can be null.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh numeric promotion, boxing costs, char versus Unicode code points, equality behavior, and precision traps.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>int overflow does not throw an exception. It silently wraps, which is why money, counters, and IDs need deliberate type choices.</li>
+      <li>double is for measurement, not exact decimal money. Use BigDecimal carefully with string constructors and explicit rounding.</li>
+      <li>char is a UTF-16 code unit, not always a full human character. Emojis and many scripts require code point awareness.</li>
+      <li>Boxing primitives into Integer, Long, or Double can create allocation and equality surprises; == compares references for wrappers.</li>
+      <li>A type should communicate business meaning. A String that represents currency, status, or date often deserves a stronger model.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Data Types</div><div class="hl-desc">Explain Data Types without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Data Types</div><div class="hl-desc">Use Data Types in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Data Types</div><div class="hl-desc">Predict how Data Types behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <!-- PRIMITIVES -->
 <div class="section" id="primitives">
@@ -103,25 +140,29 @@
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Declaring Primitives</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Integer types</span>
-<span class="kw">byte</span> age = <span class="nm">25</span>;
-<span class="kw">short</span> year = <span class="nm">2024</span>;
-<span class="kw">int</span> salary = <span class="nm">100_000</span>;        <span class="cm">// Underscores for readability!</span>
-<span class="kw">long</span> worldPop = <span class="nm">8_000_000_000L</span>; <span class="cm">// Must end with L for long</span>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Integer types</span>
+        <span class="kw">byte</span> age = <span class="nm">25</span>;
+        <span class="kw">short</span> year = <span class="nm">2024</span>;
+        <span class="kw">int</span> salary = <span class="nm">100_000</span>;        <span class="cm">// Underscores for readability!</span>
+        <span class="kw">long</span> worldPop = <span class="nm">8_000_000_000L</span>; <span class="cm">// Must end with L for long</span>
 
-<span class="cm">// Floating-point types</span>
-<span class="kw">float</span> pi = <span class="nm">3.14159f</span>;        <span class="cm">// Must end with f for float</span>
-<span class="kw">double</span> precise = <span class="nm">3.141592653589793</span>; <span class="cm">// Default decimal type</span>
+        <span class="cm">// Floating-point types</span>
+        <span class="kw">float</span> pi = <span class="nm">3.14159f</span>;        <span class="cm">// Must end with f for float</span>
+        <span class="kw">double</span> precise = <span class="nm">3.141592653589793</span>; <span class="cm">// Default decimal type</span>
 
-<span class="cm">// Boolean &amp; Char</span>
-<span class="kw">boolean</span> isJavaFun = <span class="kw">true</span>;
-<span class="kw">char</span> grade = <span class="st">'A'</span>;
-<span class="kw">char</span> unicode = <span class="st">'\u0041'</span>;    <span class="cm">// Also 'A' (Unicode)</span>
+        <span class="cm">// Boolean &amp; Char</span>
+        <span class="kw">boolean</span> isJavaFun = <span class="kw">true</span>;
+        <span class="kw">char</span> grade = <span class="st">'A'</span>;
+        <span class="kw">char</span> unicode = <span class="st">'\u0041'</span>;    <span class="cm">// Also 'A' (Unicode)</span>
 
-<span class="cm">// Number systems</span>
-<span class="kw">int</span> hex = <span class="nm">0xFF</span>;              <span class="cm">// Hexadecimal = 255</span>
-<span class="kw">int</span> binary = <span class="nm">0b1010</span>;         <span class="cm">// Binary = 10</span>
-<span class="kw">int</span> octal = <span class="nm">077</span>;             <span class="cm">// Octal = 63</span></code></pre>
+        <span class="cm">// Number systems</span>
+        <span class="kw">int</span> hex = <span class="nm">0xFF</span>;              <span class="cm">// Hexadecimal = 255</span>
+        <span class="kw">int</span> binary = <span class="nm">0b1010</span>;         <span class="cm">// Binary = 10</span>
+        <span class="kw">int</span> octal = <span class="nm">077</span>;             <span class="cm">// Octal = 63</span>
+    }
+}</code></pre>
     </div>
 
     <div class="callout warn">
@@ -140,24 +181,30 @@
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Primitives vs References</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Primitive: holds actual value</span>
-<span class="kw">int</span> a = <span class="nm">10</span>;
-<span class="kw">int</span> b = a;  <span class="cm">// b gets a COPY of the value</span>
-b = <span class="nm">20</span>;     <span class="cm">// a is still 10</span>
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.Scanner</span>;
 
-<span class="cm">// Reference: holds a pointer to an object</span>
-<span class="kw">int</span>[] arr1 = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>};
-<span class="kw">int</span>[] arr2 = arr1;  <span class="cm">// arr2 points to the SAME array</span>
-arr2[<span class="nm">0</span>] = <span class="nm">99</span>;       <span class="cm">// arr1[0] is NOW 99 too!</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Primitive: holds actual value</span>
+        <span class="kw">int</span> a = <span class="nm">10</span>;
+        <span class="kw">int</span> b = a;  <span class="cm">// b gets a COPY of the value</span>
+        b = <span class="nm">20</span>;     <span class="cm">// a is still 10</span>
 
-<span class="cm">// Common reference types</span>
-<span class="cl">String</span> name = <span class="st">"Alice"</span>;           <span class="cm">// String object</span>
-<span class="kw">int</span>[] numbers = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">5</span>];      <span class="cm">// Array object</span>
-<span class="cl">Scanner</span> sc = <span class="kw">new</span> <span class="cl">Scanner</span>(<span class="cl">System</span>.in); <span class="cm">// Scanner object</span>
+        <span class="cm">// Reference: holds a pointer to an object</span>
+        <span class="kw">int</span>[] arr1 = {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>};
+        <span class="kw">int</span>[] arr2 = arr1;  <span class="cm">// arr2 points to the SAME array</span>
+        arr2[<span class="nm">0</span>] = <span class="nm">99</span>;       <span class="cm">// arr1[0] is NOW 99 too!</span>
 
-<span class="cm">// null means "points to nothing"</span>
-<span class="cl">String</span> nothing = <span class="kw">null</span>;
-<span class="cm">// nothing.length()  →  NullPointerException!</span></code></pre>
+        <span class="cm">// Common reference types</span>
+        <span class="cl">String</span> name = <span class="st">"Alice"</span>;           <span class="cm">// String object</span>
+        <span class="kw">int</span>[] numbers = <span class="kw">new</span> <span class="kw">int</span>[<span class="nm">5</span>];      <span class="cm">// Array object</span>
+        <span class="cl">Scanner</span> sc = <span class="kw">new</span> <span class="cl">Scanner</span>(<span class="cl">System</span>.in); <span class="cm">// Scanner object</span>
+
+        <span class="cm">// null means "points to nothing"</span>
+        <span class="cl">String</span> nothing = <span class="kw">null</span>;
+        <span class="cm">// nothing.length()  →  NullPointerException!</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -165,20 +212,26 @@ arr2[<span class="nm">0</span>] = <span class="nm">99</span>;       <span class=
 <!-- FINANCIAL TYPES -->
 <div class="section" id="financial-types">
   <div class="subsection">
-    <h3>Financial Types: BigInteger & BigDecimal</h3>
+    <h3>Financial Types: BigInteger &amp; BigDecimal</h3>
     <p>Never, <em>ever</em> use <code>float</code> or <code>double</code> for currency. Floating-point numbers are stored as binary fractions, meaning they cannot precisely represent decimal fractions like 0.1. Over thousands of calculations, pennies will mysteriously vanish or appear.</p>
     <p>For high-precision, arbitrary-length numbers, Java provides the immutable <code>BigDecimal</code> and <code>BigInteger</code> classes.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">BigDecimal Example</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// ❌ BAD: Floating point rounding error</span>
-<span class="kw">double</span> total = <span class="nm">0.1</span> + <span class="nm">0.2</span>;
-<span class="cl">System</span>.out.<span class="fn">println</span>(total); <span class="cm">// Prints: 0.30000000000000004</span>
+      <pre><code><span class="kw">import</span> <span class="cl">java.math.BigDecimal</span>;
 
-<span class="cm">// ✅ GOOD: BigDecimal precision</span>
-<span class="cl">BigDecimal</span> b1 = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.1"</span>); <span class="cm">// ALWAYS use String constructor</span>
-<span class="cl">BigDecimal</span> b2 = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.2"</span>);
-<span class="cl">BigDecimal</span> result = b1.<span class="fn">add</span>(b2);
-<span class="cl">System</span>.out.<span class="fn">println</span>(result); <span class="cm">// Prints: 0.3</span></code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// ❌ BAD: Floating point rounding error</span>
+        <span class="kw">double</span> total = <span class="nm">0.1</span> + <span class="nm">0.2</span>;
+        <span class="cl">System</span>.out.<span class="fn">println</span>(total); <span class="cm">// Prints: 0.30000000000000004</span>
+
+        <span class="cm">// ✅ GOOD: BigDecimal precision</span>
+        <span class="cl">BigDecimal</span> b1 = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.1"</span>); <span class="cm">// ALWAYS use String constructor</span>
+        <span class="cl">BigDecimal</span> b2 = <span class="kw">new</span> <span class="cl">BigDecimal</span>(<span class="st">"0.2"</span>);
+        <span class="cl">BigDecimal</span> result = b1.<span class="fn">add</span>(b2);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(result); <span class="cm">// Prints: 0.3</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -197,26 +250,30 @@ arr2[<span class="nm">0</span>] = <span class="nm">99</span>;       <span class=
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Type Casting</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Widening: byte → short → int → long → float → double</span>
-<span class="kw">int</span> myInt = <span class="nm">9</span>;
-<span class="kw">double</span> myDouble = myInt;  <span class="cm">// Automatic: 9.0</span>
+      <pre><code><span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Widening: byte → short → int → long → float → double</span>
+        <span class="kw">int</span> myInt = <span class="nm">9</span>;
+        <span class="kw">double</span> myDouble = myInt;  <span class="cm">// Automatic: 9.0</span>
 
-<span class="cm">// Narrowing: double → float → long → int → short → byte</span>
-<span class="kw">double</span> pi = <span class="nm">3.14159</span>;
-<span class="kw">int</span> truncated = (<span class="kw">int</span>) pi;  <span class="cm">// Manual cast: 3 (decimal part lost!)</span>
+        <span class="cm">// Narrowing: double → float → long → int → short → byte</span>
+        <span class="kw">double</span> pi = <span class="nm">3.14159</span>;
+        <span class="kw">int</span> truncated = (<span class="kw">int</span>) pi;  <span class="cm">// Manual cast: 3 (decimal part lost!)</span>
 
-<span class="cm">// Be careful with overflow!</span>
-<span class="kw">int</span> big = <span class="nm">130</span>;
-<span class="kw">byte</span> small = (<span class="kw">byte</span>) big; <span class="cm">// -126! (wraps around because byte max is 127)</span>
+        <span class="cm">// Be careful with overflow!</span>
+        <span class="kw">int</span> big = <span class="nm">130</span>;
+        <span class="kw">byte</span> small = (<span class="kw">byte</span>) big; <span class="cm">// -126! (wraps around because byte max is 127)</span>
 
-<span class="cm">// String to Number conversions</span>
-<span class="cl">String</span> numStr = <span class="st">"42"</span>;
-<span class="kw">int</span> num = <span class="cl">Integer</span>.<span class="fn">parseInt</span>(numStr);
-<span class="kw">double</span> dbl = <span class="cl">Double</span>.<span class="fn">parseDouble</span>(<span class="st">"3.14"</span>);
+        <span class="cm">// String to Number conversions</span>
+        <span class="cl">String</span> numStr = <span class="st">"42"</span>;
+        <span class="kw">int</span> num = <span class="cl">Integer</span>.<span class="fn">parseInt</span>(numStr);
+        <span class="kw">double</span> dbl = <span class="cl">Double</span>.<span class="fn">parseDouble</span>(<span class="st">"3.14"</span>);
 
-<span class="cm">// Number to String</span>
-<span class="cl">String</span> str = <span class="cl">String</span>.<span class="fn">valueOf</span>(<span class="nm">42</span>);
-<span class="cl">String</span> str2 = <span class="nm">42</span> + <span class="st">""</span>; <span class="cm">// Quick trick</span></code></pre>
+        <span class="cm">// Number to String</span>
+        <span class="cl">String</span> str = <span class="cl">String</span>.<span class="fn">valueOf</span>(<span class="nm">42</span>);
+        <span class="cl">String</span> str2 = <span class="nm">42</span> + <span class="st">""</span>; <span class="cm">// Quick trick</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -229,16 +286,23 @@ arr2[<span class="nm">0</span>] = <span class="nm">99</span>;       <span class=
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Constants</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">final int</span> MAX_USERS = <span class="nm">100</span>;
-<span class="kw">final double</span> TAX_RATE = <span class="nm">0.18</span>;
-<span class="kw">final</span> <span class="cl">String</span> APP_NAME = <span class="st">"JavaMaster"</span>;
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
 
-<span class="cm">// MAX_USERS = 200;  →  Compile Error! Cannot reassign final variable</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">final int</span> MAX_USERS = <span class="nm">100</span>;
+        <span class="kw">final double</span> TAX_RATE = <span class="nm">0.18</span>;
+        <span class="kw">final</span> <span class="cl">String</span> APP_NAME = <span class="st">"JavaMaster"</span>;
 
-<span class="cm">// final with reference types: the reference can't change, but the object CAN</span>
-<span class="kw">final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
-list.<span class="fn">add</span>(<span class="st">"Hello"</span>);  <span class="cm">// ✅ OK: modifying the object</span>
-<span class="cm">// list = new ArrayList&lt;&gt;();  →  ❌ Error: reassigning the reference</span></code></pre>
+        <span class="cm">// MAX_USERS = 200;  →  Compile Error! Cannot reassign final variable</span>
+
+        <span class="cm">// final with reference types: the reference can't change, but the object CAN</span>
+        <span class="kw">final</span> <span class="cl">List</span>&lt;<span class="cl">String</span>&gt; list = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+        list.<span class="fn">add</span>(<span class="st">"Hello"</span>);  <span class="cm">// ✅ OK: modifying the object</span>
+        <span class="cm">// list = new ArrayList&lt;&gt;();  →  ❌ Error: reassigning the reference</span>
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -251,16 +315,21 @@ list.<span class="fn">add</span>(<span class="st">"Hello"</span>);  <span class=
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Using var</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">var</span> name = <span class="st">"Alice"</span>;      <span class="cm">// Compiler infers String</span>
-<span class="kw">var</span> count = <span class="nm">42</span>;           <span class="cm">// Compiler infers int</span>
-<span class="kw">var</span> prices = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;<span class="cl">Double</span>&gt;(); <span class="cm">// Infers ArrayList&lt;Double&gt;</span>
-<span class="kw">var</span> map = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"a"</span>, <span class="nm">1</span>); <span class="cm">// Infers Map&lt;String, Integer&gt;</span>
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
+<span class="kw">import</span> <span class="cl">java.util.Map</span>;
 
-<span class="cm">// Where you CANNOT use var:</span>
-<span class="cm">// ❌ var x;              (no initializer)</span>
-<span class="cm">// ❌ var x = null;       (can't infer type from null)</span>
-<span class="cm">// ❌ class fields        (only local variables)</span>
-<span class="cm">// ❌ method parameters   (only local variables)</span></code></pre>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="kw">var</span> name = <span class="st">"Alice"</span>;      <span class="cm">// Compiler infers String</span>
+        <span class="kw">var</span> count = <span class="nm">42</span>;           <span class="cm">// Compiler infers int</span>
+        <span class="kw">var</span> prices = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;<span class="cl">Double</span>&gt;(); <span class="cm">// Infers ArrayList&lt;Double&gt;</span>
+        <span class="kw">var</span> map = <span class="cl">Map</span>.<span class="fn">of</span>(<span class="st">"a"</span>, <span class="nm">1</span>); <span class="cm">// Infers Map&lt;String, Integer&gt;</span>
+
+        <span class="cm">// Where you CANNOT use var:</span>
+        <span class="cm">// ❌ var x;              (no initializer)</span>
+        <span class="cm">// ❌ var x = null;       (can't infer type from null)</span>
+    }
+}</code></pre>
     </div>
 
     <div class="callout tip">
@@ -295,21 +364,28 @@ list.<span class="fn">add</span>(<span class="st">"Hello"</span>);  <span class=
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Autoboxing &amp; Unboxing</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="cm">// Autoboxing: primitive → Wrapper (automatic)</span>
-<span class="cl">Integer</span> boxed = <span class="nm">42</span>;   <span class="cm">// int → Integer automatically</span>
+      <pre><code><span class="kw">import</span> <span class="cl">java.util.List</span>;
+<span class="kw">import</span> <span class="cl">java.util.ArrayList</span>;
 
-<span class="cm">// Unboxing: Wrapper → primitive (automatic)</span>
-<span class="kw">int</span> unboxed = boxed;   <span class="cm">// Integer → int automatically</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Autoboxing: primitive → Wrapper (automatic)</span>
+        <span class="cl">Integer</span> boxed = <span class="nm">42</span>;   <span class="cm">// int → Integer automatically</span>
 
-<span class="cm">// Why it matters: Collections need objects</span>
-<span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
-nums.<span class="fn">add</span>(<span class="nm">10</span>);  <span class="cm">// Autoboxing: int 10 → Integer.valueOf(10)</span>
-<span class="kw">int</span> first = nums.<span class="fn">get</span>(<span class="nm">0</span>); <span class="cm">// Unboxing: Integer → int</span>
+        <span class="cm">// Unboxing: Wrapper → primitive (automatic)</span>
+        <span class="kw">int</span> unboxed = boxed;   <span class="cm">// Integer → int automatically</span>
 
-<span class="cm">// Useful Wrapper methods</span>
-<span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;         <span class="cm">// 2,147,483,647</span>
-<span class="kw">int</span> parsed = <span class="cl">Integer</span>.<span class="fn">parseInt</span>(<span class="st">"123"</span>); <span class="cm">// String → int</span>
-<span class="cl">String</span> binary = <span class="cl">Integer</span>.<span class="fn">toBinaryString</span>(<span class="nm">255</span>); <span class="cm">// "11111111"</span></code></pre>
+        <span class="cm">// Why it matters: Collections need objects</span>
+        <span class="cl">List</span>&lt;<span class="cl">Integer</span>&gt; nums = <span class="kw">new</span> <span class="cl">ArrayList</span>&lt;&gt;();
+        nums.<span class="fn">add</span>(<span class="nm">10</span>);  <span class="cm">// Autoboxing: int 10 → Integer.valueOf(10)</span>
+        <span class="kw">int</span> first = nums.<span class="fn">get</span>(<span class="nm">0</span>); <span class="cm">// Unboxing: Integer → int</span>
+
+        <span class="cm">// Useful Wrapper methods</span>
+        <span class="kw">int</span> max = <span class="cl">Integer</span>.MAX_VALUE;         <span class="cm">// 2,147,483,647</span>
+        <span class="kw">int</span> parsed = <span class="cl">Integer</span>.<span class="fn">parseInt</span>(<span class="st">"123"</span>); <span class="cm">// String → int</span>
+        <span class="cl">String</span> binary = <span class="cl">Integer</span>.<span class="fn">toBinaryString</span>(<span class="nm">255</span>); <span class="cm">// "11111111"</span>
+    }
+}</code></pre>
     </div>
 
     <div class="callout danger">
@@ -327,26 +403,29 @@ nums.<span class="fn">add</span>(<span class="nm">10</span>);  <span class="cm">
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Variable Scopes</span><button class="copy-btn">⎘ Copy</button></div>
-      <pre><code><span class="kw">public class</span> <span class="cl">ScopeDemo</span> {
+      <pre><code>public class Main {
+    private int instanceVar = 10;
+    private static int staticVar = 20;
 
-    <span class="cm">// 1. CLASS/INSTANCE SCOPE — accessible anywhere in the class</span>
-    <span class="kw">private int</span> instanceVar = <span class="nm">10</span>;
-    <span class="kw">private static int</span> classVar = <span class="nm">20</span>; <span class="cm">// Shared across all instances</span>
+    public void demonstrateScope() {
+        int localVar = 30;
 
-    <span class="kw">public void</span> <span class="fn">myMethod</span>() {
-        <span class="cm">// 2. METHOD/LOCAL SCOPE — only inside this method</span>
-        <span class="kw">int</span> localVar = <span class="nm">30</span>;
-
-        <span class="kw">if</span> (<span class="kw">true</span>) {
-            <span class="cm">// 3. BLOCK SCOPE — only inside this if-block</span>
-            <span class="kw">int</span> blockVar = <span class="nm">40</span>;
+        if (true) {
+            int blockVar = 40;
+            System.out.println("Block: " + blockVar);
         }
-        <span class="cm">// blockVar is NOT accessible here!</span>
 
-        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; <span class="nm">5</span>; i++) {
-            <span class="cm">// 4. LOOP SCOPE — 'i' only exists inside this loop</span>
+        for (int i = 0; i &lt; 3; i++) {
+            System.out.println("Loop index: " + i);
         }
-        <span class="cm">// i is NOT accessible here!</span>
+
+        System.out.println("Instance: " + instanceVar);
+        System.out.println("Static: " + staticVar);
+        System.out.println("Local: " + localVar);
+    }
+
+    public static void main(String[] args) {
+        new Main().demonstrateScope();
     }
 }</code></pre>
     </div>

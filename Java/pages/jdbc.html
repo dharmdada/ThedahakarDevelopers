@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JDBC and SQL in Java - JavaMaster</title>
 <meta name="description" content="Master Java JDBC: PreparedStatement, transactions, batch writes, connection pooling, RowMapper pattern, N+1 problem, and HikariCP configuration.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Professional</span></div>
 </header>
@@ -37,6 +35,13 @@
     <p>SQL injection is not just bad practice — it is an <strong>existential security risk</strong>. A single concatenated string in a query can expose or delete an entire database. <code class="inline">PreparedStatement</code> prevents this by separating SQL structure from user data permanently.</p>
     <p>Transactions exist because some business operations span multiple SQL statements. If a money transfer deducts from Account A but then fails before crediting Account B, the deducted money vanishes. Atomicity prevents this.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn Connection, PreparedStatement, ResultSet, transactions, and closing resources.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh isolation levels, pooling, batching, generated keys, SQL injection, mapping boundaries, and transaction ownership.</p>
+    <p><strong>Mastery check:</strong> You understand JDBC when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>JDBC Architecture</h3>
     <div class="highlight-row">
@@ -81,6 +86,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>JDBC is the raw contract between Java and relational databases.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn Connection, PreparedStatement, ResultSet, transactions, and closing resources.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh isolation levels, pooling, batching, generated keys, SQL injection, mapping boundaries, and transaction ownership.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>PreparedStatement is not only convenience; it is the default defense against SQL injection and parsing mistakes.</li>
+      <li>A transaction boundary should match a business operation, not a random DAO method.</li>
+      <li>Connection pools are shared capacity. Leaking one connection can eventually freeze an entire service.</li>
+      <li>Auto-commit hides transaction behavior. Know when each statement commits and what happens on failure.</li>
+      <li>ORMs do not remove JDBC realities; they build on connections, statements, result sets, transactions, and SQL constraints.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">JDBC</div><div class="hl-desc">Explain JDBC without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">JDBC</div><div class="hl-desc">Use JDBC in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">JDBC</div><div class="hl-desc">Predict how JDBC behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="datasource">
   <div class="subsection">
@@ -95,7 +130,7 @@
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class BasicConnectionDemo {
+public class Main {
     public static void main(String[] args) {
         // The JDBC URL tells the DriverManager which database to find.
         // Format: jdbc:[driver-type]://[host]:[port]/[database_name]
@@ -128,7 +163,7 @@ public class BasicConnectionDemo {
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DataSourceDemo {
+public class Main {
     public static void main(String[] args) throws SQLException {
         // 1. Configure the DataSource EXACTLY ONCE when the app starts
         PGSimpleDataSource ds = new PGSimpleDataSource();
@@ -159,85 +194,58 @@ public class DataSourceDemo {
     <h3>Full CRUD Repository Pattern</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Repository class — clean, safe JDBC</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public class UserRepository {
+      <pre><code>import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
+
+record User(long id, String name, String email) {}
+
+class UserRepository {
     private final DataSource ds;
 
-    public UserRepository(DataSource ds) { this.ds = ds; }
+    UserRepository(DataSource ds) {
+        this.ds = ds;
+    }
 
-    // --- CREATE ---
-    public long insert(User user) throws SQLException {
-        String sql = "INSERT INTO users (name, email, created_at) VALUES (?, ?, ?)";
+    Optional&lt;User&gt; findById(long id) {
+        String sql = "SELECT id, name, email FROM users WHERE id = ?";
         try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return Optional.empty();
+                return Optional.of(new User(
+                    rs.getLong("id"),
+                    rs.getString("name"),
+                    rs.getString("email")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not load user " + id, e);
+        }
+    }
 
-            ps.setString(1, user.name());
-            ps.setString(2, user.email());
-            ps.setObject(3, user.createdAt());  // LocalDateTime via JDBC 4.2
+    void save(User user) {
+        String sql = "INSERT INTO users(id, name, email) VALUES (?, ?, ?)";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, user.id());
+            ps.setString(2, user.name());
+            ps.setString(3, user.email());
             ps.executeUpdate();
-
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) return keys.getLong(1);
-                throw new SQLException("No generated key returned");
-            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Could not save user", e);
         }
     }
+}
 
-    // --- READ ---
-    public Optional&lt;User&gt; findById(long id) throws SQLException {
-        String sql = "SELECT id, name, email, created_at FROM users WHERE id = ?";
-        try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+class DataAccessException extends RuntimeException {
+    DataAccessException(String message, Throwable cause) { super(message, cause); }
+}
 
-            ps.setLong(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? Optional.of(mapRow(rs)) : Optional.empty();
-            }
-        }
-    }
-
-    public List&lt;User&gt; findByStatus(String status) throws SQLException {
-        String sql = "SELECT id, name, email, created_at FROM users WHERE status = ? ORDER BY name";
-        try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, status);
-            try (ResultSet rs = ps.executeQuery()) {
-                List&lt;User&gt; users = new ArrayList&lt;&gt;();
-                while (rs.next()) users.add(mapRow(rs));
-                return users;
-            }
-        }
-    }
-
-    // --- UPDATE ---
-    public int update(User user) throws SQLException {
-        String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
-        try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, user.name());
-            ps.setString(2, user.email());
-            ps.setLong(3, user.id());
-            return ps.executeUpdate(); // returns rows affected
-        }
-    }
-
-    // --- DELETE ---
-    public int deleteById(long id) throws SQLException {
-        try (Connection con = ds.getConnection();
-             PreparedStatement ps = con.prepareStatement("DELETE FROM users WHERE id = ?")) {
-            ps.setLong(1, id);
-            return ps.executeUpdate();
-        }
-    }
-
-    // Row mapper: converts ResultSet row to domain object
-    private User mapRow(ResultSet rs) throws SQLException {
-        return new User(
-            rs.getLong("id"),
-            rs.getString("name"),
-            rs.getString("email"),
-            rs.getObject("created_at", LocalDateTime.class)
-        );
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Create a DataSource, then pass it to new UserRepository(dataSource).");
     }
 }</code></pre>
     </div>
@@ -250,23 +258,36 @@ public class DataSourceDemo {
     <p>Never return thousands of rows from a database in a single query. It consumes massive amounts of RAM and stalls the database. Always use <strong>Pagination</strong> to fetch data in chunks.</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">LIMIT and OFFSET Pagination</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public List&lt;User&gt; getUsers(int page, int pageSize) throws SQLException {
-    // PostgreSQL / MySQL syntax for pagination
-    String sql = "SELECT id, name, email FROM users ORDER BY id LIMIT ? OFFSET ?";
-    
-    try (Connection con = ds.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-         
-        ps.setInt(1, pageSize); // How many to fetch
-        ps.setInt(2, (page - 1) * pageSize); // How many to skip
-        
-        try (ResultSet rs = ps.executeQuery()) {
-            List&lt;User&gt; users = new ArrayList&lt;&gt;();
-            while (rs.next()) {
-                users.add(mapRow(rs));
+      <pre><code>import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
+
+record User(long id, String name, String email) {}
+
+public class Main {
+    static DataSource ds;
+
+    public static void main(String[] args) {
+        System.out.println("Inject a DataSource, then call getUsers(page, pageSize).");
+    }
+
+    public static List&lt;User&gt; getUsers(int page, int pageSize) throws SQLException {
+        if (ds == null) return List.of();
+        String sql = "SELECT id, name, email FROM users ORDER BY id LIMIT ? OFFSET ?";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, pageSize);
+            ps.setInt(2, (page - 1) * pageSize);
+            try (ResultSet rs = ps.executeQuery()) {
+                List&lt;User&gt; users = new ArrayList&lt;&gt;();
+                while (rs.next()) users.add(mapRow(rs));
+                return users;
             }
-            return users;
         }
+    }
+
+    static User mapRow(ResultSet rs) throws SQLException {
+        return new User(rs.getLong("id"), rs.getString("name"), rs.getString("email"));
     }
 }</code></pre>
     </div>
@@ -282,36 +303,48 @@ public class DataSourceDemo {
     <h3>Transaction Management</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Atomic money transfer — commit or full rollback</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public void transfer(long fromId, long toId, BigDecimal amount) throws SQLException {
-    try (Connection con = ds.getConnection()) {
-        con.setAutoCommit(false);  // Start manual transaction
+      <pre><code>import javax.sql.DataSource;
+import java.sql.*;
+import java.math.BigDecimal;
 
-        try {
-            // Debit
-            try (PreparedStatement debit = con.prepareStatement(
-                    "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance &gt;= ?")) {
-                debit.setBigDecimal(1, amount);
-                debit.setLong(2, fromId);
-                debit.setBigDecimal(3, amount);       // optimistic check
-                int rows = debit.executeUpdate();
-                if (rows == 0) throw new InsufficientFundsException("Insufficient balance");
+public class Main {
+    static DataSource ds;
+
+    public static void main(String[] args) throws Exception {
+        transfer(1001L, 1002L, new BigDecimal("250.00"));
+    }
+
+    public static void transfer(long fromId, long toId, BigDecimal amount) throws SQLException {
+        try (Connection con = ds.getConnection()) {
+            con.setAutoCommit(false);  // Start manual transaction
+
+            try {
+                // Debit
+                try (PreparedStatement debit = con.prepareStatement(
+                        "UPDATE accounts SET balance = balance - ? WHERE id = ? AND balance &gt;= ?")) {
+                    debit.setBigDecimal(1, amount);
+                    debit.setLong(2, fromId);
+                    debit.setBigDecimal(3, amount);       // optimistic check
+                    int rows = debit.executeUpdate();
+                    if (rows == 0) throw new IllegalStateException("Insufficient balance");
+                }
+
+                // Credit
+                try (PreparedStatement credit = con.prepareStatement(
+                        "UPDATE accounts SET balance = balance + ? WHERE id = ?")) {
+                    credit.setBigDecimal(1, amount);
+                    credit.setLong(2, toId);
+                    credit.executeUpdate();
+                }
+
+                con.commit();  // ✅ Both succeeded — commit atomically
+
+            } catch (SQLException | IllegalStateException e) {
+                con.rollback(); // ❌ Any failure — undo everything
+                throw new RuntimeException(e);
             }
-
-            // Credit
-            try (PreparedStatement credit = con.prepareStatement(
-                    "UPDATE accounts SET balance = balance + ? WHERE id = ?")) {
-                credit.setBigDecimal(1, amount);
-                credit.setLong(2, toId);
-                credit.executeUpdate();
-            }
-
-            con.commit();  // ✅ Both succeeded — commit atomically
-
-        } catch (SQLException | InsufficientFundsException e) {
-            con.rollback(); // ❌ Any failure — undo everything
-            throw e;
+            // Connection auto-closed by try-with-resources, returns to pool
         }
-        // Connection auto-closed by try-with-resources, returns to pool
     }
 }</code></pre>
     </div>
@@ -340,22 +373,31 @@ public class DataSourceDemo {
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Setting Isolation Level</span><button class="copy-btn">Copy</button></div>
-      <pre><code>try (Connection con = ds.getConnection()) {
-    // Prevent Dirty Reads and Non-Repeatable Reads for this specific transaction
-    con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-    con.setAutoCommit(false);
-    
-    // Execute critical queries with guaranteed isolation
-    try (PreparedStatement ps = con.prepareStatement("SELECT balance FROM accounts WHERE id = ?")) {
-        ps.setLong(1, 1001);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                System.out.println("Balance locked and read: " + rs.getBigDecimal("balance"));
+      <pre><code>import javax.sql.DataSource;
+import java.sql.*;
+
+public class Main {
+    static DataSource ds;
+
+    public static void main(String[] args) throws SQLException {
+        try (Connection con = ds.getConnection()) {
+            // Prevent Dirty Reads and Non-Repeatable Reads for this specific transaction
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            con.setAutoCommit(false);
+
+            // Execute critical queries with guaranteed isolation
+            try (PreparedStatement ps = con.prepareStatement("SELECT balance FROM accounts WHERE id = ?")) {
+                ps.setLong(1, 1001);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        System.out.println("Balance locked and read: " + rs.getBigDecimal("balance"));
+                    }
+                }
             }
+
+            con.commit();
         }
     }
-    
-    con.commit();
 }</code></pre>
     </div>
   </div>
@@ -366,35 +408,38 @@ public class DataSourceDemo {
     <h3>Batch Writes — 100x Faster Bulk Inserts</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Batching 10,000 rows efficiently</span><button class="copy-btn">Copy</button></div>
-      <pre><code>public void bulkInsert(List&lt;Event&gt; events) throws SQLException {
-    String sql = "INSERT INTO event_log (type, payload, occurred_at) VALUES (?, ?, ?)";
-    int BATCH_SIZE = 500;
+      <pre><code>import javax.sql.DataSource;
+import java.sql.*;
+import java.util.*;
 
-    try (Connection con = ds.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
+record Event(String type, String payload) {}
 
-        con.setAutoCommit(false);
+public class Main {
+    static DataSource ds;
 
-        for (int i = 0; i &lt; events.size(); i++) {
-            Event e = events.get(i);
-            ps.setString(1, e.type());
-            ps.setString(2, e.payload());
-            ps.setObject(3, e.occurredAt());
-            ps.addBatch();
-
-            // Execute in chunks of 500 to avoid memory overflow
-            if ((i + 1) % BATCH_SIZE == 0) {
-                ps.executeBatch();
-                ps.clearBatch();
-            }
-        }
-        ps.executeBatch(); // flush remaining
-        con.commit();
-
-        System.out.printf("Inserted %d events%n", events.size());
+    public static void main(String[] args) throws SQLException {
+        bulkInsert(List.of(new Event("LOGIN", "alice"), new Event("LOGOUT", "alice")));
     }
-}
-// Result: 10,000 inserts in ~300ms vs ~30 seconds with individual inserts</code></pre>
+
+    public static void bulkInsert(List&lt;Event&gt; events) throws SQLException {
+        if (ds == null) {
+            System.out.println("Inject a DataSource before running against a database.");
+            return;
+        }
+        String sql = "INSERT INTO event_log(type, payload) VALUES (?, ?)";
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            con.setAutoCommit(false);
+            for (Event event : events) {
+                ps.setString(1, event.type());
+                ps.setString(2, event.payload());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            con.commit();
+        }
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -404,41 +449,89 @@ public class DataSourceDemo {
     <h3>The N+1 Query Problem</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">❌ N+1: 1 query for orders + N queries for each order's items</span><button class="copy-btn">Copy</button></div>
-      <pre><code>List&lt;Order&gt; orders = orderRepo.findAll();       // 1 query
-for (Order order : orders) {
-    List&lt;Item&gt; items = itemRepo.findByOrderId(order.id()); // 1 query PER ORDER!
-    // With 1000 orders: 1001 total queries. Slow.
+      <pre><code>import java.util.*;
+
+record Order(long id) {}
+record Item(long id, long orderId) {}
+interface OrderRepository { List&lt;Order&gt; findAll(); }
+interface ItemRepository { List&lt;Item&gt; findByOrderId(long orderId); }
+
+public class Main {
+    static OrderRepository orderRepo = () -&gt; List.of(new Order(1), new Order(2));
+    static ItemRepository itemRepo = orderId -&gt; List.of(new Item(orderId * 10, orderId));
+
+    public static void main(String[] args) {
+        List&lt;Order&gt; orders = orderRepo.findAll();
+        for (Order order : orders) {
+            List&lt;Item&gt; items = itemRepo.findByOrderId(order.id());
+            System.out.println(order + " -&gt; " + items);
+        }
+    }
 }</code></pre>
     </div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">✅ Fixed: single JOIN query fetches everything at once</span><button class="copy-btn">Copy</button></div>
-      <pre><code>String sql = """
-    SELECT o.id, o.customer_id, o.total,
-           i.id AS item_id, i.product_name, i.quantity, i.price
-    FROM orders o
-    LEFT JOIN order_items i ON i.order_id = o.id
-    ORDER BY o.id
-    """;
+      <pre><code>import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.sql.*;
+import java.util.*;
 
-try (Connection con = ds.getConnection();
-     PreparedStatement ps = con.prepareStatement(sql);
-     ResultSet rs = ps.executeQuery()) {
+record Item(long id, String productName, int quantity, BigDecimal price) {}
+class Order {
+    private final long id;
+    private final long customerId;
+    private final BigDecimal total;
+    private final List&lt;Item&gt; items = new ArrayList&lt;&gt;();
+    Order(long id, long customerId, BigDecimal total) {
+        this.id = id;
+        this.customerId = customerId;
+        this.total = total;
+    }
+    void addItem(Item item) { items.add(item); }
+    public String toString() { return "Order " + id + " items=" + items; }
+}
 
-    Map&lt;Long, Order&gt; orderMap = new LinkedHashMap&lt;&gt;();
-    while (rs.next()) {
-        long orderId = rs.getLong("id");
-        Order order = orderMap.computeIfAbsent(orderId,
-            id -&gt; new Order(id, rs.getLong("customer_id"), rs.getBigDecimal("total")));
+public class Main {
+    static DataSource ds;
 
-        long itemId = rs.getLong("item_id");
-        if (itemId != 0) {  // LEFT JOIN may have no items
-            order.addItem(new Item(itemId, rs.getString("product_name"),
-                rs.getInt("quantity"), rs.getBigDecimal("price")));
+    public static void main(String[] args) throws SQLException {
+        System.out.println(fetchOrdersWithItems());
+    }
+
+    public static List&lt;Order&gt; fetchOrdersWithItems() throws SQLException {
+        if (ds == null) return List.of();
+        String sql = """
+            SELECT o.id, o.customer_id, o.total,
+                   i.id AS item_id, i.product_name, i.quantity, i.price
+            FROM orders o
+            LEFT JOIN order_items i ON i.order_id = o.id
+            ORDER BY o.id
+            """;
+        try (Connection con = ds.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            Map&lt;Long, Order&gt; orderMap = new LinkedHashMap&lt;&gt;();
+            while (rs.next()) {
+                long orderId = rs.getLong("id");
+                Order order = orderMap.computeIfAbsent(orderId,
+                    id -&gt; new Order(id, getLongQuietly(rs, "customer_id"), getBigDecimalQuietly(rs, "total")));
+                long itemId = rs.getLong("item_id");
+                if (!rs.wasNull()) {
+                    order.addItem(new Item(itemId, rs.getString("product_name"), rs.getInt("quantity"), rs.getBigDecimal("price")));
+                }
+            }
+            return new ArrayList&lt;&gt;(orderMap.values());
         }
     }
-    return new ArrayList&lt;&gt;(orderMap.values());
-}
-// Result: 1 query instead of 1001. 1000x fewer round-trips.</code></pre>
+
+    private static long getLongQuietly(ResultSet rs, String column) {
+        try { return rs.getLong(column); } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+
+    private static BigDecimal getBigDecimalQuietly(ResultSet rs, String column) {
+        try { return rs.getBigDecimal(column); } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -448,32 +541,41 @@ try (Connection con = ds.getConnection();
     <h3>Connection Pooling with HikariCP</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">HikariCP configuration — production settings</span><button class="copy-btn">Copy</button></div>
-      <pre><code>HikariConfig config = new HikariConfig();
-config.setJdbcUrl("jdbc:postgresql://db-host:5432/myapp");
-config.setUsername("app_user");
-config.setPassword(System.getenv("DB_PASSWORD"));  // never hardcode!
+      <pre><code>import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 
-// Pool sizing: rule of thumb = (num_cpu_cores * 2) + num_disk_spindles
-config.setMaximumPoolSize(10);
-config.setMinimumIdle(5);
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">HikariConfig</span> config = <span class="kw">new</span> <span class="cl">HikariConfig</span>();
+        config.<span class="fn">setJdbcUrl</span>(<span class="st">"jdbc:postgresql://db-host:5432/myapp"</span>);
+        config.<span class="fn">setUsername</span>(<span class="st">"app_user"</span>);
+        config.<span class="fn">setPassword</span>(<span class="cl">System</span>.<span class="fn">getenv</span>(<span class="st">"DB_PASSWORD"</span>));  <span class="cm">// never hardcode!</span>
 
-// Connection timeouts
-config.setConnectionTimeout(3000);   // fail fast if no connection available (ms)
-config.setIdleTimeout(600_000);      // remove idle connections after 10 min
-config.setMaxLifetime(1_800_000);    // force recycle connections after 30 min
+        <span class="cm">// Pool sizing: rule of thumb = (num_cpu_cores * 2) + num_disk_spindles</span>
+        config.<span class="fn">setMaximumPoolSize</span>(<span class="nm">10</span>);
+        config.<span class="fn">setMinimumIdle</span>(<span class="nm">5</span>);
 
-// Validation
-config.setConnectionTestQuery("SELECT 1");  // for drivers lacking isValid()
-config.setKeepaliveTime(60_000);            // heartbeat to prevent firewall drops
+        <span class="cm">// Connection timeouts</span>
+        config.<span class="fn">setConnectionTimeout</span>(<span class="nm">3000</span>);   <span class="cm">// fail fast if no connection available (ms)</span>
+        config.<span class="fn">setIdleTimeout</span>(<span class="nm">600_000</span>);      <span class="cm">// remove idle connections after 10 min</span>
+        config.<span class="fn">setMaxLifetime</span>(<span class="nm">1_800_000</span>);    <span class="cm">// force recycle connections after 30 min</span>
 
-// Performance
-config.addDataSourceProperty("cachePrepStmts",         "true");
-config.addDataSourceProperty("prepStmtCacheSize",      "250");
-config.addDataSourceProperty("prepStmtCacheSqlLimit",  "2048");
-config.addDataSourceProperty("useServerPrepStmts",     "true"); // MySQL-specific
+        <span class="cm">// Validation</span>
+        config.<span class="fn">setConnectionTestQuery</span>(<span class="st">"SELECT 1"</span>);  <span class="cm">// for drivers lacking isValid()</span>
+        config.<span class="fn">setKeepaliveTime</span>(<span class="nm">60_000</span>);            <span class="cm">// heartbeat to prevent firewall drops</span>
 
-DataSource ds = new HikariDataSource(config);
-// Thread-safe singleton — create once, share everywhere</code></pre>
+        <span class="cm">// Performance</span>
+        config.<span class="fn">addDataSourceProperty</span>(<span class="st">"cachePrepStmts"</span>,         <span class="st">"true"</span>);
+        config.<span class="fn">addDataSourceProperty</span>(<span class="st">"prepStmtCacheSize"</span>,      <span class="st">"250"</span>);
+        config.<span class="fn">addDataSourceProperty</span>(<span class="st">"prepStmtCacheSqlLimit"</span>,  <span class="st">"2048"</span>);
+        config.<span class="fn">addDataSourceProperty</span>(<span class="st">"useServerPrepStmts"</span>,     <span class="st">"true"</span>); <span class="cm">// MySQL-specific</span>
+
+        <span class="cl">DataSource</span> ds = <span class="kw">new</span> <span class="cl">HikariDataSource</span>(config);
+        <span class="cm">// Thread-safe singleton — create once, share everywhere</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"HikariCP DataSource ready: "</span> + ds);
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
@@ -515,5 +617,5 @@ DataSource ds = new HikariDataSource(config);
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>

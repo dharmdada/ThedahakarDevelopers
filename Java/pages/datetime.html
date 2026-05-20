@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Date and Time API - JavaMaster</title>
 <meta name="description" content="Master Java's java.time API: LocalDate, Instant, ZonedDateTime, Duration, Period, TemporalAdjusters, DateTimeFormatter and timezone-safe design.">
@@ -9,7 +7,7 @@
 <body>
 <div id="progress-bar"><div id="progress-fill"></div></div>
 <header id="topbar">
-  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
   <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
   <div class="topbar-right"><span class="progress-badge">Advanced</span></div>
 </header>
@@ -41,6 +39,13 @@
     <p>Time zones are <strong>political constructs</strong>, not math. The IANA timezone database is updated when governments change DST rules. Offsets change. Storing <code class="inline">+05:30</code> is different from storing <code class="inline">Asia/Kolkata</code> — the latter carries DST history. Always use the IANA zone ID for recurring schedules.</p>
     <p><code class="inline">Duration</code> and <code class="inline">Period</code> exist for a reason: one month is NOT 30 days. One hour on the day clocks spring forward is 60 minutes, but on fall-back day there are two 1 AM hours. The API forces you to be explicit.</p>
   </div>
+  <div class="subsection theory-lens">
+    <h3>Beginner-Friendly, Expert-Useful Lens</h3>
+    <p><strong>If you are new:</strong> Beginners should learn LocalDate, LocalTime, LocalDateTime, Instant, Duration, Period, and ZoneId separately.</p>
+    <p><strong>If you are revising:</strong> Experts should refresh DST gaps, offset versus zone, clock injection, parsing formats, persistence, and testability.</p>
+    <p><strong>Mastery check:</strong> You understand Date and Time when you can explain the simple mental model, write a tiny runnable example, identify the common trap, and describe how it behaves in a real project.</p>
+  </div>
+
   <div class="subsection">
     <h3>Why Legacy Date/Calendar Was a Disaster</h3>
     <div class="highlight-row">
@@ -79,6 +84,36 @@
     </ul>
   </div>
 </div>
+<div class="section advanced-notes" id="advanced-notes">
+  <div class="section-header">
+    <div class="section-icon advanced-icon">ADV</div>
+    <div><h2>Advanced Notes Most Courses Skip</h2><p>Time is domain data with calendars, zones, precision, and ambiguity.</p></div>
+  </div>
+  <div class="subsection expert-lens">
+    <h3>Beginner and Expert Lens</h3>
+    <p><strong>Beginner lens:</strong> Beginners should learn LocalDate, LocalTime, LocalDateTime, Instant, Duration, Period, and ZoneId separately.</p>
+    <p><strong>Expert refresh:</strong> Experts should refresh DST gaps, offset versus zone, clock injection, parsing formats, persistence, and testability.</p>
+  </div>
+  <div class="subsection">
+    <h3>Hard-Won Tips</h3>
+    <ul class="feature-list advanced-tip-list">
+      <li>LocalDateTime is not a moment on the global timeline. Without a zone or offset, it cannot identify an instant.</li>
+      <li>Daylight saving time creates missing and repeated local times. Scheduling systems must decide what to do in both cases.</li>
+      <li>Inject Clock in code that depends on now. It turns time from an untestable global into a controllable dependency.</li>
+      <li>Store instants for event timestamps, but preserve user zone when the original civil meaning matters.</li>
+      <li>Never parse dates with casual string splitting when DateTimeFormatter can encode format, locale, and validation.</li>
+    </ul>
+  </div>
+  <div class="subsection">
+    <h3>Revision Ladder</h3>
+    <div class="highlight-row">
+      <div class="hl-box"><div class="hl-label">Beginner</div><div class="hl-value">Date and Time</div><div class="hl-desc">Explain Date and Time without jargon and write one small program that proves the idea.</div></div>
+      <div class="hl-box"><div class="hl-label">Working Dev</div><div class="hl-value">Date and Time</div><div class="hl-desc">Use Date and Time in code that has validation, failure handling, tests, and readable names.</div></div>
+      <div class="hl-box"><div class="hl-label">Expert</div><div class="hl-value">Date and Time</div><div class="hl-desc">Predict how Date and Time behaves under scale, refactoring, bad input, and production tooling.</div></div>
+    </div>
+  </div>
+</div>
+
 
 <div class="section" id="types">
   <div class="subsection">
@@ -93,13 +128,27 @@
     </div>
     <div class="code-block" style="margin-top:18px;">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Creating instances</span><button class="copy-btn">Copy</button></div>
-      <pre><code>LocalDate today      = LocalDate.now();               // 2026-05-17
-LocalDate birthday   = LocalDate.of(1990, Month.JUNE, 15);
-LocalTime noon       = LocalTime.of(12, 0);
-LocalDateTime ldt    = LocalDateTime.of(today, noon);
-Instant now          = Instant.now();                 // UTC nanoseconds
-ZonedDateTime zdt    = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-OffsetDateTime odt   = OffsetDateTime.now(ZoneOffset.ofHoursMinutes(5, 30));</code></pre>
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.time.temporal.*;
+
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">LocalDate</span> today      = <span class="cl">LocalDate</span>.<span class="fn">now</span>();               <span class="cm">// 2026-05-17</span>
+        <span class="cl">LocalDate</span> birthday   = <span class="cl">LocalDate</span>.<span class="fn">of</span>(<span class="nm">1990</span>, <span class="cl">Month</span>.JUNE, <span class="nm">15</span>);
+        <span class="cl">LocalTime</span> noon       = <span class="cl">LocalTime</span>.<span class="fn">of</span>(<span class="nm">12</span>, <span class="nm">0</span>);
+        <span class="cl">LocalDateTime</span> ldt    = <span class="cl">LocalDateTime</span>.<span class="fn">of</span>(today, noon);
+        <span class="cl">Instant</span> now          = <span class="cl">Instant</span>.<span class="fn">now</span>();                 <span class="cm">// UTC nanoseconds</span>
+        <span class="cl">ZonedDateTime</span> zdt    = <span class="cl">ZonedDateTime</span>.<span class="fn">now</span>(<span class="cl">ZoneId</span>.<span class="fn">of</span>(<span class="st">"Asia/Kolkata"</span>));
+        <span class="cl">OffsetDateTime</span> odt   = <span class="cl">OffsetDateTime</span>.<span class="fn">now</span>(<span class="cl">ZoneOffset</span>.<span class="fn">ofHoursMinutes</span>(<span class="nm">5</span>, <span class="nm">30</span>));
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Today: "</span> + today);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Birthday: "</span> + birthday);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"LocalDateTime: "</span> + ldt);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Instant: "</span> + now);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"ZonedDateTime: "</span> + zdt);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"OffsetDateTime: "</span> + odt);
+    }
+}</code></pre>
     </div>
   </div>
 </div>
@@ -109,22 +158,35 @@ OffsetDateTime odt   = OffsetDateTime.now(ZoneOffset.ofHoursMinutes(5, 30));</co
     <h3>Date Arithmetic: Plus, Minus, Until</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Immutable arithmetic — always capture return value!</span><button class="copy-btn">Copy</button></div>
-      <pre><code>LocalDate today = LocalDate.now();
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.time.temporal.*;
 
-LocalDate nextWeek    = today.plusWeeks(1);
-LocalDate lastMonth   = today.minusMonths(1);
-LocalDate anniversary = today.withDayOfMonth(1).withMonth(1);  // Jan 1 this year
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">LocalDate</span> today = <span class="cl">LocalDate</span>.<span class="fn">now</span>();
+        <span class="cl">LocalDate</span> birthday = <span class="cl">LocalDate</span>.<span class="fn">of</span>(<span class="nm">1990</span>, <span class="nm">6</span>, <span class="nm">15</span>);
 
-long daysBetween = ChronoUnit.DAYS.between(today, nextWeek);  // 7
-long monthsBetween = ChronoUnit.MONTHS.between(birthday, today);
+        <span class="cl">LocalDate</span> nextWeek    = today.<span class="fn">plusWeeks</span>(<span class="nm">1</span>);
+        <span class="cl">LocalDate</span> lastMonth   = today.<span class="fn">minusMonths</span>(<span class="nm">1</span>);
+        <span class="cl">LocalDate</span> anniversary = today.<span class="fn">withDayOfMonth</span>(<span class="nm">1</span>).<span class="fn">withMonth</span>(<span class="nm">1</span>);  <span class="cm">// Jan 1 this year</span>
 
-// Duration: machine time (seconds/nanos)
-Duration twoHours = Duration.ofHours(2);
-Instant later = Instant.now().plus(twoHours);
+        <span class="kw">long</span> daysBetween = <span class="cl">ChronoUnit</span>.DAYS.<span class="fn">between</span>(today, nextWeek);  <span class="cm">// 7</span>
+        <span class="kw">long</span> monthsBetween = <span class="cl">ChronoUnit</span>.MONTHS.<span class="fn">between</span>(birthday, today);
 
-// Period: human calendar (days/months/years)
-Period threeMonths = Period.ofMonths(3);
-LocalDate futureDate = today.plus(threeMonths);</code></pre>
+        <span class="cm">// Duration: machine time (seconds/nanos)</span>
+        <span class="cl">Duration</span> twoHours = <span class="cl">Duration</span>.<span class="fn">ofHours</span>(<span class="nm">2</span>);
+        <span class="cl">Instant</span> later = <span class="cl">Instant</span>.<span class="fn">now</span>().<span class="fn">plus</span>(twoHours);
+
+        <span class="cm">// Period: human calendar (days/months/years)</span>
+        <span class="cl">Period</span> threeMonths = <span class="cl">Period</span>.<span class="fn">ofMonths</span>(<span class="nm">3</span>);
+        <span class="cl">LocalDate</span> futureDate = today.<span class="fn">plus</span>(threeMonths);
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Next week: "</span> + nextWeek);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Days between: "</span> + daysBetween);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Months since birthday: "</span> + monthsBetween);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"3 months from now: "</span> + futureDate);
+    }
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
@@ -138,22 +200,35 @@ LocalDate futureDate = today.plus(threeMonths);</code></pre>
     <h3>Formatting and Parsing</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">DateTimeFormatter — always thread-safe when created as constant</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// Built-in ISO formats (preferred for APIs)
-String iso = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE); // "2026-05-17"
-Instant parsed = Instant.parse("2026-05-17T10:30:00Z");
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.time.format.*;
+<span class="kw">import</span> java.util.*;
 
-// Custom pattern
-DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a", Locale.ENGLISH);
-String display = LocalDateTime.now().format(fmt); // "17 May 2026, 02:30 PM"
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// Built-in ISO formats (preferred for APIs)</span>
+        <span class="cl">String</span> iso = <span class="cl">LocalDate</span>.<span class="fn">now</span>().<span class="fn">format</span>(<span class="cl">DateTimeFormatter</span>.ISO_LOCAL_DATE); <span class="cm">// "2026-05-17"</span>
+        <span class="cl">Instant</span> parsed = <span class="cl">Instant</span>.<span class="fn">parse</span>(<span class="st">"2026-05-17T10:30:00Z"</span>);
 
-// Parsing user input safely
-DateTimeFormatter userFmt = DateTimeFormatter.ofPattern("d/M/yyyy");
-LocalDate userDate = LocalDate.parse("5/3/2026", userFmt); // March 5
+        <span class="cm">// Custom pattern</span>
+        <span class="cl">DateTimeFormatter</span> fmt = <span class="cl">DateTimeFormatter</span>.<span class="fn">ofPattern</span>(<span class="st">"dd MMM yyyy, hh:mm a"</span>, <span class="cl">Locale</span>.ENGLISH);
+        <span class="cl">String</span> display = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>().<span class="fn">format</span>(fmt); <span class="cm">// "17 May 2026, 02:30 PM"</span>
 
-// Locale-aware formatting
-DateTimeFormatter localeFmt = DateTimeFormatter
-    .ofLocalizedDate(FormatStyle.LONG)
-    .withLocale(Locale.forLanguageTag("hi-IN")); // Hindi format</code></pre>
+        <span class="cm">// Parsing user input safely</span>
+        <span class="cl">DateTimeFormatter</span> userFmt = <span class="cl">DateTimeFormatter</span>.<span class="fn">ofPattern</span>(<span class="st">"d/M/yyyy"</span>);
+        <span class="cl">LocalDate</span> userDate = <span class="cl">LocalDate</span>.<span class="fn">parse</span>(<span class="st">"5/3/2026"</span>, userFmt); <span class="cm">// March 5</span>
+
+        <span class="cm">// Locale-aware formatting</span>
+        <span class="cl">DateTimeFormatter</span> localeFmt = <span class="cl">DateTimeFormatter</span>
+            .<span class="fn">ofLocalizedDate</span>(<span class="cl">FormatStyle</span>.LONG)
+            .<span class="fn">withLocale</span>(<span class="cl">Locale</span>.<span class="fn">forLanguageTag</span>(<span class="st">"hi-IN"</span>)); <span class="cm">// Hindi format</span>
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"ISO date: "</span> + iso);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Custom format: "</span> + display);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Parsed user date: "</span> + userDate);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Hindi format: "</span> + userDate.<span class="fn">format</span>(localeFmt));
+    }
+}</code></pre>
     </div>
     <div class="callout tip">
       <span class="callout-icon">TIP</span>
@@ -168,32 +243,43 @@ DateTimeFormatter localeFmt = DateTimeFormatter
     <p>Beyond simple addition, <code class="inline">TemporalAdjusters</code> handle real-world business date logic:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">Copy</button></div>
-      <pre><code>LocalDate today = LocalDate.now();
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.time.temporal.*;
 
-// Built-in adjusters
-LocalDate firstOfMonth  = today.with(TemporalAdjusters.firstDayOfMonth());
-LocalDate lastOfMonth   = today.with(TemporalAdjusters.lastDayOfMonth());
-LocalDate firstOfNext   = today.with(TemporalAdjusters.firstDayOfNextMonth());
-LocalDate nextFriday    = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
-LocalDate prevMonday    = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">LocalDate</span> today = <span class="cl">LocalDate</span>.<span class="fn">now</span>();
 
-// Custom adjuster: next working day (skip weekends)
-TemporalAdjuster nextWorkingDay = TemporalAdjusters.ofDateAdjuster(date -> {
-    DayOfWeek dow = date.getDayOfWeek();
-    int daysToAdd = switch (dow) {
-        case FRIDAY   -> 3;
-        case SATURDAY -> 2;
-        default       -> 1;
-    };
-    return date.plusDays(daysToAdd);
-});
-LocalDate nextWorkDay = today.with(nextWorkingDay);
+        <span class="cm">// Built-in adjusters</span>
+        <span class="cl">LocalDate</span> firstOfMonth  = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">firstDayOfMonth</span>());
+        <span class="cl">LocalDate</span> lastOfMonth   = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">lastDayOfMonth</span>());
+        <span class="cl">LocalDate</span> firstOfNext   = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">firstDayOfNextMonth</span>());
+        <span class="cl">LocalDate</span> nextFriday    = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">next</span>(<span class="cl">DayOfWeek</span>.FRIDAY));
+        <span class="cl">LocalDate</span> prevMonday    = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">previousOrSame</span>(<span class="cl">DayOfWeek</span>.MONDAY));
 
-// Payment due date: last business day of month
-LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
-while (endOfMonth.getDayOfWeek() == DayOfWeek.SATURDAY
-    || endOfMonth.getDayOfWeek() == DayOfWeek.SUNDAY) {
-    endOfMonth = endOfMonth.minusDays(1);
+        <span class="cm">// Custom adjuster: next working day (skip weekends)</span>
+        <span class="cl">TemporalAdjuster</span> nextWorkingDay = <span class="cl">TemporalAdjusters</span>.<span class="fn">ofDateAdjuster</span>(date -&gt; {
+            <span class="cl">DayOfWeek</span> dow = date.<span class="fn">getDayOfWeek</span>();
+            <span class="kw">int</span> daysToAdd = <span class="kw">switch</span> (dow) {
+                <span class="kw">case</span> FRIDAY   -&gt; <span class="nm">3</span>;
+                <span class="kw">case</span> SATURDAY -&gt; <span class="nm">2</span>;
+                <span class="kw">default</span>       -&gt; <span class="nm">1</span>;
+            };
+            <span class="kw">return</span> date.<span class="fn">plusDays</span>(daysToAdd);
+        });
+        <span class="cl">LocalDate</span> nextWorkDay = today.<span class="fn">with</span>(nextWorkingDay);
+
+        <span class="cm">// Payment due date: last business day of month</span>
+        <span class="cl">LocalDate</span> endOfMonth = today.<span class="fn">with</span>(<span class="cl">TemporalAdjusters</span>.<span class="fn">lastDayOfMonth</span>());
+        <span class="kw">while</span> (endOfMonth.<span class="fn">getDayOfWeek</span>() == <span class="cl">DayOfWeek</span>.SATURDAY
+            || endOfMonth.<span class="fn">getDayOfWeek</span>() == <span class="cl">DayOfWeek</span>.SUNDAY) {
+            endOfMonth = endOfMonth.<span class="fn">minusDays</span>(<span class="nm">1</span>);
+        }
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Next Friday: "</span> + nextFriday);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Next work day: "</span> + nextWorkDay);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Last business day of month: "</span> + endOfMonth);
+    }
 }</code></pre>
     </div>
   </div>
@@ -204,26 +290,37 @@ while (endOfMonth.getDayOfWeek() == DayOfWeek.SATURDAY
     <h3>Timezone-Safe Design Patterns</h3>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">UTC storage, local display</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// ✅ CORRECT PATTERN: Store in UTC, display in user's zone
-Instant eventTime = Instant.now();             // Store this in DB
-ZoneId userZone = ZoneId.of("America/New_York");
-ZonedDateTime display = eventTime.atZone(userZone);
-// "2026-05-17T04:00-04:00[America/New_York]"
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.util.*;
 
-// ✅ Convert between zones correctly
-ZonedDateTime kolkata = ZonedDateTime.now(ZoneId.of("Asia/Kolkata"));
-ZonedDateTime london  = kolkata.withZoneSameInstant(ZoneId.of("Europe/London"));
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// ✅ CORRECT PATTERN: Store in UTC, display in user's zone</span>
+        <span class="cl">Instant</span> eventTime = <span class="cl">Instant</span>.<span class="fn">now</span>();             <span class="cm">// Store this in DB</span>
+        <span class="cl">ZoneId</span> userZone = <span class="cl">ZoneId</span>.<span class="fn">of</span>(<span class="st">"America/New_York"</span>);
+        <span class="cl">ZonedDateTime</span> display = eventTime.<span class="fn">atZone</span>(userZone);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"NY time: "</span> + display);
 
-// ❌ WRONG: LocalDateTime loses timezone context
-LocalDateTime wrong = LocalDateTime.now(); // Whose time zone? Unknown!
+        <span class="cm">// ✅ Convert between zones correctly</span>
+        <span class="cl">ZonedDateTime</span> kolkata = <span class="cl">ZonedDateTime</span>.<span class="fn">now</span>(<span class="cl">ZoneId</span>.<span class="fn">of</span>(<span class="st">"Asia/Kolkata"</span>));
+        <span class="cl">ZonedDateTime</span> london  = kolkata.<span class="fn">withZoneSameInstant</span>(<span class="cl">ZoneId</span>.<span class="fn">of</span>(<span class="st">"Europe/London"</span>));
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Kolkata: "</span> + kolkata);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"London:  "</span> + london);
 
-// ✅ Querying available zone IDs
-Set&lt;String&gt; allZones = ZoneId.getAvailableZoneIds(); // ~600 zones
+        <span class="cm">// ❌ WRONG: LocalDateTime loses timezone context</span>
+        <span class="cl">LocalDateTime</span> wrong = <span class="cl">LocalDateTime</span>.<span class="fn">now</span>(); <span class="cm">// Whose time zone? Unknown!</span>
 
-// ✅ ZonedDateTime comparison is instant-based
-ZonedDateTime meeting1 = ZonedDateTime.parse("2026-06-01T09:00+05:30[Asia/Kolkata]");
-ZonedDateTime meeting2 = ZonedDateTime.parse("2026-06-01T04:00Z");
-boolean sameMoment = meeting1.toInstant().equals(meeting2.toInstant()); // true!</code></pre>
+        <span class="cm">// ✅ Querying available zone IDs</span>
+        <span class="kw">long</span> zoneCount = <span class="cl">ZoneId</span>.<span class="fn">getAvailableZoneIds</span>().<span class="fn">size</span>(); <span class="cm">// ~600 zones</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Available zones: "</span> + zoneCount);
+
+        <span class="cm">// ✅ ZonedDateTime comparison is instant-based</span>
+        <span class="cl">ZonedDateTime</span> meeting1 = <span class="cl">ZonedDateTime</span>.<span class="fn">parse</span>(<span class="st">"2026-06-01T09:00+05:30[Asia/Kolkata]"</span>);
+        <span class="cl">ZonedDateTime</span> meeting2 = <span class="cl">ZonedDateTime</span>.<span class="fn">parse</span>(<span class="st">"2026-06-01T04:00Z"</span>);
+        <span class="kw">boolean</span> sameMoment = meeting1.<span class="fn">toInstant</span>().<span class="fn">equals</span>(meeting2.<span class="fn">toInstant</span>()); <span class="cm">// true!</span>
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Same instant? "</span> + sameMoment);
+    }
+}</code></pre>
     </div>
     <div class="callout warn">
       <span class="callout-icon">WARN</span>
@@ -238,27 +335,39 @@ boolean sameMoment = meeting1.toInstant().equals(meeting2.toInstant()); // true!
     <p>When integrating with older frameworks (JDBC, Hibernate, older libs) you'll need bridge conversions:</p>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Bridge between java.util and java.time</span><button class="copy-btn">Copy</button></div>
-      <pre><code>// java.util.Date ↔ Instant
-Date legacy  = new Date();
-Instant inst = legacy.toInstant();
-Date back    = Date.from(inst);
+      <pre><code><span class="kw">import</span> java.time.*;
+<span class="kw">import</span> java.sql.Timestamp;
+<span class="kw">import</span> java.util.*;
 
-// java.util.Calendar ↔ ZonedDateTime
-Calendar cal = Calendar.getInstance();
-ZonedDateTime zdt = cal.toInstant().atZone(cal.getTimeZone().toZoneId());
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cm">// java.util.Date ↔ Instant</span>
+        <span class="cl">Date</span> legacy  = <span class="kw">new</span> <span class="cl">Date</span>();
+        <span class="cl">Instant</span> inst = legacy.<span class="fn">toInstant</span>();
+        <span class="cl">Date</span> back    = <span class="cl">Date</span>.<span class="fn">from</span>(inst);
 
-// java.sql.Date ↔ LocalDate (for JDBC)
-java.sql.Date sqlDate  = java.sql.Date.valueOf(LocalDate.now());
-LocalDate localDate    = sqlDate.toLocalDate();
+        <span class="cm">// java.util.Calendar ↔ ZonedDateTime</span>
+        <span class="cl">Calendar</span> cal = <span class="cl">Calendar</span>.<span class="fn">getInstance</span>();
+        <span class="cl">ZonedDateTime</span> zdt = cal.<span class="fn">toInstant</span>().<span class="fn">atZone</span>(cal.<span class="fn">getTimeZone</span>().<span class="fn">toZoneId</span>());
 
-// java.sql.Timestamp ↔ LocalDateTime / Instant
-Timestamp ts           = Timestamp.from(Instant.now());
-LocalDateTime fromTs   = ts.toLocalDateTime();
+        <span class="cm">// java.sql.Date ↔ LocalDate (for JDBC)</span>
+        <span class="cl">java.sql.Date</span> sqlDate  = <span class="cl">java.sql.Date</span>.<span class="fn">valueOf</span>(<span class="cl">LocalDate</span>.<span class="fn">now</span>());
+        <span class="cl">LocalDate</span> localDate    = sqlDate.<span class="fn">toLocalDate</span>();
 
-// For modern JDBC drivers (PostgreSQL 42.x+, MySQL 8.x+)
-// directly pass LocalDate, LocalDateTime, Instant in PreparedStatement
-ps.setObject(1, LocalDate.now());     // works with JDBC 4.2+
-ps.setObject(2, Instant.now());       // maps to TIMESTAMP WITH TIME ZONE</code></pre>
+        <span class="cm">// java.sql.Timestamp ↔ LocalDateTime / Instant</span>
+        <span class="cl">Timestamp</span> ts           = <span class="cl">Timestamp</span>.<span class="fn">from</span>(<span class="cl">Instant</span>.<span class="fn">now</span>());
+        <span class="cl">LocalDateTime</span> fromTs   = ts.<span class="fn">toLocalDateTime</span>();
+
+        <span class="cm">// For modern JDBC drivers (PostgreSQL 42.x+, MySQL 8.x+)</span>
+        <span class="cm">// directly pass LocalDate, LocalDateTime, Instant in PreparedStatement</span>
+        <span class="cm">// ps.setObject(1, LocalDate.now());     // works with JDBC 4.2+</span>
+        <span class="cm">// ps.setObject(2, Instant.now());       // maps to TIMESTAMP WITH TIME ZONE</span>
+
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Legacy Date: "</span> + legacy);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"LocalDate: "</span> + localDate);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"From Timestamp: "</span> + fromTs);
+    }
+}</code></pre>
     </div>
     <div class="callout info">
       <span class="callout-icon">INFO</span>
@@ -323,5 +432,5 @@ ps.setObject(2, Instant.now());       // maps to TIMESTAMP WITH TIME ZONE</code>
 </div>
 <button id="btt" aria-label="Back to top">↑</button>
 <script src="../script.js"></script>
-</body>
-</html>
+
+</body></html>
