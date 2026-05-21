@@ -39,5 +39,8 @@ window.globalSearchIndex = [
   { id: "build-tools.html", title: "Maven & Gradle", category: "Professional" },
   { id: "testing.html", title: "Testing with JUnit & Mockito", category: "Professional" },
   { id: "jdbc.html", title: "JDBC & SQL", category: "Professional" },
-  { id: "design-patterns.html", title: "Design Patterns & SOLID", category: "Professional" }
+  { id: "design-patterns.html", title: "Design Patterns & SOLID", category: "Professional" },
+
+  // Quick Reference
+  { id: "cheatsheet.html", title: "Java Cheat Sheet", category: "Quick Reference" }
 ];

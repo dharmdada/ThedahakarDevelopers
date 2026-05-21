@@ -1,0 +1,660 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Java Cheat Sheet – JavaMaster</title>
+<meta name="description" content="Complete Java quick reference: syntax, data types, operators, control flow, OOP, collections, streams, exceptions, and common APIs on a single page.">
+<meta property="og:title" content="Java Cheat Sheet – JavaMaster">
+<meta property="og:description" content="A condensed single-page Java syntax reference covering everything from basics to advanced.">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill"></div></div>
+<header id="topbar">
+  <button id="menu-btn"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+  <a class="logo" href="../index.html"><div class="logo-icon">J</div><span class="logo-text">Java<span>Master</span></span></a>
+  <div class="topbar-right"><span class="progress-badge">📋 Cheat Sheet</span></div>
+</header>
+<nav id="sidebar"></nav>
+<div id="overlay"></div>
+<div id="main">
+<div class="content-area">
+
+<div class="section" id="top">
+  <div class="section-header">
+    <div class="section-icon" style="background:rgba(249,115,22,0.15);">📋</div>
+    <div><h2>Java Cheat Sheet</h2><p>Complete quick reference — bookmark this page for rapid lookup.</p></div>
+  </div>
+  <nav id="page-toc">
+    <a href="#primitives">Data Types</a>
+    <a href="#operators">Operators</a>
+    <a href="#control">Control Flow</a>
+    <a href="#strings">Strings</a>
+    <a href="#arrays">Arrays</a>
+    <a href="#oop">OOP</a>
+    <a href="#collections">Collections</a>
+    <a href="#streams">Streams</a>
+    <a href="#exceptions">Exceptions</a>
+    <a href="#io">I/O</a>
+    <a href="#concurrency">Concurrency</a>
+    <a href="#modern">Modern Java</a>
+    <a href="#keywords">Keywords</a>
+  </nav>
+</div>
+
+<!-- ════════════ PRIMITIVES ════════════ -->
+<div class="section" id="primitives">
+  <div class="subsection">
+    <h3>Primitive Data Types</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Size</th><th>Range / Info</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">byte</code></td><td>1 byte</td><td>-128 to 127</td><td>0</td></tr>
+          <tr><td><code class="inline">short</code></td><td>2 bytes</td><td>-32,768 to 32,767</td><td>0</td></tr>
+          <tr><td><code class="inline">int</code></td><td>4 bytes</td><td>-2³¹ to 2³¹-1</td><td>0</td></tr>
+          <tr><td><code class="inline">long</code></td><td>8 bytes</td><td>-2⁶³ to 2⁶³-1</td><td>0L</td></tr>
+          <tr><td><code class="inline">float</code></td><td>4 bytes</td><td>~6-7 decimal digits</td><td>0.0f</td></tr>
+          <tr><td><code class="inline">double</code></td><td>8 bytes</td><td>~15 decimal digits</td><td>0.0d</td></tr>
+          <tr><td><code class="inline">char</code></td><td>2 bytes</td><td>Unicode (0 to 65,535)</td><td>'\u0000'</td></tr>
+          <tr><td><code class="inline">boolean</code></td><td>~1 bit</td><td>true / false</td><td>false</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Variable declarations</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>int age = 25;
+long big = 9_999_999_999L;
+double pi = 3.14159;
+char letter = 'A';
+boolean active = true;
+var name = "Alice";         // Type inference (Java 10+)
+final int MAX = 100;        // Constant</code></pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Wrapper Classes & Autoboxing</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>Integer x = 42;                    // Autoboxing: int → Integer
+int y = x;                         // Unboxing: Integer → int
+String s = Integer.toString(42);   // int → String
+int n = Integer.parseInt("42");    // String → int
+double d = Double.parseDouble("3.14");</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ OPERATORS ════════════ -->
+<div class="section" id="operators">
+  <div class="subsection">
+    <h3>Operators Quick Reference</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Operators</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Arithmetic</strong></td><td><code class="inline">+  -  *  /  %  ++  --</code></td></tr>
+          <tr><td><strong>Assignment</strong></td><td><code class="inline">=  +=  -=  *=  /=  %=  &=  |=  ^=  >>=  <<=</code></td></tr>
+          <tr><td><strong>Comparison</strong></td><td><code class="inline">==  !=  >  <  >=  <=</code></td></tr>
+          <tr><td><strong>Logical</strong></td><td><code class="inline">&&  ||  !</code></td></tr>
+          <tr><td><strong>Bitwise</strong></td><td><code class="inline">&  |  ^  ~  <<  >>  >>></code></td></tr>
+          <tr><td><strong>Ternary</strong></td><td><code class="inline">condition ? valueIfTrue : valueIfFalse</code></td></tr>
+          <tr><td><strong>instanceof</strong></td><td><code class="inline">obj instanceof Type</code> (pattern: <code class="inline">obj instanceof Type t</code>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ CONTROL FLOW ════════════ -->
+<div class="section" id="control">
+  <div class="subsection">
+    <h3>Control Flow Patterns</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">if / else / switch / loops</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// if-else
+if (x > 0) { ... }
+else if (x == 0) { ... }
+else { ... }
+
+// Ternary
+String label = (x > 0) ? "positive" : "non-positive";
+
+// Switch (classic)
+switch (day) {
+    case "MON": case "TUE": result = "weekday"; break;
+    default: result = "weekend";
+}
+
+// Switch expression (Java 14+)
+String result = switch (day) {
+    case "MON", "TUE", "WED", "THU", "FRI" -> "weekday";
+    case "SAT", "SUN" -> "weekend";
+    default -> throw new IllegalArgumentException();
+};
+
+// For loop
+for (int i = 0; i < n; i++) { ... }
+
+// Enhanced for
+for (String item : list) { ... }
+
+// While
+while (condition) { ... }
+
+// Do-while
+do { ... } while (condition);
+
+// break / continue / labeled break
+outer:
+for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 10; j++) {
+        if (j == 5) continue outer;
+        if (i == 8) break outer;
+    }
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ STRINGS ════════════ -->
+<div class="section" id="strings">
+  <div class="subsection">
+    <h3>Strings — Essential Methods</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>String s = "Hello, World!";
+
+s.length()                    // 13
+s.charAt(0)                   // 'H'
+s.substring(0, 5)             // "Hello"
+s.indexOf("World")            // 7
+s.contains("World")           // true
+s.startsWith("He")            // true
+s.toUpperCase()               // "HELLO, WORLD!"
+s.trim()                      // Remove whitespace
+s.strip()                     // Unicode-aware trim (Java 11+)
+s.replace("World", "Java")   // "Hello, Java!"
+s.split(", ")                 // ["Hello", "World!"]
+s.isBlank()                   // false (Java 11+)
+s.repeat(2)                   // "Hello, World!Hello, World!" (Java 11+)
+s.chars()                     // IntStream of characters
+
+// Formatting
+String.format("Name: %s, Age: %d", name, age);
+"Name: %s, Age: %d".formatted(name, age);  // Java 15+
+
+// StringBuilder (mutable, fast)
+var sb = new StringBuilder();
+sb.append("Hello").append(" ").append("World");
+String result = sb.toString();
+
+// Text blocks (Java 15+)
+String json = """
+    {
+        "name": "Alice",
+        "age": 30
+    }
+    """;</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ARRAYS ════════════ -->
+<div class="section" id="arrays">
+  <div class="subsection">
+    <h3>Arrays</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Declaration & initialization
+int[] nums = {1, 2, 3, 4, 5};
+int[] zeros = new int[10];       // All zeros
+String[] names = new String[3];  // All null
+
+// 2D array
+int[][] matrix = {{1, 2}, {3, 4}};
+
+// Useful operations
+Arrays.sort(nums);
+Arrays.fill(zeros, -1);
+int[] copy = Arrays.copyOf(nums, nums.length);
+boolean eq = Arrays.equals(nums, copy);
+String str = Arrays.toString(nums);        // "[1, 2, 3, 4, 5]"
+String deep = Arrays.deepToString(matrix); // "[[1, 2], [3, 4]]"
+int idx = Arrays.binarySearch(nums, 3);    // 2 (sorted array only)
+List&lt;Integer&gt; list = Arrays.asList(1, 2, 3); // Fixed-size List</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ OOP ════════════ -->
+<div class="section" id="oop">
+  <div class="subsection">
+    <h3>Object-Oriented Essentials</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Class, interface, inheritance, record</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// ── CLASS ──────────────────────────
+public class Animal {
+    private String name;
+    protected int age;
+
+    public Animal(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() { return name; }
+
+    @Override
+    public String toString() {
+        return "Animal{name='%s'}".formatted(name);
+    }
+}
+
+// ── INHERITANCE ───────────────────
+public class Dog extends Animal {
+    private String breed;
+
+    public Dog(String name, int age, String breed) {
+        super(name, age);          // Must call parent constructor
+        this.breed = breed;
+    }
+
+    @Override
+    public String toString() {
+        return "Dog{name='%s', breed='%s'}".formatted(getName(), breed);
+    }
+}
+
+// ── INTERFACE ─────────────────────
+public interface Speakable {
+    String speak();                        // Abstract
+    default String whisper() {             // Default method
+        return speak().toLowerCase();
+    }
+    static Speakable silent() {            // Static factory
+        return () -> "";
+    }
+}
+
+// ── ABSTRACT CLASS ────────────────
+public abstract class Shape {
+    abstract double area();
+    double perimeter() { return 0; }       // Concrete method
+}
+
+// ── RECORD (Java 16+) ────────────
+public record Point(int x, int y) {
+    // Compact constructor for validation
+    public Point {
+        if (x < 0 || y < 0) throw new IllegalArgumentException();
+    }
+}
+
+// ── ENUM ──────────────────────────
+public enum Direction {
+    NORTH, SOUTH, EAST, WEST;
+    public Direction opposite() {
+        return switch (this) {
+            case NORTH -> SOUTH;
+            case SOUTH -> NORTH;
+            case EAST  -> WEST;
+            case WEST  -> EAST;
+        };
+    }
+}
+
+// ── SEALED CLASS (Java 17+) ──────
+public sealed class Result permits Success, Failure {}
+public final class Success extends Result {}
+public final class Failure extends Result {}</code></pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Access Modifiers</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Modifier</th><th>Class</th><th>Package</th><th>Subclass</th><th>World</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">public</code></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td><code class="inline">protected</code></td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+          <tr><td><em>default</em></td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+          <tr><td><code class="inline">private</code></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ COLLECTIONS ════════════ -->
+<div class="section" id="collections">
+  <div class="subsection">
+    <h3>Collections Framework</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Interface</th><th>Implementations</th><th>Ordered?</th><th>Duplicates?</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">List</code></td><td>ArrayList, LinkedList, CopyOnWriteArrayList</td><td>✅</td><td>✅</td></tr>
+          <tr><td><code class="inline">Set</code></td><td>HashSet, LinkedHashSet, TreeSet</td><td>Tree/Linked</td><td>❌</td></tr>
+          <tr><td><code class="inline">Map</code></td><td>HashMap, LinkedHashMap, TreeMap, ConcurrentHashMap</td><td>Tree/Linked</td><td>Keys ❌</td></tr>
+          <tr><td><code class="inline">Queue</code></td><td>LinkedList, PriorityQueue, ArrayDeque</td><td>FIFO/Priority</td><td>✅</td></tr>
+          <tr><td><code class="inline">Deque</code></td><td>ArrayDeque, LinkedList</td><td>Both ends</td><td>✅</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Common patterns</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// List
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("A");
+list.get(0);
+list.size();
+list.remove("A");
+List&lt;String&gt; immutable = List.of("A", "B", "C");   // Immutable (Java 9+)
+
+// Set
+Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+set.add(1);
+set.contains(1);       // O(1)
+Set&lt;Integer&gt; sorted = new TreeSet&lt;&gt;(set);   // Sorted
+
+// Map
+Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+map.put("key", 42);
+map.get("key");                       // 42
+map.getOrDefault("missing", 0);       // 0
+map.containsKey("key");               // true
+map.forEach((k, v) -> System.out.println(k + "=" + v));
+map.computeIfAbsent("key", k -> expensiveCompute(k));
+Map&lt;String, Integer&gt; immutableMap = Map.of("a", 1, "b", 2);
+
+// Sorting
+Collections.sort(list);
+list.sort(Comparator.naturalOrder());
+list.sort(Comparator.comparing(String::length).reversed());</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ STREAMS ════════════ -->
+<div class="section" id="streams">
+  <div class="subsection">
+    <h3>Streams API</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Creating streams
+Stream.of("a", "b", "c");
+list.stream();
+Arrays.stream(array);
+IntStream.range(0, 10);          // 0..9
+IntStream.rangeClosed(1, 10);    // 1..10
+Stream.iterate(0, n -> n + 2);   // 0, 2, 4, 6, ...
+Stream.generate(Math::random);
+
+// Intermediate (lazy)
+.filter(x -> x > 5)
+.map(String::toUpperCase)
+.flatMap(Collection::stream)
+.distinct()
+.sorted()
+.sorted(Comparator.comparing(Person::age))
+.peek(System.out::println)       // Debug only
+.limit(10)
+.skip(5)
+
+// Terminal (triggers execution)
+.forEach(System.out::println)
+.collect(Collectors.toList())
+.collect(Collectors.toSet())
+.collect(Collectors.joining(", "))
+.collect(Collectors.groupingBy(Person::city))
+.collect(Collectors.partitioningBy(n -> n > 0))
+.collect(Collectors.toMap(Person::name, Person::age))
+.reduce(0, Integer::sum)
+.count()
+.findFirst()                     // Optional&lt;T&gt;
+.anyMatch(x -> x > 10)
+.allMatch(x -> x > 0)
+.min(Comparator.naturalOrder())
+.toArray(String[]::new)
+
+// Optional
+Optional&lt;String&gt; opt = Optional.ofNullable(value);
+opt.orElse("default");
+opt.orElseThrow();
+opt.ifPresent(System.out::println);
+opt.map(String::toUpperCase).orElse("");</code></pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Lambdas & Functional Interfaces</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Interface</th><th>Signature</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">Predicate&lt;T&gt;</code></td><td><code class="inline">T → boolean</code></td><td>Filtering</td></tr>
+          <tr><td><code class="inline">Function&lt;T,R&gt;</code></td><td><code class="inline">T → R</code></td><td>Mapping</td></tr>
+          <tr><td><code class="inline">Consumer&lt;T&gt;</code></td><td><code class="inline">T → void</code></td><td>Side effects</td></tr>
+          <tr><td><code class="inline">Supplier&lt;T&gt;</code></td><td><code class="inline">() → T</code></td><td>Factory</td></tr>
+          <tr><td><code class="inline">UnaryOperator&lt;T&gt;</code></td><td><code class="inline">T → T</code></td><td>Transform</td></tr>
+          <tr><td><code class="inline">BiFunction&lt;T,U,R&gt;</code></td><td><code class="inline">(T,U) → R</code></td><td>Two-arg mapping</td></tr>
+          <tr><td><code class="inline">Comparator&lt;T&gt;</code></td><td><code class="inline">(T,T) → int</code></td><td>Sorting</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">Lambda syntax</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Full form
+(String a, String b) -> { return a.compareTo(b); }
+
+// Inferred types
+(a, b) -> a.compareTo(b)
+
+// Single parameter
+x -> x * 2
+
+// Method reference
+String::toUpperCase       // instance method
+System.out::println       // instance on object
+Integer::parseInt         // static method
+ArrayList::new            // constructor</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ EXCEPTIONS ════════════ -->
+<div class="section" id="exceptions">
+  <div class="subsection">
+    <h3>Exceptions & Error Handling</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// try-catch-finally
+try {
+    riskyOperation();
+} catch (IOException | SQLException e) {   // Multi-catch
+    logger.error("Failed", e);
+} finally {
+    cleanup();   // Always runs
+}
+
+// try-with-resources (AutoCloseable)
+try (var reader = new BufferedReader(new FileReader("file.txt"));
+     var writer = new BufferedWriter(new FileWriter("out.txt"))) {
+    // Resources auto-closed at end
+}
+
+// Custom exception
+public class OrderException extends RuntimeException {
+    private final String orderId;
+    public OrderException(String orderId, String message) {
+        super(message);
+        this.orderId = orderId;
+    }
+    public String getOrderId() { return orderId; }
+}
+
+// Throwing
+throw new IllegalArgumentException("Invalid input: " + value);
+throw new OrderException("ORD-123", "Payment failed");</code></pre>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-body"><strong>Checked vs Unchecked</strong><br>
+        <strong>Checked</strong> (extends Exception): Must catch or declare — IOException, SQLException<br>
+        <strong>Unchecked</strong> (extends RuntimeException): No obligation — NullPointerException, IllegalArgumentException
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ I/O ════════════ -->
+<div class="section" id="io">
+  <div class="subsection">
+    <h3>File I/O Quick Patterns</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Read entire file (Java 11+)
+String content = Files.readString(Path.of("file.txt"));
+List&lt;String&gt; lines = Files.readAllLines(Path.of("file.txt"));
+
+// Write file
+Files.writeString(Path.of("out.txt"), "Hello");
+Files.write(Path.of("out.txt"), lines);
+
+// Stream lines (lazy, good for large files)
+try (Stream&lt;String&gt; stream = Files.lines(Path.of("big.txt"))) {
+    stream.filter(line -> line.contains("ERROR"))
+          .forEach(System.out::println);
+}
+
+// Walk directory tree
+try (Stream&lt;Path&gt; paths = Files.walk(Path.of("src"))) {
+    paths.filter(p -> p.toString().endsWith(".java"))
+         .forEach(System.out::println);
+}
+
+// Path operations
+Path p = Path.of("src", "main", "App.java");
+p.getFileName();       // App.java
+p.getParent();         // src/main
+p.toAbsolutePath();
+Files.exists(p);
+Files.isDirectory(p);
+Files.createDirectories(Path.of("a/b/c"));</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ CONCURRENCY ════════════ -->
+<div class="section" id="concurrency">
+  <div class="subsection">
+    <h3>Concurrency Essentials</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Thread creation
+Thread t = new Thread(() -> System.out.println("Running"));
+t.start();
+
+// ExecutorService (preferred)
+ExecutorService pool = Executors.newFixedThreadPool(4);
+Future&lt;Integer&gt; future = pool.submit(() -> compute());
+int result = future.get();   // Blocking
+pool.shutdown();
+
+// CompletableFuture
+CompletableFuture.supplyAsync(() -> fetchData())
+    .thenApply(data -> process(data))
+    .thenAccept(result -> save(result))
+    .exceptionally(ex -> { log(ex); return null; });
+
+// Synchronized
+synchronized (lock) {
+    sharedResource.update();
+}
+
+// Concurrent collections
+ConcurrentHashMap&lt;String, Integer&gt; map = new ConcurrentHashMap&lt;&gt;();
+CopyOnWriteArrayList&lt;String&gt; list = new CopyOnWriteArrayList&lt;&gt;();
+BlockingQueue&lt;Task&gt; queue = new LinkedBlockingQueue&lt;&gt;();
+
+// Virtual threads (Java 21+)
+Thread.startVirtualThread(() -> handleRequest());
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> task());
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ MODERN JAVA ════════════ -->
+<div class="section" id="modern">
+  <div class="subsection">
+    <h3>Modern Java Features (11–21+)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Version</th><th>Feature</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>10</td><td>var (local type inference)</td><td><code class="inline">var list = new ArrayList&lt;String&gt;();</code></td></tr>
+          <tr><td>11</td><td>String methods</td><td><code class="inline">isBlank(), strip(), repeat(), lines()</code></td></tr>
+          <tr><td>14</td><td>Switch expressions</td><td><code class="inline">var x = switch(s) { case "a" -> 1; default -> 0; };</code></td></tr>
+          <tr><td>15</td><td>Text blocks</td><td><code class="inline">"""multi\nline"""</code></td></tr>
+          <tr><td>16</td><td>Records</td><td><code class="inline">record Point(int x, int y) {}</code></td></tr>
+          <tr><td>16</td><td>Pattern instanceof</td><td><code class="inline">if (obj instanceof String s) { s.length(); }</code></td></tr>
+          <tr><td>17</td><td>Sealed classes</td><td><code class="inline">sealed class Shape permits Circle, Rect {}</code></td></tr>
+          <tr><td>21</td><td>Virtual threads</td><td><code class="inline">Thread.startVirtualThread(() -> ...)</code></td></tr>
+          <tr><td>21</td><td>Pattern matching for switch</td><td><code class="inline">case Integer i -> ...</code></td></tr>
+          <tr><td>21</td><td>Sequenced collections</td><td><code class="inline">list.getFirst(), list.getLast()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ KEYWORDS ════════════ -->
+<div class="section" id="keywords">
+  <div class="subsection">
+    <h3>All Java Keywords</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Java</span><span class="code-title">53 reserved keywords</span><button class="copy-btn">⎘ Copy</button></div>
+      <pre><code>// Access         : public  protected  private
+// Class/Type     : class  interface  enum  record  extends  implements
+// Modifiers      : abstract  final  static  sealed  non-sealed  permits
+// Primitives     : byte  short  int  long  float  double  char  boolean  void
+// Control Flow   : if  else  switch  case  default  for  while  do  break  continue  return  yield
+// Error Handling : try  catch  finally  throw  throws
+// Object         : new  this  super  instanceof
+// Package        : package  import
+// Concurrency    : synchronized  volatile
+// Other          : native  strictfp  transient  assert  var  const  goto
+// Literals       : true  false  null</code></pre>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3>Common Annotations</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Annotation</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">@Override</code></td><td>Confirms method overrides parent</td></tr>
+          <tr><td><code class="inline">@Deprecated</code></td><td>Marks as discouraged for use</td></tr>
+          <tr><td><code class="inline">@SuppressWarnings</code></td><td>Suppresses compiler warnings</td></tr>
+          <tr><td><code class="inline">@FunctionalInterface</code></td><td>Ensures exactly one abstract method</td></tr>
+          <tr><td><code class="inline">@SafeVarargs</code></td><td>Suppresses heap pollution warnings</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+<footer class="footer-nav">
+  <div class="footer-left"><a href="../index.html">← Home</a></div>
+  <div class="footer-center"><a href="../index.html">Back to Home</a></div>
+  <div class="footer-right"><a href="../basics.html">Basics →</a></div>
+</footer>
+</div>
+<button id="btt" aria-label="Back to top">↑</button>
+<script src="../script.js"></script>
+</body></html>

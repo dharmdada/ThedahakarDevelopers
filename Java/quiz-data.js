@@ -4,85 +4,61 @@ const quizDB = {
       question: "Which of the following is NOT a feature of Java?",
       options: ["Platform Independent (WORA)", "Object-Oriented", "Manual Memory Management", "Strongly Typed"],
       answer: 2,
-      explanation: "Java handles memory automatically using a Garbage Collector. In languages like C/C++, you must manually allocate and free memory, but Java prevents these types of memory leaks by managing the Heap for you."
+      explanation: "Java handles memory automatically using a Garbage Collector. In languages like C/C++, you must manually allocate and free memory. Java prevents these types of memory leaks by managing the Heap for you."
     },
     {
       question: "What does WORA stand for in Java?",
       options: ["Write Once, Read Anywhere", "Write Once, Run Anywhere", "Windows Operating Resource Array", "Web Object Routing Architecture"],
       answer: 1,
-      explanation: "WORA stands for Write Once, Run Anywhere. It means you can compile your Java code on one platform and run it on any other platform that has a JVM."
+      explanation: "WORA stands for Write Once, Run Anywhere. You compile your Java code once into bytecode and run it on any platform that has a compatible JVM — the JVM handles the OS and CPU translation."
     },
     {
-      question: "Which component is responsible for executing the Java bytecode?",
-      options: ["JDK", "JRE", "JVM", "JIT"],
+      question: "Which component is directly responsible for executing Java bytecode?",
+      options: ["JDK", "JRE", "JVM", "javac"],
       answer: 2,
-      explanation: "The JVM (Java Virtual Machine) is the interpreter that reads and executes the bytecode."
+      explanation: "The JVM (Java Virtual Machine) reads and executes the .class bytecode. The JDK includes development tools, the JRE provides the runtime environment, but only the JVM actually runs the bytecode."
     },
     {
-      question: "Is Java a purely object-oriented language?",
-      options: ["Yes, everything is an object.", "No, because it supports primitive data types.", "Yes, because it supports inheritance.", "No, because it doesn't support pointers."],
+      question: "What is the file extension of a compiled Java bytecode file?",
+      options: [".java", ".class", ".byte", ".exe"],
       answer: 1,
-      explanation: "Java is not considered 100% purely object-oriented because it supports primitive data types (like int, char) which are not objects."
+      explanation: "Java source files use the .java extension. When compiled with javac, they produce platform-neutral bytecode files with the .class extension, which any JVM can execute."
     },
     {
       question: "What is the difference between JDK and JRE?",
-      options: ["JDK is for development, JRE is for running.", "JRE is for development, JDK is for running.", "They are the exact same thing.", "JDK includes JVM, JRE does not."],
+      options: ["JDK is for development; JRE is for running Java applications.", "JRE is for development; JDK is for running.", "They are identical.", "JDK includes JVM; JRE does not."],
       answer: 0,
-      explanation: "JDK (Java Development Kit) contains tools for developing Java programs (like javac). JRE (Java Runtime Environment) contains the JVM and libraries needed to RUN Java programs."
+      explanation: "JDK (Java Development Kit) contains tools for developing Java programs like the javac compiler. JRE (Java Runtime Environment) contains the JVM and core libraries needed only to RUN Java programs."
     },
     {
       question: "Is Java a compiled or interpreted language?",
-      options: ["Purely compiled.", "Purely interpreted.", "Both. It compiles to bytecode, then interprets/JIT compiles that.", "Neither."],
+      options: ["Purely compiled to machine code.", "Purely interpreted line by line.", "Both — compiled to bytecode, then JIT-compiled or interpreted by the JVM.", "Neither, it uses transpilation."],
       answer: 2,
-      explanation: "Java is both. Source code is compiled into bytecode (by <code>javac</code>), and then the JVM interprets or JIT-compiles that bytecode into native machine code."
-    },
-    {
-      question: "What is the String Pool?",
-      options: ["A special area in the Heap to store String literals.", "A list of all strings in the program.", "A garbage collection algorithm.", "A database for strings."],
-      answer: 0,
-      explanation: "The String Pool is a special storage area in the Java Heap. When you create a String literal, the JVM checks the pool first. If it exists, it reuses the reference."
-    },
-    {
-      question: "Does Java support multiple inheritance of classes?",
-      options: ["Yes, a class can extend multiple classes.", "No, to avoid the 'Diamond Problem'.", "Yes, using the 'extends' keyword with commas.", "No, because it is too slow."],
-      answer: 1,
-      explanation: "Java does NOT support multiple inheritance of classes to avoid complexity and ambiguity (the Diamond Problem). However, a class can implement multiple interfaces."
-    },
-    {
-      question: "What is the file extension of a Java bytecode file?",
-      options: [".java", ".class", ".byte", ".exe"],
-      answer: 1,
-      explanation: "Java source files have the <code>.java</code> extension. When compiled, they produce bytecode files with the <code>.class</code> extension."
+      explanation: "Java is a two-stage system. Source code is compiled by javac into bytecode (.class files). Then the JVM either interprets that bytecode or uses the JIT (Just-In-Time) compiler to convert hot code paths into native machine instructions at runtime."
     },
     {
       question: "Which company originally developed Java?",
       options: ["Microsoft", "Sun Microsystems", "Oracle", "IBM"],
       answer: 1,
-      explanation: "Java was originally developed by Sun Microsystems (James Gosling and team) in 1995. Oracle later acquired Sun."
+      explanation: "Java was originally developed by James Gosling and his team at Sun Microsystems in 1995. Oracle later acquired Sun Microsystems in 2010 and now stewards the Java platform."
     },
     {
-      question: "What is the purpose of the <code>package</code> statement in Java?",
-      options: ["To group related classes together and avoid naming conflicts.", "To create an archive file.", "To import external libraries.", "To make a class public."],
-      answer: 0,
-      explanation: "Packages are used in Java to prevent naming conflicts, to control access, and to make searching/locating and usage of classes, interfaces, enumerations, and annotations easier."
-    },
-    {
-      question: "What is Garbage Collection in Java?",
-      options: ["A process that deletes files from the disk.", "An automatic memory management process that removes unused objects from the heap.", "A way to optimize code.", "A process that checks for syntax errors."],
+      question: "What does the JIT compiler do in the JVM?",
+      options: ["Compiles Java source code to bytecode.", "Converts frequently executed bytecode to native machine code at runtime for speed.", "Manages garbage collection.", "Links external libraries to the JVM."],
       answer: 1,
-      explanation: "Garbage collection is the process by which Java programs perform automatic memory management. The GC finds unused objects and deletes them to free up memory."
+      explanation: "The JIT (Just-In-Time) compiler identifies 'hot' code paths (frequently executed bytecode) and compiles them to native machine code at runtime, dramatically speeding up execution compared to pure interpretation."
     },
     {
-      question: "Is Java pass-by-value or pass-by-reference?",
-      options: ["Pass-by-reference.", "Pass-by-value.", "Both.", "Depends on the data type."],
+      question: "Why do teams choose Java for large enterprise systems over languages like Python?",
+      options: ["Java programs use less memory.", "Java has stronger typing, deep tooling, long backward compatibility, and a mature JVM ecosystem for large teams.", "Java is the simplest language to learn.", "Java runs exclusively on servers."],
       answer: 1,
-      explanation: "Java is strictly pass-by-value. For primitives, the value is passed. For objects, the value of the reference (memory address) is passed, not the object itself."
+      explanation: "Java's strong type system catches defects at compile time. Its JVM provides excellent observability and profiling tools. Backward compatibility means code from 2010 runs on Java 21 often faster — these qualities matter enormously at scale."
     },
     {
-      question: "What is the parent class of all classes in Java?",
-      options: ["Class", "Object", "Main", "Root"],
+      question: "What is the core design idea behind Java's platform independence?",
+      options: ["Java is installed on every OS natively.", "Source code is compiled once to bytecode; each JVM translates that bytecode to native code for its specific OS and CPU.", "Java does not use machine code.", "Java uses a universal binary that runs on all hardware."],
       answer: 1,
-      explanation: "The <code>java.lang.Object</code> class is the root of the class hierarchy. Every class has Object as a superclass."
+      explanation: "The JVM acts as an abstraction layer. You compile your source to bytecode once. Different JVM implementations (OpenJDK, GraalVM, etc.) each handle translating that same bytecode to the native execution format of the target OS and CPU architecture."
     }
   ],
   'setup.html': [
@@ -2187,6 +2163,288 @@ const quizDB = {
       options: ["A generic type used without type arguments.", "A type that cannot be changed.", "A primitive type.", "An array type."],
       answer: 0,
       explanation: "A raw type is the name of a generic class or interface without any type arguments (e.g., using <code>List</code> instead of <code>List<String></code>)."
+    }
+  ],
+  'build-tools.html': [
+    {
+      question: "What is the primary purpose of a build tool like Maven or Gradle?",
+      options: ["To write Java code faster.", "To automate compilation, dependency management, testing, and packaging.", "To deploy code to production servers.", "To format source code automatically."],
+      answer: 1,
+      explanation: "Build tools automate the entire build lifecycle: downloading dependencies, compiling source, running tests, and packaging the application into a JAR or WAR — so you don't do these steps manually."
+    },
+    {
+      question: "In Maven, which file declares a project's dependencies and build configuration?",
+      options: ["build.gradle", "pom.xml", "settings.xml", "manifest.mf"],
+      answer: 1,
+      explanation: "Maven projects are configured via pom.xml (Project Object Model). It declares the groupId, artifactId, version, dependencies, plugins, and build settings."
+    },
+    {
+      question: "What does the Maven command 'mvn clean install' do?",
+      options: ["Deletes the project and reinstalls Maven.", "Cleans the build output, then compiles, tests, and installs the JAR into the local repository.", "Only runs unit tests.", "Downloads all dependencies without building."],
+      answer: 1,
+      explanation: "'clean' deletes the target directory. 'install' runs through compile, test, package, and installs the resulting artifact into your local ~/.m2 repository so other local projects can use it."
+    },
+    {
+      question: "What is a Maven 'scope' like 'test' used for on a dependency?",
+      options: ["The dependency is only included during test compilation and execution, not in the production JAR.", "The dependency is required in all environments.", "The dependency is downloaded but never used.", "The dependency is shared with all modules."],
+      answer: 0,
+      explanation: "Dependency scope 'test' means the dependency (e.g., JUnit) is only available on the test classpath. It is not included in the final packaged artifact, keeping production builds lean."
+    },
+    {
+      question: "What is Gradle's key advantage over Maven?",
+      options: ["Gradle uses XML configuration which is more readable.", "Gradle uses a Groovy or Kotlin DSL script and supports incremental builds, making it significantly faster for large projects.", "Gradle does not need a repository to download dependencies.", "Gradle automatically writes unit tests."],
+      answer: 1,
+      explanation: "Gradle uses a programmable DSL (Groovy or Kotlin) instead of XML, making builds more flexible. Its incremental build system and build cache avoid re-running tasks whose inputs haven't changed, saving significant time in large projects."
+    },
+    {
+      question: "What is a Maven 'artifact' identified by?",
+      options: ["A file name only.", "A groupId, artifactId, and version (GAV coordinates).", "A URL of the repository.", "A hash of the source code."],
+      answer: 1,
+      explanation: "Every Maven artifact is uniquely identified by three coordinates: groupId (organization), artifactId (project name), and version. These GAV coordinates are what you declare in your pom.xml dependency block."
+    },
+    {
+      question: "What does the Gradle 'wrapper' (gradlew) solve?",
+      options: ["It wraps your code in a JAR automatically.", "It ensures all developers and CI servers use the exact same Gradle version without a prior local installation.", "It downloads Java for you.", "It speeds up Gradle tasks."],
+      answer: 1,
+      explanation: "The Gradle wrapper (gradlew script) is checked into the project. When executed, it downloads and uses the exact Gradle version specified in gradle-wrapper.properties, ensuring reproducible builds across machines."
+    },
+    {
+      question: "In Maven, what is the difference between 'compile' and 'runtime' scope?",
+      options: ["'compile' dependencies are needed to compile and run; 'runtime' dependencies are only needed at runtime, not during compilation.", "'runtime' is needed to compile; 'compile' is only for running.", "They are identical.", "'compile' scope is optional; 'runtime' is required."],
+      answer: 0,
+      explanation: "'compile' (the default) means the dependency is on the classpath during both compilation and execution. 'runtime' means the dependency is NOT needed to compile (your code doesn't reference its types directly) but IS needed when running."
+    }
+  ],
+  'design-patterns.html': [
+    {
+      question: "What is the Singleton design pattern?",
+      options: ["A pattern where a class can only have one method.", "A creational pattern that ensures a class has only one instance and provides a global access point to it.", "A structural pattern for wrapping objects.", "A behavioral pattern for iterating collections."],
+      answer: 1,
+      explanation: "The Singleton pattern restricts instantiation of a class to a single object. It uses a private constructor and a static method to return the single instance, used for shared resources like configuration or connection pools."
+    },
+    {
+      question: "Which design pattern category does the Factory Method belong to?",
+      options: ["Structural", "Behavioral", "Creational", "Architectural"],
+      answer: 2,
+      explanation: "Factory Method is a Creational pattern. It defines an interface for creating an object but lets subclasses decide which class to instantiate, decoupling object creation from usage."
+    },
+    {
+      question: "What problem does the Observer pattern solve?",
+      options: ["Creating objects without specifying their exact class.", "Defining a one-to-many dependency so that when one object changes state, all its dependents are notified automatically.", "Converting one interface into another.", "Composing objects into tree structures."],
+      answer: 1,
+      explanation: "The Observer pattern establishes a subscription mechanism. Publishers (subjects) maintain a list of subscribers (observers) and notify them when their state changes — the backbone of event-driven systems."
+    },
+    {
+      question: "What is the Strategy pattern used for?",
+      options: ["Ensuring only one instance exists.", "Defining a family of algorithms, encapsulating each one, and making them interchangeable at runtime.", "Wrapping incompatible interfaces together.", "Composing objects into trees."],
+      answer: 1,
+      explanation: "Strategy lets you define a set of algorithms, put each into a separate class, and make their objects interchangeable. The client can switch algorithms at runtime without modifying the classes that use them."
+    },
+    {
+      question: "What is the Decorator pattern?",
+      options: ["A pattern to create objects without knowing the concrete class.", "A structural pattern that attaches additional responsibilities to an object dynamically, wrapping it in decorator objects.", "A behavioral pattern for state transitions.", "A pattern to ensure one instance only."],
+      answer: 1,
+      explanation: "Decorator wraps an object in a chain of decorator objects that each add behavior. Java's I/O classes (BufferedReader wrapping FileReader) are a classic example — each layer adds buffering, compression, or encryption transparently."
+    },
+    {
+      question: "What is the Adapter pattern?",
+      options: ["A pattern that converts one interface into another that a client expects, allowing incompatible interfaces to work together.", "A pattern for creating objects step by step.", "A pattern for notifying observers.", "A pattern for managing a single instance."],
+      answer: 0,
+      explanation: "Adapter (also called Wrapper) converts the interface of a class into another interface clients expect. It allows classes to work together that couldn't otherwise because of incompatible interfaces."
+    },
+    {
+      question: "What are the three main categories of GoF design patterns?",
+      options: ["Creational, Structural, Behavioral", "Abstract, Concrete, Interface", "Static, Dynamic, Runtime", "Class, Object, Method"],
+      answer: 0,
+      explanation: "The Gang of Four catalogued 23 patterns in three categories: Creational (object creation), Structural (how objects compose), and Behavioral (how objects interact and distribute responsibility)."
+    },
+    {
+      question: "What is the Builder pattern used for?",
+      options: ["Building observer chains.", "Constructing complex objects step by step, separating construction from representation.", "Building singleton instances.", "Building proxy objects."],
+      answer: 1,
+      explanation: "Builder is a Creational pattern for constructing complex objects step by step. It lets you produce different types and representations of an object using the same construction process — ideal when an object has many optional parameters."
+    }
+  ],
+  'java-io-streams.html': [
+    {
+      question: "What is the fundamental abstraction behind Java I/O streams?",
+      options: ["Random access to any part of a file.", "A sequential flow of data — bytes or characters — read from a source or written to a destination.", "A two-way socket connection.", "A list of file names."],
+      answer: 1,
+      explanation: "A stream in Java I/O represents a sequential flow of data. You read from or write to streams without knowing if the underlying source is a file, network connection, or memory buffer — the stream abstraction is the same."
+    },
+    {
+      question: "What is the difference between InputStream/OutputStream and Reader/Writer?",
+      options: ["InputStream is for text; Reader is for binary.", "InputStream/OutputStream handle raw bytes (binary data); Reader/Writer handle 16-bit Unicode characters (text).", "They are identical, just different names.", "Reader is faster than InputStream."],
+      answer: 1,
+      explanation: "The byte stream classes (InputStream/OutputStream) work with raw bytes, making them suitable for images, audio, and binary data. Character stream classes (Reader/Writer) handle text correctly by working with Java's char (16-bit Unicode)."
+    },
+    {
+      question: "Why should you use BufferedInputStream instead of FileInputStream directly for reading files?",
+      options: ["BufferedInputStream reads the entire file at once.", "BufferedInputStream reduces the number of system calls by reading a large chunk into memory at once, making sequential reads much faster.", "FileInputStream cannot read binary files.", "BufferedInputStream provides encryption."],
+      answer: 1,
+      explanation: "Each read() call on an unbuffered stream may trigger a system call. BufferedInputStream maintains an internal byte array and fills it in one read, serving subsequent read() calls from the buffer — drastically reducing system call overhead for sequential access."
+    },
+    {
+      question: "What does ObjectInputStream/ObjectOutputStream enable?",
+      options: ["Reading and writing plain text files.", "Serializing and deserializing Java objects — converting them to/from a byte stream for storage or network transfer.", "Encrypting data streams.", "Connecting to a database."],
+      answer: 1,
+      explanation: "Object streams enable Java serialization. ObjectOutputStream writes the state of an object to a stream; ObjectInputStream reads it back and reconstructs the object — the class must implement the Serializable interface."
+    },
+    {
+      question: "What is the purpose of the PrintWriter class?",
+      options: ["To read formatted text input.", "To write formatted text output conveniently, with methods like println() and printf(), to files or other output streams.", "To write binary data.", "To compress data before writing."],
+      answer: 1,
+      explanation: "PrintWriter provides convenient methods (print, println, printf, format) for writing formatted text output. It wraps another Writer or OutputStream and is commonly used for writing to files or HTTP responses."
+    },
+    {
+      question: "What does the 'transient' keyword do to a field during serialization?",
+      options: ["It makes the field immutable.", "It marks the field to be skipped during serialization — its value is not written to the stream.", "It encrypts the field value.", "It makes the field static."],
+      answer: 1,
+      explanation: "When an object is serialized, transient fields are excluded. When deserialized, transient fields are initialized to their default values (null for objects, 0 for numbers). Use it for sensitive data, derived fields, or non-serializable references."
+    },
+    {
+      question: "What is the Scanner class primarily used for in Java?",
+      options: ["Scanning files for viruses.", "Parsing primitive types and strings from text input using delimiter patterns — often used for reading from System.in or a file.", "Writing formatted output.", "Searching byte streams."],
+      answer: 1,
+      explanation: "Scanner breaks its input into tokens using a delimiter pattern (whitespace by default) and provides typed reading methods: nextInt(), nextDouble(), nextLine(), etc. It's the simplest way to read user input from the console."
+    }
+  ],
+  'java-project-structure.html': [
+    {
+      question: "What is the standard Maven/Gradle source directory for production Java code?",
+      options: ["src/code/java", "src/main/java", "src/prod/java", "source/main"],
+      answer: 1,
+      explanation: "The Maven Standard Directory Layout uses src/main/java for production source code, src/main/resources for production resources, src/test/java for test code, and src/test/resources for test resources."
+    },
+    {
+      question: "What is the purpose of a Java 'package' in terms of project structure?",
+      options: ["To bundle code into a JAR file.", "To group related classes in a namespace that mirrors the directory structure, preventing naming conflicts.", "To import external libraries.", "To mark classes as public."],
+      answer: 1,
+      explanation: "A package declaration (e.g., com.company.feature) creates a namespace for classes and must match the directory structure (com/company/feature/). This organizes code logically and prevents class name collisions across libraries."
+    },
+    {
+      question: "What is a JAR file?",
+      options: ["A Java source archive containing .java files.", "A ZIP archive containing compiled .class files, resources, and a manifest, used to distribute Java applications and libraries.", "A configuration file for the JVM.", "A binary executable for Windows."],
+      answer: 1,
+      explanation: "A JAR (Java Archive) is a ZIP-format file containing compiled .class files, resources (images, config), and a META-INF/MANIFEST.MF that can specify the main class for executable JARs. It's the standard distribution unit for Java libraries and apps."
+    },
+    {
+      question: "What is the MANIFEST.MF file inside a JAR used for?",
+      options: ["Listing all Java source files.", "Specifying metadata about the JAR, including the Main-Class entry point and classpath dependencies.", "Storing encrypted passwords.", "Listing all external dependencies."],
+      answer: 1,
+      explanation: "MANIFEST.MF is a special metadata file in META-INF/ inside a JAR. The 'Main-Class' attribute tells the JVM which class to run when executing 'java -jar myapp.jar'. It can also specify classpath entries."
+    },
+    {
+      question: "What naming convention should Java packages follow?",
+      options: ["PascalCase, matching the class name.", "Lowercase, using reverse domain name notation (e.g., com.company.module).", "UPPER_SNAKE_CASE.", "camelCase."],
+      answer: 1,
+      explanation: "Java packages use all-lowercase letters. The convention is to start with your organization's reversed domain name (com.google.guava) to guarantee global uniqueness, then add module/feature names."
+    },
+    {
+      question: "What is the difference between a monolithic and a multi-module Maven project?",
+      options: ["Monolithic has one pom.xml; multi-module has a parent pom.xml with child module pom.xml files that build independently.", "Multi-module projects cannot share dependencies.", "Monolithic projects build faster.", "They are identical."],
+      answer: 0,
+      explanation: "A multi-module Maven project has a parent pom.xml declaring child modules. Each module has its own pom.xml and source tree. Modules can depend on each other and are built together. This separates concerns (e.g., api, service, persistence) into independent artifacts."
+    }
+  ],
+  'jdbc.html': [
+    {
+      question: "What does JDBC stand for and what is its purpose?",
+      options: ["Java Dynamic Bean Connector — to map Java beans to databases.", "Java Database Connectivity — a standard API for connecting Java applications to relational databases.", "Java Data Broadcasting Channel — to send data over a network.", "Java Desktop Builder Components — to create UI components."],
+      answer: 1,
+      explanation: "JDBC (Java Database Connectivity) is a standard Java API that defines how Java code connects to a relational database, executes SQL, and processes results. It abstracts over database vendors — the same code works against MySQL, PostgreSQL, Oracle, etc."
+    },
+    {
+      question: "What is the role of a JDBC Driver?",
+      options: ["It compiles SQL queries before sending them.", "It translates JDBC API calls into the database-specific protocol for a particular database vendor.", "It manages connection pooling automatically.", "It generates SQL from Java objects."],
+      answer: 1,
+      explanation: "A JDBC Driver is a vendor-provided implementation of the JDBC API. For example, mysql-connector-java translates JDBC calls into MySQL's wire protocol. You add it as a dependency, and DriverManager (or DataSource) uses it to establish connections."
+    },
+    {
+      question: "What is the difference between Statement and PreparedStatement?",
+      options: ["Statement is for DDL; PreparedStatement is for DML only.", "PreparedStatement pre-compiles SQL and supports parameterized queries, preventing SQL injection and improving performance for repeated execution.", "Statement is faster in all cases.", "They are identical."],
+      answer: 1,
+      explanation: "Statement sends raw SQL to the database on every call. PreparedStatement pre-compiles the SQL with placeholders (?), and you bind values separately. This prevents SQL injection (values are never treated as SQL) and is faster when the same query runs multiple times."
+    },
+    {
+      question: "Why should you always close JDBC Connection, Statement, and ResultSet objects?",
+      options: ["They expire after 5 minutes automatically.", "They hold database server resources (network connections, cursors, memory). Failing to close them causes resource leaks that can exhaust the database.", "Java closes them during garbage collection reliably.", "Only Connection needs to be closed; Statement and ResultSet are closed automatically."],
+      answer: 1,
+      explanation: "JDBC objects hold external resources — a Connection holds a network socket and a server-side session. ResultSet holds a server-side cursor. If not closed, these resources leak. In high-traffic applications this quickly exhausts the database's connection limit."
+    },
+    {
+      question: "What is a Connection Pool and why is it used with JDBC?",
+      options: ["A pool of SQL queries cached for reuse.", "A pre-created pool of database connections that are reused across requests, avoiding the expensive overhead of opening a new connection for every database operation.", "A collection of ResultSet objects.", "A group of database servers."],
+      answer: 1,
+      explanation: "Opening a JDBC connection involves TCP handshake, authentication, and session setup — taking tens to hundreds of milliseconds. A connection pool (HikariCP, c3p0) pre-opens connections and loans them to application threads, returning them to the pool after use rather than closing."
+    },
+    {
+      question: "What is a JDBC Transaction and how do you control it?",
+      options: ["A transaction is a single SQL query.", "A transaction is a group of SQL operations that either all succeed (commit) or all fail together (rollback). You control it via connection.setAutoCommit(false), then commit() or rollback().", "A transaction is handled automatically by JDBC for all operations.", "A transaction is a connection timeout setting."],
+      answer: 1,
+      explanation: "By default, JDBC auto-commits each statement. For multi-step operations (debit + credit), you set autoCommit(false), execute your statements, and then call commit() on success or rollback() on failure, ensuring data consistency."
+    },
+    {
+      question: "What does ResultSet.next() return?",
+      options: ["The next row's data as a String.", "true if there is another row to process, false if iteration is complete.", "An integer count of remaining rows.", "The column names of the next row."],
+      answer: 1,
+      explanation: "ResultSet.next() advances the cursor to the next row. It returns true if the next row exists (and you can call getXxx() methods to retrieve column values), and false when there are no more rows. You always call it in a while loop."
+    },
+    {
+      question: "What SQL injection vulnerability does PreparedStatement prevent?",
+      options: ["It prevents users from running SELECT statements.", "It prevents attacker-controlled input from being interpreted as SQL by binding parameter values separately from the SQL structure.", "It encrypts all SQL queries sent to the database.", "It validates SQL syntax before execution."],
+      answer: 1,
+      explanation: "If you build SQL by concatenating user input (\"SELECT * FROM users WHERE name='\" + input + \"'\"), an attacker can inject SQL like ' OR '1'='1. PreparedStatement sends the SQL structure and parameters separately — the database treats the parameter value as data, never as SQL syntax."
+    }
+  ],
+  'testing.html': [
+    {
+      question: "What is a unit test?",
+      options: ["A test that verifies the entire application works end-to-end.", "A test that verifies a single, isolated unit of code (usually a method or class) works correctly in isolation from dependencies.", "A test that checks the database schema.", "A test run only in production."],
+      answer: 1,
+      explanation: "Unit tests target the smallest testable piece of code in isolation. Dependencies (databases, APIs) are replaced with mocks or stubs, making tests fast, reliable, and pinpointing exactly where a bug lives."
+    },
+    {
+      question: "In JUnit 5, which annotation marks a method as a test?",
+      options: ["@Test from JUnit 5 (org.junit.jupiter.api.Test)", "@TestMethod", "@RunTest", "@Unit"],
+      answer: 0,
+      explanation: "JUnit 5's @Test annotation (from org.junit.jupiter.api) marks a method as a test case. The JUnit Platform discovers and runs these annotated methods automatically during the build."
+    },
+    {
+      question: "What is mocking and when do you use it?",
+      options: ["Mocking is writing fake Java classes that are completely non-functional.", "Mocking creates a controlled substitute for a dependency (like a database or HTTP client) so you can test code in isolation and verify interactions without real infrastructure.", "Mocking is running tests in parallel.", "Mocking is a technique to make tests run faster by skipping assertions."],
+      answer: 1,
+      explanation: "When the class under test depends on external systems (database, REST API), you replace them with mock objects (using Mockito) that you fully control. You define what they return and can verify they were called correctly, without real infrastructure."
+    },
+    {
+      question: "What is the AAA pattern in unit testing?",
+      options: ["Always Assert Accurately.", "Arrange, Act, Assert — structure a test by setting up data, calling the method under test, and verifying the outcome.", "Authenticate, Authorize, Audit.", "Abstract, Apply, Analyze."],
+      answer: 1,
+      explanation: "The Arrange-Act-Assert pattern is the standard structure for a readable unit test: Arrange sets up the test data and mocks, Act invokes the code being tested, and Assert verifies the result or behavior matches expectations."
+    },
+    {
+      question: "What is the difference between Mockito's verify() and assertions?",
+      options: ["They are identical.", "Assertions check the return value or state; verify() checks that a specific method on a mock was called, how many times, and with what arguments.", "verify() checks the return value; assertions check method calls.", "verify() is only for integration tests."],
+      answer: 1,
+      explanation: "Assertions (assertEquals, assertTrue) check the output or state of the code under test. Mockito's verify() checks behavioral aspects — that a collaboration happened: 'was emailService.sendEmail() called exactly once with this address?' — useful for void methods."
+    },
+    {
+      question: "What is test coverage and what is its limitation?",
+      options: ["Test coverage is 100% always sufficient to guarantee correctness.", "Test coverage measures what percentage of code lines/branches are executed by tests. High coverage means tests ran those lines — it does NOT guarantee correct behavior or good test assertions.", "Test coverage is only relevant for integration tests.", "Test coverage automatically improves code quality."],
+      answer: 1,
+      explanation: "Code coverage tells you which lines were hit by tests. A test with no assertions can achieve 100% coverage while testing nothing. High coverage is a hygiene indicator, not a correctness guarantee — you can have full coverage with weak assertions and miss real bugs."
+    },
+    {
+      question: "What is an integration test?",
+      options: ["A test that runs on an integrated development environment.", "A test that verifies multiple components work together correctly — for example, testing a service that actually writes to a real (or in-memory) database.", "A test that checks all packages are imported correctly.", "A test written by multiple developers together."],
+      answer: 1,
+      explanation: "Integration tests verify how components collaborate — the service, repository, and database working together. They are slower than unit tests (involve real I/O or containers) but catch problems like incorrect SQL, misconfigured Spring beans, or broken API contracts."
+    },
+    {
+      question: "What does @BeforeEach do in JUnit 5?",
+      options: ["It runs the annotated method once before all tests in the class.", "It runs the annotated method before each individual test method, used to reset state or reinitialize shared fixtures.", "It marks the test to be skipped.", "It runs the method after each test."],
+      answer: 1,
+      explanation: "@BeforeEach runs before each test method in the class. Use it to create fresh objects or reset shared state so tests don't interfere with each other — a key principle of test isolation."
     }
   ]
 };

@@ -25,10 +25,60 @@ function toggleLessonCompleted(file) {
   return status;
 }
 
+// BOOKMARK / FAVORITES SYSTEM
+const BOOKMARKS_KEY = 'javamaster_bookmarks';
+function getBookmarks() {
+  const data = localStorage.getItem(BOOKMARKS_KEY);
+  return data ? JSON.parse(data) : [];
+}
+function saveBookmarks(bookmarks) {
+  localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+}
+function toggleBookmark(page, sectionId, title) {
+  let bookmarks = getBookmarks();
+  const idx = bookmarks.findIndex(b => b.page === page && b.sectionId === sectionId);
+  if (idx > -1) {
+    bookmarks.splice(idx, 1);
+  } else {
+    bookmarks.push({ page, sectionId, title, date: Date.now() });
+  }
+  saveBookmarks(bookmarks);
+  return idx === -1; // true = added
+}
+function isBookmarked(page, sectionId) {
+  return getBookmarks().some(b => b.page === page && b.sectionId === sectionId);
+}
+
 // SIDEBAR GENERATION
 const isSubPage = window.location.pathname.includes('/pages/');
 const basePath = isSubPage ? '../' : './';
 const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+// INJECT FAVICON if missing
+if (!document.querySelector('link[rel="icon"]')) {
+  const fav = document.createElement('link');
+  fav.rel = 'icon';
+  fav.type = 'image/svg+xml';
+  fav.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%23f97316'/><text x='50' y='72' text-anchor='middle' font-size='60' font-weight='800' fill='white' font-family='sans-serif'>J</text></svg>";
+  document.head.appendChild(fav);
+}
+
+// INJECT PWA MANIFEST if missing
+if (!document.querySelector('link[rel="manifest"]')) {
+  const manifest = document.createElement('link');
+  manifest.rel = 'manifest';
+  manifest.href = basePath + 'manifest.json';
+  document.head.appendChild(manifest);
+}
+
+// REGISTER PWA SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(basePath + 'sw.js').catch(err => {
+      console.warn('Service Worker registration failed:', err);
+    });
+  });
+}
 
 
 function renderSidebar() {
@@ -129,6 +179,11 @@ function renderSidebar() {
           <a class="nav-item ${isActive('design-patterns.html')}" href="${basePath}pages/design-patterns.html"><span class="dot"></span>Patterns & SOLID</a>
         </div>
       </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Quick Reference</div>
+        <a class="nav-item ${isActive('cheatsheet.html')}" href="${basePath}pages/cheatsheet.html"><span class="dot"></span>📋 Cheat Sheet</a>
+      </div>
     </div>
   `;
   
@@ -181,7 +236,8 @@ const coursePages = [
   { file: 'java-project-structure.html', path: 'pages/java-project-structure.html', title: 'Project Structure' },
   { file: 'build-tools.html', path: 'pages/build-tools.html', title: 'Maven and Gradle' },
   { file: 'testing.html', path: 'pages/testing.html', title: 'Testing' },
-  { file: 'design-patterns.html', path: 'pages/design-patterns.html', title: 'Patterns and SOLID' }
+  { file: 'design-patterns.html', path: 'pages/design-patterns.html', title: 'Patterns and SOLID' },
+  { file: 'cheatsheet.html', path: 'pages/cheatsheet.html', title: 'Java Cheat Sheet' }
 ];
 
 // Redundant course-pager removed as static footer navigation handles course progress.
@@ -392,6 +448,26 @@ document.querySelectorAll('.code-header').forEach(header => {
   runBtn.style.textDecoration = 'none';
   header.insertBefore(runBtn, header.querySelector('.copy-btn'));
 });
+
+// INJECT SEARCH BAR on pages that don't have one
+if (!document.getElementById('search')) {
+  const topbar = document.getElementById('topbar');
+  if (topbar) {
+    const searchWrap = document.createElement('div');
+    searchWrap.id = 'search-wrap';
+    searchWrap.innerHTML = `
+      <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input id="search" type="text" placeholder="Search topics, APIs, concepts" autocomplete="off">
+      <div id="search-results"></div>
+    `;
+    const topbarRight = topbar.querySelector('.topbar-right');
+    if (topbarRight) topbar.insertBefore(searchWrap, topbarRight);
+    else topbar.appendChild(searchWrap);
+  }
+}
 
 // Load global search index
 const searchScript = document.createElement('script');
@@ -965,3 +1041,380 @@ function setupPageTOC() {
   sections.forEach(section => observer.observe(section));
 }
 setupPageTOC();
+
+// ═══════════════════════════════════════════════════════════
+//  BOOKMARK UI — star buttons on h3s + topbar panel
+// ═══════════════════════════════════════════════════════════
+(function initBookmarkUI() {
+  // Add star to each subsection h3 that has an id
+  document.querySelectorAll('.subsection h3').forEach(h3 => {
+    const section = h3.closest('.section[id]') || h3.closest('[id]');
+    if (!section || !section.id) return;
+    const sectionId = section.id;
+    const title = h3.textContent.replace('✓', '').trim();
+    const starred = isBookmarked(currentPage, sectionId);
+
+    const star = document.createElement('button');
+    star.className = 'bookmark-star' + (starred ? ' active' : '');
+    star.innerHTML = starred ? '★' : '☆';
+    star.title = starred ? 'Remove bookmark' : 'Bookmark this section';
+    star.setAttribute('aria-label', star.title);
+    star.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const added = toggleBookmark(currentPage, sectionId, title);
+      star.classList.toggle('active', added);
+      star.innerHTML = added ? '★' : '☆';
+      star.title = added ? 'Remove bookmark' : 'Bookmark this section';
+      updateBookmarkPanel();
+    });
+    h3.appendChild(star);
+  });
+
+  // Add bookmarks button to topbar
+  const topbarRight = document.querySelector('.topbar-right');
+  if (!topbarRight) return;
+
+  const bmBtn = document.createElement('button');
+  bmBtn.id = 'bookmarks-toggle';
+  bmBtn.type = 'button';
+  bmBtn.setAttribute('aria-label', 'Bookmarks');
+  bmBtn.title = 'Bookmarks';
+  topbarRight.insertBefore(bmBtn, topbarRight.firstChild);
+
+  const bmPanel = document.createElement('div');
+  bmPanel.id = 'bookmarks-panel';
+  bmPanel.className = 'glass';
+  document.body.appendChild(bmPanel);
+
+  function updateBookmarkPanel() {
+    const bookmarks = getBookmarks();
+    if (!bookmarks.length) {
+      bmPanel.innerHTML = `
+        <div class="bm-header">Bookmarks</div>
+        <div class="bm-empty">No bookmarks yet.<br>Click the ☆ on any section heading to save it.</div>
+      `;
+      return;
+    }
+    // Group by page
+    const grouped = {};
+    bookmarks.forEach(b => {
+      const pageInfo = coursePages.find(p => p.file === b.page);
+      const label = pageInfo ? pageInfo.title : b.page;
+      if (!grouped[label]) grouped[label] = { page: b.page, items: [] };
+      grouped[label].items.push(b);
+    });
+
+    let html = '<div class="bm-header">Bookmarks <button id="bm-clear" title="Clear all">✕</button></div>';
+    for (const [label, group] of Object.entries(grouped)) {
+      html += `<div class="bm-group-title">${label}</div>`;
+      group.items.forEach(b => {
+        const pagePath = coursePages.find(p => p.file === b.page);
+        const href = pagePath ? basePath + pagePath.path + '#' + b.sectionId : '#' + b.sectionId;
+        html += `<a class="bm-item" href="${href}"><span class="bm-star">★</span>${b.title}</a>`;
+      });
+    }
+    bmPanel.innerHTML = html;
+
+    const clearBtn = bmPanel.querySelector('#bm-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (confirm('Clear all bookmarks?')) {
+          saveBookmarks([]);
+          updateBookmarkPanel();
+          document.querySelectorAll('.bookmark-star').forEach(s => {
+            s.classList.remove('active');
+            s.innerHTML = '☆';
+          });
+        }
+      });
+    }
+  }
+
+  updateBookmarkPanel();
+
+  let panelOpen = false;
+  bmBtn.addEventListener('click', () => {
+    panelOpen = !panelOpen;
+    bmPanel.classList.toggle('show', panelOpen);
+    bmBtn.classList.toggle('active', panelOpen);
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#bookmarks-panel') && !e.target.closest('#bookmarks-toggle')) {
+      bmPanel.classList.remove('show');
+      bmBtn.classList.remove('active');
+      panelOpen = false;
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  SHARE LESSON LINK — copy URL to clipboard
+// ═══════════════════════════════════════════════════════════
+(function initShareButton() {
+  if (currentPage === 'index.html' || currentPage === '') return;
+  const topbarRight = document.querySelector('.topbar-right');
+  if (!topbarRight) return;
+
+  const shareBtn = document.createElement('button');
+  shareBtn.id = 'share-btn';
+  shareBtn.type = 'button';
+  shareBtn.setAttribute('aria-label', 'Share this lesson');
+  shareBtn.title = 'Copy link to clipboard';
+  topbarRight.insertBefore(shareBtn, topbarRight.firstChild);
+
+  shareBtn.addEventListener('click', () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      shareBtn.classList.add('copied');
+      shareBtn.title = 'Copied!';
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        shareBtn.title = 'Copy link to clipboard';
+      }, 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      shareBtn.classList.add('copied');
+      setTimeout(() => shareBtn.classList.remove('copied'), 2000);
+    });
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  PRINT / DOWNLOAD PDF — print-friendly via window.print()
+// ═══════════════════════════════════════════════════════════
+(function initPrintButton() {
+  if (currentPage === 'index.html' || currentPage === '') return;
+  const topbarRight = document.querySelector('.topbar-right');
+  if (!topbarRight) return;
+
+  const printBtn = document.createElement('button');
+  printBtn.id = 'print-btn';
+  printBtn.type = 'button';
+  printBtn.setAttribute('aria-label', 'Print or save as PDF');
+  printBtn.title = 'Print / Save as PDF';
+  topbarRight.insertBefore(printBtn, topbarRight.firstChild);
+
+  printBtn.addEventListener('click', () => {
+    window.print();
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  FLASHCARD / SPACED REPETITION MODE
+//  Pulls questions from quiz-data.js for the current page
+// ═══════════════════════════════════════════════════════════
+(function initFlashcards() {
+  // Wait for quiz-data to load, then build flashcard UI
+  function tryInit() {
+    if (typeof quizDB === 'undefined') return;
+
+    const pageFile = currentPage;
+    let cards = quizDB[pageFile];
+    if (!cards) return;
+    if (!Array.isArray(cards)) cards = [cards];
+    if (cards.length < 1) return;
+
+    // Add flashcard button to the content area (after quiz or at bottom)
+    const contentArea = document.querySelector('.content-area');
+    if (!contentArea) return;
+    if (document.getElementById('flashcard-zone')) return;
+
+    const fcZone = document.createElement('div');
+    fcZone.id = 'flashcard-zone';
+    fcZone.className = 'animate-fade';
+
+    const triggerBtn = document.createElement('button');
+    triggerBtn.id = 'flashcard-trigger';
+    triggerBtn.className = 'btn btn-secondary';
+    triggerBtn.innerHTML = '🃏 Practice Flashcards (' + cards.length + ')';
+    fcZone.appendChild(triggerBtn);
+
+    const fcContainer = document.createElement('div');
+    fcContainer.id = 'flashcard-container';
+    fcContainer.style.display = 'none';
+    fcZone.appendChild(fcContainer);
+
+    contentArea.appendChild(fcZone);
+
+    // Flashcard state
+    const FC_KEY = 'javamaster_flashcards';
+    function getFCState() {
+      const d = localStorage.getItem(FC_KEY);
+      return d ? JSON.parse(d) : {};
+    }
+    function saveFCState(state) {
+      localStorage.setItem(FC_KEY, JSON.stringify(state));
+    }
+
+    // Shuffle
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    let currentIdx = 0;
+    let deck = [];
+    let flipped = false;
+
+    function renderCard() {
+      if (deck.length === 0) {
+        fcContainer.innerHTML = `
+          <div class="fc-done">
+            <div class="fc-done-icon">🎉</div>
+            <div class="fc-done-text">All cards reviewed!</div>
+            <button class="btn btn-secondary fc-restart">Restart Deck</button>
+          </div>`;
+        fcContainer.querySelector('.fc-restart').addEventListener('click', startDeck);
+        return;
+      }
+
+      const card = deck[currentIdx];
+      flipped = false;
+
+      fcContainer.innerHTML = `
+        <div class="fc-progress">${currentIdx + 1} / ${deck.length}</div>
+        <div class="fc-card" id="fc-card">
+          <div class="fc-front">
+            <div class="fc-label">Question</div>
+            <div class="fc-question">${card.question}</div>
+            <div class="fc-tap">Click to reveal answer</div>
+          </div>
+          <div class="fc-back" style="display:none;">
+            <div class="fc-label">Answer</div>
+            <div class="fc-answer">${card.options[card.answer]}</div>
+            ${card.explanation ? '<div class="fc-explain">' + card.explanation + '</div>' : ''}
+          </div>
+        </div>
+        <div class="fc-actions" style="display:none;">
+          <button class="fc-btn fc-hard" title="Review again soon">😓 Hard</button>
+          <button class="fc-btn fc-ok" title="Got it">👍 Got it</button>
+          <button class="fc-btn fc-easy" title="Too easy">⚡ Easy</button>
+        </div>
+        <button class="btn btn-secondary fc-close-btn">Close Flashcards</button>
+      `;
+
+      const fcCard = fcContainer.querySelector('#fc-card');
+      const fcActions = fcContainer.querySelector('.fc-actions');
+
+      fcCard.addEventListener('click', () => {
+        if (flipped) return;
+        flipped = true;
+        fcCard.querySelector('.fc-front').style.display = 'none';
+        fcCard.querySelector('.fc-back').style.display = 'block';
+        fcCard.classList.add('flipped');
+        fcActions.style.display = 'flex';
+      });
+
+      // Rating buttons
+      fcContainer.querySelector('.fc-hard').addEventListener('click', () => rateCard('hard'));
+      fcContainer.querySelector('.fc-ok').addEventListener('click', () => rateCard('ok'));
+      fcContainer.querySelector('.fc-easy').addEventListener('click', () => rateCard('easy'));
+      fcContainer.querySelector('.fc-close-btn').addEventListener('click', closeDeck);
+    }
+
+    function rateCard(rating) {
+      const card = deck[currentIdx];
+      const state = getFCState();
+      const cardKey = pageFile + '_' + currentIdx;
+
+      if (!state[cardKey]) state[cardKey] = { reviews: 0, lastRating: '' };
+      state[cardKey].reviews++;
+      state[cardKey].lastRating = rating;
+      state[cardKey].lastReview = Date.now();
+      saveFCState(state);
+
+      if (rating === 'hard') {
+        // Move card to 3 positions later for re-review
+        deck.splice(currentIdx, 1);
+        const insertAt = Math.min(currentIdx + 3, deck.length);
+        deck.splice(insertAt, 0, card);
+        // Don't increment currentIdx since we removed current
+      } else {
+        deck.splice(currentIdx, 1);
+        // Don't increment, next card shifts into currentIdx
+      }
+
+      if (currentIdx >= deck.length) currentIdx = 0;
+      renderCard();
+    }
+
+    function startDeck() {
+      deck = shuffle(cards.map((c, i) => ({ ...c, _origIdx: i })));
+      currentIdx = 0;
+      fcContainer.style.display = 'block';
+      triggerBtn.style.display = 'none';
+      renderCard();
+    }
+
+    function closeDeck() {
+      fcContainer.style.display = 'none';
+      triggerBtn.style.display = 'inline-flex';
+    }
+
+    triggerBtn.addEventListener('click', startDeck);
+  }
+
+  // Quiz data loads asynchronously — poll briefly
+  if (typeof quizDB !== 'undefined') {
+    tryInit();
+  } else {
+    let attempts = 0;
+    const poll = setInterval(() => {
+      attempts++;
+      if (typeof quizDB !== 'undefined' || attempts > 20) {
+        clearInterval(poll);
+        tryInit();
+      }
+    }, 250);
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════
+//  ESTIMATED READING TIME
+// ═══════════════════════════════════════════════════════════
+(function initReadingTime() {
+  if (currentPage === 'index.html' || currentPage === '') return;
+  const contentArea = document.querySelector('.content-area');
+  if (!contentArea) return;
+
+  // Calculate words (excluding script tags, hidden elements if possible, but innerText mostly handles this)
+  const text = contentArea.innerText || contentArea.textContent;
+  const words = text.trim().split(/\s+/).length;
+  // Average reading speed is roughly 200-250 wpm
+  const wpm = 225;
+  const mins = Math.max(1, Math.ceil(words / wpm));
+  const timeText = `${mins} min read`;
+
+  // Inject into page header
+  const sectionHeaderDiv = document.querySelector('.section-header div:last-child');
+  if (sectionHeaderDiv) {
+    const pTag = sectionHeaderDiv.querySelector('p');
+    if (pTag) {
+      const badge = document.createElement('span');
+      badge.className = 'reading-time-badge';
+      badge.innerText = `⏱ ${timeText}`;
+      pTag.appendChild(badge);
+    }
+  }
+
+  // Inject into sidebar
+  const activeNavItem = document.querySelector('#sidebar .nav-item.active');
+  if (activeNavItem) {
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'sidebar-reading-time';
+    timeSpan.innerText = timeText;
+    activeNavItem.appendChild(timeSpan);
+  }
+})();
